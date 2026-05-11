@@ -1,69 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜控制台</title>
+    <title>朔夜核心终端</title>
     <style>
-        body { background: #000; color: #00ff00; font-family: monospace; padding: 40px 20px; margin: 0; height: 100vh; }
-        .p { border: 1px solid #005500; padding: 15px; margin-bottom: 20px; background: rgba(0,20,0,0.5); }
-        input, textarea { background: #000; color: #00ff00; border: 1px solid #004400; width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px; box-sizing: border-box; }
-        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; width: 100%; cursor: pointer; }
-        .i { border-left: 2px solid #00ff00; padding: 10px; margin-top: 10px; font-size: 0.9em; background: #111; }
-        .export-btn { background: #ff3333; color: white; margin-top: 20px; }
+        /* 强制干掉所有默认边距和白边，打造极致黑客绿 */
+        html, body {
+            margin: 0; padding: 0;
+            background-color: #000000; color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            height: 100vh; overflow-x: hidden; width: 100vw;
+        }
+        
+        /* 内部容器留出顶部安全距离 */
+        .container { padding: 30px 15px 20px 15px; max-width: 800px; margin: 0 auto; }
+        h1 { border-bottom: 2px dashed #00ff00; padding-bottom: 10px; text-shadow: 0 0 8px #00ff00; margin-top: 0; }
+        .panel { border: 1px solid #005500; background-color: rgba(0, 20, 0, 0.4); padding: 15px; margin-bottom: 20px; }
+        .panel-title { color: #00ff00; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #00ff00; padding-left: 10px; }
+        input, textarea { background-color: #050505; color: #00ff00; border: 1px solid #004400; padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 10px; font-family: 'Courier New', monospace; font-size: 16px; }
+        input:focus, textarea:focus { outline: none; border-color: #00ff00; box-shadow: 0 0 5px rgba(0,255,0,0.5); }
+        button { background-color: #00ff00; color: #000000; border: none; padding: 10px 15px; font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; margin-right: 5px; }
+        .danger-btn { background-color: #aa0000; color: white; }
+        .log-item { background-color: #080808; border-left: 2px solid #00ff00; padding: 10px; margin-bottom: 8px; word-wrap: break-word; font-size: 0.9em; }
+        .highlight { color: #ff3333; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h2 style="text-shadow: 0 0 5px #0f0; margin-top: 0;">[ 朔夜逆仙团 - 核心终端 ]</h2>
-    
-    <div class="p">
-        <input type="text" id="n" placeholder="手动部署任务代号...">
-        <input type="number" id="t" placeholder="限时(分钟)">
-        <button onclick="st()">[ 启动倒计时 ]</button>
-        <div id="tl"></div>
-    </div>
+    <div class="container">
+        <h1>[ SYSTEM ONLINE: SHUOYE_CORE ]</h1>
 
-    <div class="p">
-        <input type="text" id="s" placeholder="学科分类 (如: 高一物理)">
-        <textarea id="c" rows="3" placeholder="录入底层逻辑漏洞..."></textarea>
-        <button onclick="sv()">[ 存入本地数据库 ]</button>
-        <div id="bl"></div>
-    </div>
+        <div class="panel">
+            <div class="panel-title">>_ 战术部署 (Task)</div>
+            <input type="text" id="taskName" placeholder="手动部署任务代号...">
+            <input type="number" id="taskTime" placeholder="限时 (分钟)">
+            <button onclick="startTask()">[ 启动倒计时 ]</button>
+            <div id="taskList" style="margin-top: 15px;"></div>
+        </div>
 
-    <button class="export-btn" onclick="exp()">[ 一键导出数据给 Gemini ]</button>
+        <div class="panel">
+            <div class="panel-title">>_ 漏洞扫描 (Bug Report)</div>
+            <input type="text" id="bugSubject" placeholder="学科分类 (如: 高一物理)">
+            <textarea id="bugContent" rows="3" placeholder="录入底层逻辑漏洞..."></textarea>
+            <button onclick="saveBug()">[ 存入本地数据库 ]</button>
+            <div id="bugList" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">>_ 情报中枢 (Daily Log)</div>
+            <textarea id="dailyLog" rows="3" placeholder="今日战况与战术反思..."></textarea>
+            <button onclick="saveLog()">[ 锁定情报 ]</button>
+            <span id="logStatus" style="color: yellow; margin-left: 10px; font-size: 0.8em;"></span>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 40px;">
+            <button class="danger-btn" onclick="exportToGemini()">[ 导出数据 -> Gemini ]</button>
+            <button onclick="clearAll()" style="background: #222; color: #555;">[ 重置系统 ]</button>
+        </div>
+    </div>
 
     <script>
-        function st(){
-            let name=document.getElementById('n').value, time=document.getElementById('t').value;
-            if(!name||!time)return; let s=time*60; const d=document.createElement('div'); d.className='i';
-            document.getElementById('tl').prepend(d);
-            const tm=setInterval(()=>{
-                if(s<=0){clearInterval(tm); d.innerHTML=`[ 任务完结 ] ${name}`;}
-                else{let m=Math.floor(s/60),sec=s%60; d.innerHTML=`[ ${m}:${sec<10?'0'+sec:sec} ] ${name}`; s--;}
-            },1000);
+        function startTask() {
+            const name = document.getElementById('taskName').value;
+            const time = document.getElementById('taskTime').value;
+            if (!name || !time) return;
+            let secs = time * 60;
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'log-item';
+            document.getElementById('taskList').prepend(taskDiv);
+            const timer = setInterval(() => {
+                if (secs <= 0) {
+                    clearInterval(timer);
+                    taskDiv.innerHTML = `<span style="color:gray;">[ 任务终结 ] ${name}</span>`;
+                    taskDiv.style.borderLeftColor = 'gray';
+                } else {
+                    let m = Math.floor(secs / 60), s = secs % 60;
+                    taskDiv.innerHTML = `<span class="highlight">[ ${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s} ]</span> 执行中：${name}`;
+                    secs--;
+                }
+            }, 1000);
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskTime').value = '';
         }
-        function sv(){
-            let sub=document.getElementById('s').value, con=document.getElementById('c').value;
-            if(!sub||!con)return; let b=JSON.parse(localStorage.getItem('sy_b')||"[]");
-            b.unshift({sub,con}); localStorage.setItem('sy_b',JSON.stringify(b)); render();
-            document.getElementById('s').value=''; document.getElementById('c').value='';
+
+        function saveBug() {
+            const sub = document.getElementById('bugSubject').value;
+            const txt = document.getElementById('bugContent').value;
+            if (!sub || !txt) return;
+            let bugs = JSON.parse(localStorage.getItem('shuoye_bugs') || "[]");
+            bugs.unshift({ sub, txt, time: new Date().toLocaleString() });
+            localStorage.setItem('shuoye_bugs', JSON.stringify(bugs));
+            renderBugs();
+            document.getElementById('bugSubject').value = '';
+            document.getElementById('bugContent').value = '';
         }
-        function render(){
-            let b=JSON.parse(localStorage.getItem('sy_b')||"[]");
-            document.getElementById('bl').innerHTML=b.map(x=>`<div class="i"><b>[${x.sub}]</b> ${x.con}</div>`).join('');
+
+        function renderBugs() {
+            const bugs = JSON.parse(localStorage.getItem('shuoye_bugs') || "[]");
+            document.getElementById('bugList').innerHTML = bugs.map(b => 
+                `<div class="log-item"><span class="highlight">[${b.sub}]</span> ${b.txt}</div>`
+            ).join('');
         }
-        function exp(){
-            let b=JSON.parse(localStorage.getItem('sy_b')||"[]");
-            if(b.length===0){ alert("数据库为空！"); return; }
-            let text = ">>> 朔夜逆仙团情报导出 <<<\n\n";
-            b.forEach((item, index) => { text += `${index + 1}. [${item.sub}] ${item.con}\n`; });
-            const el=document.createElement('textarea'); el.value=text; document.body.appendChild(el);
-            el.select(); document.execCommand('copy'); document.body.removeChild(el);
-            alert("数据已复制！请直接发给 Gemini。");
+
+        function saveLog() {
+            localStorage.setItem('shuoye_log', document.getElementById('dailyLog').value);
+            document.getElementById('logStatus').innerText = "情报已写入本地。";
+            setTimeout(() => document.getElementById('logStatus').innerText = "", 3000);
         }
-        render();
+
+        function exportToGemini() {
+            const bugs = JSON.parse(localStorage.getItem('shuoye_bugs') || "[]");
+            const logs = localStorage.getItem('shuoye_log') || "无记录";
+            let result = `>>> 朔夜逆仙团 - 战术数据导出 <<<\n\n【今日情报】\n${logs}\n\n【漏洞档案】\n`;
+            bugs.forEach((b, i) => { result += `${i+1}. [${b.sub}] ${b.txt}\n`; });
+            const temp = document.createElement('textarea');
+            temp.value = result; document.body.appendChild(temp);
+            temp.select(); document.execCommand('copy'); document.body.removeChild(temp);
+            alert("降维数据已复制！请直接切换到 Gemini 粘贴发送。");
+        }
+
+        function clearAll() {
+            if (confirm("警告：抹除数据？")) { localStorage.clear(); location.reload(); }
+        }
+
+        renderBugs();
+        document.getElementById('dailyLog').value = localStorage.getItem('shuoye_log') || "";
     </script>
 </body>
 </html>
