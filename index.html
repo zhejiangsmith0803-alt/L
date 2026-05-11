@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>朔夜控制台</title>
+    <style>
+        body { background: #000; color: #00ff00; font-family: monospace; padding: 40px 20px; margin: 0; height: 100vh; }
+        .p { border: 1px solid #005500; padding: 15px; margin-bottom: 20px; background: rgba(0,20,0,0.5); }
+        input, textarea { background: #000; color: #00ff00; border: 1px solid #004400; width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px; box-sizing: border-box; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; width: 100%; cursor: pointer; }
+        .i { border-left: 2px solid #00ff00; padding: 10px; margin-top: 10px; font-size: 0.9em; background: #111; }
+        .export-btn { background: #ff3333; color: white; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2 style="text-shadow: 0 0 5px #0f0; margin-top: 0;">[ 朔夜逆仙团 - 核心终端 ]</h2>
+    
+    <div class="p">
+        <input type="text" id="n" placeholder="手动部署任务代号...">
+        <input type="number" id="t" placeholder="限时(分钟)">
+        <button onclick="st()">[ 启动倒计时 ]</button>
+        <div id="tl"></div>
+    </div>
+
+    <div class="p">
+        <input type="text" id="s" placeholder="学科分类 (如: 高一物理)">
+        <textarea id="c" rows="3" placeholder="录入底层逻辑漏洞..."></textarea>
+        <button onclick="sv()">[ 存入本地数据库 ]</button>
+        <div id="bl"></div>
+    </div>
+
+    <button class="export-btn" onclick="exp()">[ 一键导出数据给 Gemini ]</button>
+
+    <script>
+        function st(){
+            let name=document.getElementById('n').value, time=document.getElementById('t').value;
+            if(!name||!time)return; let s=time*60; const d=document.createElement('div'); d.className='i';
+            document.getElementById('tl').prepend(d);
+            const tm=setInterval(()=>{
+                if(s<=0){clearInterval(tm); d.innerHTML=`[ 任务完结 ] ${name}`;}
+                else{let m=Math.floor(s/60),sec=s%60; d.innerHTML=`[ ${m}:${sec<10?'0'+sec:sec} ] ${name}`; s--;}
+            },1000);
+        }
+        function sv(){
+            let sub=document.getElementById('s').value, con=document.getElementById('c').value;
+            if(!sub||!con)return; let b=JSON.parse(localStorage.getItem('sy_b')||"[]");
+            b.unshift({sub,con}); localStorage.setItem('sy_b',JSON.stringify(b)); render();
+            document.getElementById('s').value=''; document.getElementById('c').value='';
+        }
+        function render(){
+            let b=JSON.parse(localStorage.getItem('sy_b')||"[]");
+            document.getElementById('bl').innerHTML=b.map(x=>`<div class="i"><b>[${x.sub}]</b> ${x.con}</div>`).join('');
+        }
+        function exp(){
+            let b=JSON.parse(localStorage.getItem('sy_b')||"[]");
+            if(b.length===0){ alert("数据库为空！"); return; }
+            let text = ">>> 朔夜逆仙团情报导出 <<<\n\n";
+            b.forEach((item, index) => { text += `${index + 1}. [${item.sub}] ${item.con}\n`; });
+            const el=document.createElement('textarea'); el.value=text; document.body.appendChild(el);
+            el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            alert("数据已复制！请直接发给 Gemini。");
+        }
+        render();
+    </script>
+</body>
+</html>
