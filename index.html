@@ -2,131 +2,514 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜核心终端</title>
+    <title>朔夜核心终端 3.0</title>
     <style>
-        /* 强制干掉所有默认边距和白边，打造极致黑客绿 */
+        /* 全局样式 - 极致黑客风格 */
         html, body {
-            margin: 0; padding: 0;
-            background-color: #000000; color: #00ff00;
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
-            height: 100vh; overflow-x: hidden; width: 100vw;
+            height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
-        
-        /* 内部容器留出顶部安全距离 */
-        .container { padding: 30px 15px 20px 15px; max-width: 800px; margin: 0 auto; }
-        h1 { border-bottom: 2px dashed #00ff00; padding-bottom: 10px; text-shadow: 0 0 8px #00ff00; margin-top: 0; }
-        .panel { border: 1px solid #005500; background-color: rgba(0, 20, 0, 0.4); padding: 15px; margin-bottom: 20px; }
-        .panel-title { color: #00ff00; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #00ff00; padding-left: 10px; }
-        input, textarea { background-color: #050505; color: #00ff00; border: 1px solid #004400; padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 10px; font-family: 'Courier New', monospace; font-size: 16px; }
-        input:focus, textarea:focus { outline: none; border-color: #00ff00; box-shadow: 0 0 5px rgba(0,255,0,0.5); }
-        button { background-color: #00ff00; color: #000000; border: none; padding: 10px 15px; font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; margin-right: 5px; }
-        .danger-btn { background-color: #aa0000; color: white; }
-        .log-item { background-color: #080808; border-left: 2px solid #00ff00; padding: 10px; margin-bottom: 8px; word-wrap: break-word; font-size: 0.9em; }
-        .highlight { color: #ff3333; font-weight: bold; }
+
+        /* 容器 - iPad 安全距离 */
+        .container {
+            padding: 30px 20px 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: max(30px, env(safe-area-inset-top));
+            padding-bottom: max(40px, env(safe-area-inset-bottom));
+        }
+
+        /* 标题 */
+        h1 {
+            border-bottom: 2px dashed #00ff00;
+            padding-bottom: 15px;
+            text-shadow: 0 0 10px #00ff00;
+            margin: 0 0 30px 0;
+            font-size: 1.8em;
+            letter-spacing: 2px;
+        }
+
+        /* 面板 */
+        .panel {
+            border: 1px solid #005500;
+            background-color: rgba(0, 20, 0, 0.4);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .panel-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-left: 4px solid #00ff00;
+            padding-left: 12px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 表单控件 - 大而清晰，适配iPad */
+        input[type="text"],
+        input[type="file"],
+        select,
+        textarea {
+            background-color: #050505;
+            color: #00ff00;
+            border: 1px solid #004400;
+            padding: 18px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border-radius: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 50px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.6), inset 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+
+        /* 按钮 - 大按钮，易于点击 */
+        button {
+            background-color: #00ff00;
+            color: #000000;
+            border: none;
+            padding: 16px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            min-height: 50px;
+            min-width: 200px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+
+        button:disabled {
+            background-color: #444;
+            color: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* 危险按钮 */
+        .danger-btn {
+            background-color: #aa0000;
+            color: #ffffff;
+        }
+
+        /* 状态显示区域 */
+        .status-box {
+            background-color: #080808;
+            border: 1px solid #004400;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 4px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00ff00;
+            padding-left: 15px;
+            word-wrap: break-word;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .status-success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .status-error {
+            border-left-color: #ff3333;
+            color: #ff6666;
+        }
+
+        .status-info {
+            border-left-color: #ffaa00;
+            color: #ffdd00;
+        }
+
+        .status-loading {
+            border-left-color: #00aaff;
+            color: #00ccff;
+        }
+
+        /* 文件输入隐藏但保留功能 */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* 自定义文件选择器按钮 */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-label {
+            display: block;
+            background-color: #005500;
+            color: #00ff00;
+            border: 1px dashed #00ff00;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .file-input-label:active {
+            background-color: #007700;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        /* 响应式 - iPad 横屏 */
+        @media (min-width: 800px) {
+            .container {
+                padding: 40px 40px 60px 40px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            button {
+                min-width: 250px;
+            }
+        }
+
+        /* 响应式 - 小屏幕 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 12px 30px 12px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            button {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none;
+        }
+
+        /* 加载指示器 */
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>[ SYSTEM ONLINE: SHUOYE_CORE ]</h1>
+        <h1>[ 朔夜核心终端 3.0 ]</h1>
 
         <div class="panel">
-            <div class="panel-title">>_ 战术部署 (Task)</div>
-            <input type="text" id="taskName" placeholder="手动部署任务代号...">
-            <input type="number" id="taskTime" placeholder="限时 (分钟)">
-            <button onclick="startTask()">[ 启动倒计时 ]</button>
-            <div id="taskList" style="margin-top: 15px;"></div>
+            <div class="panel-title">>_ 云端笔记上传系统</div>
+
+            <!-- 学科选择 -->
+            <label for="subject" style="display: block; margin-bottom: 5px; color: #ffff00; font-weight: bold;">[ 学科分类 ]</label>
+            <select id="subject" required>
+                <option value="">-- 选择学科 --</option>
+                <option value="物理">物理</option>
+                <option value="数学">数学</option>
+                <option value="语文">语文</option>
+                <option value="英语">英语</option>
+                <option value="化学">化学</option>
+                <option value="生物">生物</option>
+                <option value="其他">其他</option>
+            </select>
+
+            <!-- 自定义文件名 -->
+            <label for="customName" style="display: block; margin-bottom: 5px; color: #ffff00; font-weight: bold;">[ 自定义文件名 (可选) ]</label>
+            <input type="text" id="customName" placeholder="如：第一章笔记、复习重点等...">
+
+            <!-- 文件选择器 -->
+            <label for="fileInput" style="display: block; margin-bottom: 5px; color: #ffff00; font-weight: bold;">[ 选择文件或拍照 ]</label>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.doc,.docx" capture="environment">
+                <label for="fileInput" class="file-input-label">
+                    📎 点击选择文件或拍照 (支持图片、PDF、文档)
+                </label>
+            </div>
+
+            <!-- 选中文件显示 -->
+            <div id="fileInfo" style="background-color: #0a0a0a; border: 1px solid #003300; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
+                <div style="color: #ffff00; margin-bottom: 8px;">✓ 已选择文件：</div>
+                <div id="fileName" style="color: #00ff00; word-break: break-all;"></div>
+            </div>
+
+            <!-- 上传按钮 -->
+            <button id="uploadBtn" onclick="handleUpload()" style="width: 100%; background-color: #00aa00; min-height: 60px; font-size: 18px;">
+                [ 上传至云端数据库 ]
+            </button>
+
+            <!-- 状态显示区域 -->
+            <div id="statusContainer" class="status-box" style="display: none; flex-direction: column; min-height: auto;">
+                <div id="statusText"></div>
+            </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-title">>_ 漏洞扫描 (Bug Report)</div>
-            <input type="text" id="bugSubject" placeholder="学科分类 (如: 高一物理)">
-            <textarea id="bugContent" rows="3" placeholder="录入底层逻辑漏洞..."></textarea>
-            <button onclick="saveBug()">[ 存入本地数据库 ]</button>
-            <div id="bugList" style="margin-top: 15px;"></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">>_ 情报中枢 (Daily Log)</div>
-            <textarea id="dailyLog" rows="3" placeholder="今日战况与战术反思..."></textarea>
-            <button onclick="saveLog()">[ 锁定情报 ]</button>
-            <span id="logStatus" style="color: yellow; margin-left: 10px; font-size: 0.8em;"></span>
-        </div>
-
-        <div style="text-align: right; margin-bottom: 40px;">
-            <button class="danger-btn" onclick="exportToGemini()">[ 导出数据 -> Gemini ]</button>
-            <button onclick="clearAll()" style="background: #222; color: #555;">[ 重置系统 ]</button>
+        <!-- 说明区域 -->
+        <div class="panel" style="background-color: rgba(0, 40, 0, 0.3); border: 1px dashed #004400;">
+            <div class="panel-title">>_ 系统信息</div>
+            <div style="font-size: 0.9em; line-height: 1.8;">
+                [ ✓ ] 支持的文件类型：图片、PDF、文档<br>
+                [ ✓ ] 文件存储位置：笔记本/ 文件夹<br>
+                [ ✓ ] 命名规则：YYYY-MM-DD-学科-文件名<br>
+                [ ✓ ] 完全本地处理，无数据泄露风险<br>
+                [ ⚠ ] 首次使用需配置 GitHub Token
+            </div>
         </div>
     </div>
 
     <script>
-        function startTask() {
-            const name = document.getElementById('taskName').value;
-            const time = document.getElementById('taskTime').value;
-            if (!name || !time) return;
-            let secs = time * 60;
-            const taskDiv = document.createElement('div');
-            taskDiv.className = 'log-item';
-            document.getElementById('taskList').prepend(taskDiv);
-            const timer = setInterval(() => {
-                if (secs <= 0) {
-                    clearInterval(timer);
-                    taskDiv.innerHTML = `<span style="color:gray;">[ 任务终结 ] ${name}</span>`;
-                    taskDiv.style.borderLeftColor = 'gray';
-                } else {
-                    let m = Math.floor(secs / 60), s = secs % 60;
-                    taskDiv.innerHTML = `<span class="highlight">[ ${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s} ]</span> 执行中：${name}`;
-                    secs--;
+        // ========== 配置常量 ==========
+        const CONFIG = {
+            token: '',
+            username: '',
+            repo: ''
+        };
+
+        // ========== 全局变量 ==========
+        let selectedFile = null;
+        const statusContainer = document.getElementById('statusContainer');
+        const statusText = document.getElementById('statusText');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        // ========== 文件选择事件 ==========
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                fileName.textContent = `文件名：${file.name} | 大小：${(file.size / 1024).toFixed(2)} KB`;
+                fileInfo.style.display = 'block';
+                addStatus(`已选择文件：${file.name}`, 'info');
+            }
+        });
+
+        // ========== 获取当前日期 (YYYY-MM-DD) ==========
+        function getCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // ========== 生成目标文件路径 ==========
+        function generateFilePath(file, subject, customName) {
+            const date = getCurrentDate();
+            const originalName = file.name;
+            const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
+            const extension = originalName.substring(originalName.lastIndexOf('.'));
+            
+            // 文件名逻辑：如果有自定义名称则使用，否则使用原文件名
+            const finalName = customName && customName.trim() ? customName.trim() : nameWithoutExt;
+            
+            // 路径格式：笔记本/YYYY-MM-DD-学科-文件名.扩展名
+            const filename = `${date}-${subject}-${finalName}${extension}`;
+            const path = `笔记本/${filename}`;
+            
+            return path;
+        }
+
+        // ========== 将文件转换为 Base64 ==========
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // 去掉 "data:image/png;base64," 前缀，只保留纯 Base64
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ========== 验证配置 ==========
+        function validateConfig() {
+            if (!CONFIG.token || !CONFIG.username || !CONFIG.repo) {
+                addStatus('❌ 错误：GitHub 配置未完成。请在代码中填入 token、username、repo', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // ========== 处理上传 ==========
+        async function handleUpload() {
+            // 清空之前的状态
+            statusText.innerHTML = '';
+            statusContainer.style.display = 'none';
+
+            // 验证选择
+            const subject = document.getElementById('subject').value;
+            const customName = document.getElementById('customName').value;
+
+            if (!subject) {
+                addStatus('❌ 请选择学科分类', 'error');
+                return;
+            }
+
+            if (!selectedFile) {
+                addStatus('❌ 请选择要上传的文件', 'error');
+                return;
+            }
+
+            // 验证配置
+            if (!validateConfig()) {
+                return;
+            }
+
+            // 禁用按钮
+            uploadBtn.disabled = true;
+            addStatus('<span class="spinner"></span> 正在转换文件...', 'loading');
+
+            try {
+                // 1. 将文件转换为 Base64
+                const base64Content = await fileToBase64(selectedFile);
+                addStatus('<span class="spinner"></span> 正在上传至 GitHub...', 'loading');
+
+                // 2. 生成目标路径
+                const filePath = generateFilePath(selectedFile, subject, customName);
+
+                // 3. 准备 GitHub API 请求
+                const apiUrl = `https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${encodeURIComponent(filePath)}`;
+                
+                const requestBody = {
+                    message: `上传笔记：${subject} - ${selectedFile.name} (${getCurrentDate()})`,
+                    content: base64Content,
+                    branch: 'main'
+                };
+
+                // 4. 发送 PUT 请求
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${CONFIG.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                // 5. 处理响应
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    // 错误处理
+                    const errorMsg = responseData.message || '未知错误';
+                    addStatus(`❌ 上传失败: ${errorMsg}`, 'error');
+                    console.error('GitHub API 错误:', responseData);
+                    return;
                 }
-            }, 1000);
-            document.getElementById('taskName').value = '';
-            document.getElementById('taskTime').value = '';
+
+                // 成功
+                addStatus(`✓ 上传成功！`, 'success');
+                addStatus(`文件路径: ${filePath}`, 'success');
+                addStatus(`提交哈希: ${responseData.commit.sha.substring(0, 7)}`, 'success');
+
+                // 清空表单
+                document.getElementById('subject').value = '';
+                document.getElementById('customName').value = '';
+                selectedFile = null;
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+
+            } catch (error) {
+                addStatus(`❌ 网络错误: ${error.message}`, 'error');
+                console.error('上传过程错误:', error);
+            } finally {
+                uploadBtn.disabled = false;
+            }
         }
 
-        function saveBug() {
-            const sub = document.getElementById('bugSubject').value;
-            const txt = document.getElementById('bugContent').value;
-            if (!sub || !txt) return;
-            let bugs = JSON.parse(localStorage.getItem('shuoye_bugs') || "[]");
-            bugs.unshift({ sub, txt, time: new Date().toLocaleString() });
-            localStorage.setItem('shuoye_bugs', JSON.stringify(bugs));
-            renderBugs();
-            document.getElementById('bugSubject').value = '';
-            document.getElementById('bugContent').value = '';
+        // ========== 状态提示函数 ==========
+        function addStatus(message, type = 'info') {
+            statusContainer.style.display = 'flex';
+            const statusItem = document.createElement('div');
+            statusItem.className = `status-item status-${type}`;
+            statusItem.innerHTML = message;
+            statusText.appendChild(statusItem);
+            
+            // 自动滚动到最新消息
+            setTimeout(() => {
+                statusText.scrollTop = statusText.scrollHeight;
+            }, 0);
         }
 
-        function renderBugs() {
-            const bugs = JSON.parse(localStorage.getItem('shuoye_bugs') || "[]");
-            document.getElementById('bugList').innerHTML = bugs.map(b => 
-                `<div class="log-item"><span class="highlight">[${b.sub}]</span> ${b.txt}</div>`
-            ).join('');
-        }
-
-        function saveLog() {
-            localStorage.setItem('shuoye_log', document.getElementById('dailyLog').value);
-            document.getElementById('logStatus').innerText = "情报已写入本地。";
-            setTimeout(() => document.getElementById('logStatus').innerText = "", 3000);
-        }
-
-        function exportToGemini() {
-            const bugs = JSON.parse(localStorage.getItem('shuoye_bugs') || "[]");
-            const logs = localStorage.getItem('shuoye_log') || "无记录";
-            let result = `>>> 朔夜逆仙团 - 战术数据导出 <<<\n\n【今日情报】\n${logs}\n\n【漏洞档案】\n`;
-            bugs.forEach((b, i) => { result += `${i+1}. [${b.sub}] ${b.txt}\n`; });
-            const temp = document.createElement('textarea');
-            temp.value = result; document.body.appendChild(temp);
-            temp.select(); document.execCommand('copy'); document.body.removeChild(temp);
-            alert("降维数据已复制！请直接切换到 Gemini 粘贴发送。");
-        }
-
-        function clearAll() {
-            if (confirm("警告：抹除数据？")) { localStorage.clear(); location.reload(); }
-        }
-
-        renderBugs();
-        document.getElementById('dailyLog').value = localStorage.getItem('shuoye_log') || "";
+        // ========== 页面加载初始化 ==========
+        window.addEventListener('load', () => {
+            console.log('🚀 朔夜核心终端 3.0 已启动');
+            console.log('当前日期:', getCurrentDate());
+        });
     </script>
 </body>
 </html>
