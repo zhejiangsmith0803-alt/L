@@ -82,7 +82,7 @@
 
         /* 下拉菜单自定义样式 */
         select {
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='[...]
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 20px;
@@ -430,7 +430,7 @@
     <script>
         // ========== 配置常量 ==========
         const CONFIG = {
-            token: "ghp_"+"NgjVDt0wwvqKpYvpVbcwAerV8LuRgs2EHAov"
+            token: "ghp_" + "NgjVDt0wwvqKpYvpVbcwAerV8LuRgs2EHAov",
             username: 'zhejiangsmith0803-alt',
             repo: 'L'
         };
@@ -715,7 +715,7 @@
                 const base64Content = await fileToBase64(selectedFile);
                 addStatus('正在上传至 GitHub...', 'loading');
 
-                // 2. 生成目标路径
+                // 2. 生��目标路径
                 const filePath = generateFilePath(selectedFile, subject, customName);
 
                 // 3. 准备 GitHub API 请求
