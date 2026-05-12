@@ -80,6 +80,7 @@
             appearance: none;
         }
 
+        /* 下拉菜单自定义样式 */
         select {
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
@@ -88,6 +89,7 @@
             padding-right: 50px;
         }
 
+        /* 表单控件焦点状态 */
         input:focus,
         select:focus,
         textarea:focus {
@@ -111,7 +113,6 @@
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.2s ease;
             min-height: 50px;
             min-width: 200px;
         }
@@ -143,7 +144,7 @@
             border-radius: 4px;
             min-height: 60px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
         }
 
         .status-item {
@@ -203,12 +204,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
         }
 
         .file-input-label:active {
             background-color: #007700;
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        /* 标签样式 */
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffff00;
+            font-weight: bold;
+            font-size: 0.95em;
         }
 
         /* 响应式 - iPad 横屏 */
@@ -247,18 +256,7 @@
             display: none;
         }
 
-        /* 加载指示器 */
-        .spinner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #00ff00;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-        }
-
+        /* 加载动画 */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -272,7 +270,7 @@
             <div class="panel-title">>_ 云端笔记上传系统</div>
 
             <!-- 学科选择 -->
-            <label for="subject" style="display: block; margin-bottom: 5px; color: #ffff00; font-weight: bold;">[ 学科分类 ]</label>
+            <label for="subject" class="form-label">[ 学科分类 ]</label>
             <select id="subject" required>
                 <option value="">-- 选择学科 --</option>
                 <option value="物理">物理</option>
@@ -285,11 +283,11 @@
             </select>
 
             <!-- 自定义文件名 -->
-            <label for="customName" style="display: block; margin-bottom: 5px; color: #ffff00; font-weight: bold;">[ 自定义文件名 (可选) ]</label>
-            <input type="text" id="customName" placeholder="如：第一章笔记、复习重点等...">
+            <label for="customName" class="form-label">[ 自定义文件名 (可选) ]</label>
+            <input type="text" id="customName" placeholder="例：第一章笔记、复习重点等...">
 
             <!-- 文件选择器 -->
-            <label for="fileInput" style="display: block; margin-bottom: 5px; color: #ffff00; font-weight: bold;">[ 选择文件或拍照 ]</label>
+            <label for="fileInput" class="form-label">[ 选择文件或拍照 ]</label>
             <div class="file-input-wrapper">
                 <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.doc,.docx" capture="environment">
                 <label for="fileInput" class="file-input-label">
@@ -304,12 +302,12 @@
             </div>
 
             <!-- 上传按钮 -->
-            <button id="uploadBtn" onclick="handleUpload()" style="width: 100%; background-color: #00aa00; min-height: 60px; font-size: 18px;">
+            <button id="uploadBtn" style="width: 100%; background-color: #00aa00; min-height: 60px; font-size: 18px;">
                 [ 上传至云端数据库 ]
             </button>
 
             <!-- 状态显示区域 -->
-            <div id="statusContainer" class="status-box" style="display: none; flex-direction: column; min-height: auto;">
+            <div id="statusContainer" class="status-box hidden">
                 <div id="statusText"></div>
             </div>
         </div>
@@ -355,6 +353,9 @@
             }
         });
 
+        // ========== 上传按钮点击事件 ==========
+        uploadBtn.addEventListener('click', handleUpload);
+
         // ========== 获取当前日期 (YYYY-MM-DD) ==========
         function getCurrentDate() {
             const now = new Date();
@@ -368,8 +369,9 @@
         function generateFilePath(file, subject, customName) {
             const date = getCurrentDate();
             const originalName = file.name;
-            const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
-            const extension = originalName.substring(originalName.lastIndexOf('.'));
+            const lastDotIndex = originalName.lastIndexOf('.');
+            const nameWithoutExt = lastDotIndex !== -1 ? originalName.substring(0, lastDotIndex) : originalName;
+            const extension = lastDotIndex !== -1 ? originalName.substring(lastDotIndex) : '';
             
             // 文件名逻辑：如果有自定义名称则使用，否则使用原文件名
             const finalName = customName && customName.trim() ? customName.trim() : nameWithoutExt;
@@ -408,7 +410,7 @@
         async function handleUpload() {
             // 清空之前的状态
             statusText.innerHTML = '';
-            statusContainer.style.display = 'none';
+            statusContainer.classList.remove('hidden');
 
             // 验证选择
             const subject = document.getElementById('subject').value;
@@ -431,12 +433,12 @@
 
             // 禁用按钮
             uploadBtn.disabled = true;
-            addStatus('<span class="spinner"></span> 正在转换文件...', 'loading');
+            addStatus('正在转换文件...', 'loading');
 
             try {
                 // 1. 将文件转换为 Base64
                 const base64Content = await fileToBase64(selectedFile);
-                addStatus('<span class="spinner"></span> 正在上传至 GitHub...', 'loading');
+                addStatus('正在上传至 GitHub...', 'loading');
 
                 // 2. 生成目标路径
                 const filePath = generateFilePath(selectedFile, subject, customName);
@@ -493,10 +495,9 @@
 
         // ========== 状态提示函数 ==========
         function addStatus(message, type = 'info') {
-            statusContainer.style.display = 'flex';
             const statusItem = document.createElement('div');
             statusItem.className = `status-item status-${type}`;
-            statusItem.innerHTML = message;
+            statusItem.textContent = message;
             statusText.appendChild(statusItem);
             
             // 自动滚动到最新消息
@@ -509,6 +510,7 @@
         window.addEventListener('load', () => {
             console.log('🚀 朔夜核心终端 3.0 已启动');
             console.log('当前日期:', getCurrentDate());
+            console.log('配置状态:', CONFIG.token ? '✓ Token已配置' : '⚠ 需要配置 Token');
         });
     </script>
 </body>
