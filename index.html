@@ -330,7 +330,10 @@
                     📎 点击选择文件 (支持图片、PDF、文档)
                 </label>
             </div>
-
+            <!-- 💡 插入位置：就在“选择文件”按钮下面，绿色“归档”按钮上面 -->
+            <label for="docSummary" class="form-label" style="color:#00ff00;">[ 资料核心摘要 (针对 Gemini 识别优化) ]</label>
+            <textarea id="docSummary" placeholder="在此输入资料的关键知识点、模型名或公式，方便 Gemini 检索..." style="height: 80px; resize: vertical; border-color:#004400;"></textarea>
+    
             <div id="docFileInfo" style="background-color: #0a0a0a; border: 1px solid #003300; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
                 <div style="color: #ffff00; margin-bottom: 8px;">✓ 待归档资料：</div>
                 <div id="docFileName" style="color: #00ff00; word-break: break-all;"></div>
@@ -491,7 +494,15 @@
             }
 
             document.getElementById('bugStatusText').innerHTML = '';
-            
+            <!-- 新增：模型锚定勾选框 -->
+            <div id="modelAnchors" style="margin-bottom: 15px; padding: 10px; border: 1px dashed #550000; border-radius: 4px;">
+             <div style="color: #ffaa00; font-size: 0.8em; margin-bottom: 8px;">[ 🤖 Gemini 视觉校准锚点 ]</div>
+            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="斜面/复合场"> 物理模型</label>
+            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="受力分析/运动图"> 图像识别</label>
+            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="立体几何/圆锥曲线"> 数学模型</label>
+            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="包含复杂公式"> 公式强化</label>
+            </div>
+
             // 存入本地
             const bugRecord = {
                 subject: subject,
@@ -538,30 +549,43 @@
 
         // ========== 模块 C：资料库纯文件上传 ==========
         document.getElementById('uploadDocBtn').addEventListener('click', async function() {
-            const subject = document.getElementById('docSubject').value;
-            const name = document.getElementById('docName').value.trim();
-            const file = selectedDocFile;
+    const subject = document.getElementById('docSubject').value;
+    const name = document.getElementById('docName').value.trim();
+    // 关键：读取你在第 335 行加的那个摘要框
+    const summary = document.getElementById('docSummary').value.trim(); 
+    const file = selectedDocFile;
 
-            if (!name) return alert('❌ 请输入资料名称！');
-            if (!file) return alert('❌ 请选择要归档的资料文件！');
+    if (!name) return alert('❌ 请输入资料名称！');
+    if (!file) return alert('❌ 请选择要归档的资料文件！');
 
-            document.getElementById('docStatusText').innerHTML = '';
-            document.getElementById('uploadDocBtn').disabled = true;
-            logMsg('docStatusText', '🔄 正在量子压缩资料，准备归档至 [云端资料库]...', 'loading');
+    document.getElementById('docStatusText').innerHTML = '';
+    document.getElementById('uploadDocBtn').disabled = true;
+    logMsg('docStatusText', '🔄 正在执行 4.0 档案归档程序...', 'loading');
 
-            const dateStr = new Date().toISOString().split('T')[0];
-            const ext = file.name.substring(file.name.lastIndexOf('.'));
-            const path = `资料库/${dateStr}-${subject}-${name}${ext}`;
-            
-            await executeGitHubUpload(file, path, 'docStatusText');
+    const dateStr = new Date().toISOString().split('T')[0];
+    const ext = file.name.substring(file.name.lastIndexOf('.'));
+    
+    // 1. 上传原始资料文件
+    const filePath = `资料库/${dateStr}-${subject}-${name}${ext}`;
+    await executeGitHubUpload(file, filePath, 'docStatusText');
 
-            // 清理
-            selectedDocFile = null;
-            document.getElementById('docName').value = '';
-            document.getElementById('docFileInput').value = '';
-            document.getElementById('docFileInfo').style.display = 'none';
-            document.getElementById('uploadDocBtn').disabled = false;
-        });
+    // 2. 自动生成并上传对应的 Markdown 索引（包含你的摘要）
+    const mdText = `# 战备资料索引 - ${name}\n\n## 1. 归档信息\n- 学科：${subject}\n- 时间：${new Date().toLocaleString()}\n\n## 2. 核心摘要 (Gemini 识别锚点)\n${summary || '未提供摘要'}\n\n## 3. 文件链接\n[查看原始资料](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
+    const mdBlob = new Blob([mdText], { type: 'text/markdown' });
+    const mdFile = new File([mdBlob], `${dateStr}-${subject}-${name}.md`);
+    
+    await executeGitHubUpload(mdFile, `资料库/${dateStr}-${subject}-${name}.md`, 'docStatusText');
+
+    // 清理界面
+    selectedDocFile = null;
+    document.getElementById('docName').value = '';
+    document.getElementById('docSummary').value = ''; 
+    document.getElementById('docFileInput').value = '';
+    document.getElementById('docFileInfo').style.display = 'none';
+    document.getElementById('uploadDocBtn').disabled = false;
+    alert('✅ 资料与 Gemini 适配索引已同步归档！');
+});
+
 
         // ========== 核心 GitHub 穿透引擎 ==========
         async function executeGitHubUpload(file, targetPath, logContainerId) {
@@ -607,5 +631,18 @@
             console.log('🚀 朔夜核心终端 3.2 终极版已就绪');
         });
     </script>
+    // 朔夜 4.0 增强逻辑：生成给 Gemini 读的“情报摘要”
+function generateGeminiMeta() {
+    const selectedTags = Array.from(document.querySelectorAll('input[name="m-tag"]:checked'))
+                              .map(cb => cb.value);
+    if (selectedTags.length === 0) return "";
+    
+    return `\n\n## 3. Gemini 视觉校准补丁 (系统自动生成)\n` +
+           `> [!IMPORTANT]\n` +
+           `> 指挥官马骁已手动锚定以下模型特征：\n` +
+           `> 特征标签：${selectedTags.join(' | ')}\n` +
+           `> 请 Gemini 在解析图片时，严格按照上述物理/数学模型进行逻辑校验，纠正视觉识别偏差。`;
+}
+
 </body>
 </html>
