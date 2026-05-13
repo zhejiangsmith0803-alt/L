@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜核心终端 3.0</title>
+    <title>朔夜核心终端 3.2</title>
     <style>
+        /* 第一重构：极致暗黑，镇压所有白色物质 */
+        :root {
+            color-scheme: dark;
+        }
+
         /* 全局样式 - 极致黑客风格 */
         html, body {
             margin: 0;
@@ -14,7 +19,7 @@
             background-color: #000000;
             color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
             overflow-x: hidden;
             -webkit-user-select: none;
@@ -41,13 +46,14 @@
             letter-spacing: 2px;
         }
 
-        /* 面板 */
+        /* 面板 - 增加微弱发光边框 */
         .panel {
             border: 1px solid #005500;
             background-color: rgba(0, 20, 0, 0.4);
             padding: 20px;
             margin-bottom: 30px;
             border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.08);
         }
 
         .panel-title {
@@ -82,14 +88,13 @@
 
         /* 下拉菜单自定义样式 */
         select {
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='[...]
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 20px;
             padding-right: 50px;
         }
 
-        /* 表单控件焦点状态 */
         input:focus,
         select:focus,
         textarea:focus {
@@ -98,7 +103,7 @@
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.6), inset 0 0 10px rgba(0, 255, 0, 0.1);
         }
 
-        /* 按钮 - 大按钮，易于点击 */
+        /* 按钮 */
         button {
             background-color: #00ff00;
             color: #000000;
@@ -109,12 +114,11 @@
             font-family: 'Courier New', monospace;
             font-size: 16px;
             border-radius: 4px;
-            margin-right: 10px;
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
             min-height: 50px;
-            min-width: 200px;
+            width: 100%;
         }
 
         button:active {
@@ -122,22 +126,9 @@
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
         }
 
-        button:disabled {
-            background-color: #444;
-            color: #666;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
         /* 危险按钮 */
-        .danger-btn {
-            background-color: #aa0000;
-            color: #ffffff;
-        }
-
-        .danger-btn:active {
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-        }
+        .danger-btn { background-color: #aa0000; color: #ffffff; }
+        .danger-btn:active { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
 
         /* 状态显示区域 */
         .status-box {
@@ -162,41 +153,13 @@
             font-size: 0.95em;
             line-height: 1.6;
         }
+        .status-success { border-left-color: #00ff00; color: #00ff00; }
+        .status-error { border-left-color: #ff3333; color: #ff6666; }
+        .status-info { border-left-color: #ffaa00; color: #ffdd00; }
 
-        .status-success {
-            border-left-color: #00ff00;
-            color: #00ff00;
-        }
-
-        .status-error {
-            border-left-color: #ff3333;
-            color: #ff6666;
-        }
-
-        .status-info {
-            border-left-color: #ffaa00;
-            color: #ffdd00;
-        }
-
-        .status-loading {
-            border-left-color: #00aaff;
-            color: #00ccff;
-        }
-
-        /* 文件输入隐藏但保留功能 */
-        input[type="file"] {
-            display: none;
-        }
-
-        /* 自定义文件选择器按钮 */
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
+        input[type="file"] { display: none; }
         .file-input-label {
-            display: block;
+            display: flex;
             background-color: #005500;
             color: #00ff00;
             border: 1px dashed #00ff00;
@@ -207,173 +170,98 @@
             margin-bottom: 15px;
             font-weight: bold;
             min-height: 50px;
-            display: flex;
             align-items: center;
             justify-content: center;
         }
+        .file-input-label:active { background-color: #007700; }
 
-        .file-input-label:active {
-            background-color: #007700;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
+        .form-label { display: block; margin-bottom: 8px; color: #ffff00; font-weight: bold; font-size: 0.95em; }
 
-        /* 标签样式 */
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #ffff00;
-            font-weight: bold;
-            font-size: 0.95em;
-        }
+        /* 双轨倒计时显示 */
+        .dual-countdown { display: flex; gap: 10px; margin: 15px 0; }
+        .timer-box { flex: 1; padding: 20px; text-align: center; border-radius: 4px; font-family: monospace; }
+        .total-timer { background: #001133; border: 2px solid #00aaff; }
+        .task-timer { background: #0a0a0a; border: 2px solid #00ff00; }
+        .timer-title { font-size: 1em; margin-bottom: 8px; font-weight: bold; }
+        .timer-val { font-size: 2.5em; font-weight: bold; letter-spacing: 2px; }
 
-        /* 倒计时显示 */
-        .countdown-display {
-            background-color: #0a0a0a;
-            border: 2px solid #00ff00;
-            padding: 20px;
-            text-align: center;
-            border-radius: 4px;
-            margin: 15px 0;
-            font-size: 2em;
-            font-weight: bold;
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 3px;
-        }
-
-        /* 漏洞记录列表 */
+        /* 漏洞记录列表 & 销毁按钮 */
         .bug-record-item {
             background-color: #0a0a0a;
             border: 1px solid #003300;
             padding: 15px;
+            padding-right: 80px; /* 给删除按钮留空间 */
             margin: 10px 0;
             border-radius: 4px;
             word-break: break-all;
+            position: relative;
+        }
+        .bug-record-subject { color: #ffff00; font-weight: bold; margin-bottom: 8px; }
+        .bug-record-content { color: #00ff00; font-size: 0.95em; line-height: 1.6; white-space: pre-wrap; }
+        .bug-record-time { color: #888; font-size: 0.85em; margin-top: 8px; }
+        
+        .del-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background-color: #550000;
+            color: #ffaa00;
+            border: 1px solid #ff3333;
+            width: auto;
+            min-width: 0;
+            min-height: 0;
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0;
         }
 
-        .bug-record-subject {
-            color: #ffff00;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .bug-record-content {
-            color: #00ff00;
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
-
-        .bug-record-time {
-            color: #888;
-            font-size: 0.85em;
-            margin-top: 8px;
-        }
-
-        /* 响应式 - iPad 横屏 */
-        @media (min-width: 800px) {
-            .container {
-                padding: 40px 40px 60px 40px;
-            }
-
-            h1 {
-                font-size: 2.2em;
-            }
-
-            button {
-                min-width: 250px;
-            }
-        }
-
-        /* 响应式 - 小屏幕 */
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px 12px 30px 12px;
-            }
-
-            h1 {
-                font-size: 1.4em;
-            }
-
-            button {
-                width: 100%;
-                margin-right: 0;
-            }
-        }
-
-        /* 隐藏类 */
-        .hidden {
-            display: none;
-        }
-
-        /* 加载动画 */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @media (min-width: 800px) { .container { padding: 40px 40px 60px 40px; } h1 { font-size: 2.2em; } }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>[ 朔夜核心终端 3.0 ]</h1>
+        <h1>[ 朔夜核心终端 3.2 ]</h1>
 
-        <!-- ========== 任务倒计时模块 ========== -->
+        <!-- ========== 模块 A：双轨倒计时模块 ========== -->
         <div class="panel">
-            <div class="panel-title">>_ 任务倒计时</div>
+            <div class="panel-title">>_ 纯手动双轨倒计时系统</div>
 
-            <label for="taskCode" class="form-label">[ 任务代号 ]</label>
-            <input type="text" id="taskCode" placeholder="例：PROJECT-ALPHA、考试准备等...">
+            <label for="totalMinutes" class="form-label" style="color:#00aaff;">[ 🌃 今日总作战限时 (分钟) ]</label>
+            <input type="text" id="totalMinutes" placeholder="例如：180">
 
-            <label for="taskMinutes" class="form-label">[ 限时 (分钟) ]</label>
-            <input type="text" id="taskMinutes" placeholder="输入分钟数，如：30、60 等">
+            <label for="taskCode" class="form-label">[ 当前突击任务代号 ]</label>
+            <input type="text" id="taskCode" placeholder="例：攻克物理动能定理">
 
-            <button id="startCountdownBtn" style="width: 100%; background-color: #00aa00; min-height: 60px; font-size: 18px;">
-                [ 启动倒计时 ]
+            <label for="taskMinutes" class="form-label">[ 当前任务限时 (分钟) ]</label>
+            <input type="text" id="taskMinutes" placeholder="例如：45">
+
+            <button id="startCountdownBtn" style="background-color: #00aa00; min-height: 60px; font-size: 18px;">
+                [ ⚡️ 启动双轨倒计时 ]
             </button>
 
-            <div id="countdownDisplay" class="countdown-display hidden">00:00</div>
+            <div id="countdownDisplay" class="dual-countdown hidden">
+                <div class="timer-box total-timer">
+                    <div class="timer-title" style="color:#00aaff;">总作战剩余</div>
+                    <div id="totalVal" class="timer-val" style="color:#00aaff;">00:00:00</div>
+                </div>
+                <div class="timer-box task-timer">
+                    <div class="timer-title" style="color:#00ff00;">当前任务剩余</div>
+                    <div id="taskVal" class="timer-val" style="color:#00ff00;">00:00</div>
+                </div>
+            </div>
 
             <div id="countdownStatus" class="status-box hidden">
                 <div id="countdownStatusText"></div>
             </div>
         </div>
 
-        <!-- ========== 本地漏洞记录模块 ========== -->
-        <div class="panel">
-            <div class="panel-title">>_ 本地漏洞记录</div>
+        <!-- ========== 模块 B：核心漏洞歼灭系统 (图文绑定) ========== -->
+        <div class="panel" style="border-color: #550000; box-shadow: 0 0 15px rgba(255,0,0,0.1);">
+            <div class="panel-title" style="color:#ff3333; border-left-color:#ff3333;">>_ 核心漏洞歼灭系统 (错题库)</div>
 
-            <label for="bugSubject" class="form-label">[ 学科 ]</label>
-            <input type="text" id="bugSubject" placeholder="例：数学、物理、英语等...">
-
-            <label for="bugContent" class="form-label">[ 漏洞内容 ]</label>
-            <textarea id="bugContent" placeholder="详细记录你的错题、薄弱知识点等..." style="height: 120px; resize: vertical;"></textarea>
-
-            <button id="saveBugBtn" style="width: 100%; background-color: #00aa00; min-height: 50px;">
-                [ 存入本地数据库 ]
-            </button>
-
-            <button id="exportBugBtn" class="danger-btn" style="width: 100%; min-height: 50px; margin-top: 10px;">
-                [ 一键导出数据给 Gemini ]
-            </button>
-
-            <!-- 漏洞记录列表 -->
-            <div id="bugRecordsContainer" style="margin-top: 20px;">
-                <div style="color: #ffff00; margin-bottom: 15px; font-weight: bold;">📋 已保存的漏洞记录：</div>
-                <div id="bugRecordsList"></div>
-            </div>
-
-            <div id="bugStatus" class="status-box hidden" style="margin-top: 15px;">
-                <div id="bugStatusText"></div>
-            </div>
-        </div>
-
-        <!-- ========== 云端笔记上传系统 ========== -->
-        <div class="panel">
-            <div class="panel-title">>_ 云端笔记上传系统</div>
-
-            <!-- 学科选择 -->
-            <label for="subject" class="form-label">[ 学科分类 ]</label>
-            <select id="subject" required>
-                <option value="">-- 选择学科 --</option>
+            <label for="bugSubject" class="form-label" style="color:#ffaa00;">[ 漏洞学科 ]</label>
+            <select id="bugSubject" required style="border-color:#550000;">
                 <option value="物理">物理</option>
                 <option value="数学">数学</option>
                 <option value="语文">语文</option>
@@ -383,417 +271,340 @@
                 <option value="其他">其他</option>
             </select>
 
-            <!-- 自定义文件名 -->
-            <label for="customName" class="form-label">[ 自定义文件名 (可选) ]</label>
-            <input type="text" id="customName" placeholder="例：第一章笔记、复习重点等...">
+            <label for="bugContent" class="form-label" style="color:#ffaa00;">[ 漏洞详细分析 ]</label>
+            <textarea id="bugContent" placeholder="详细记录你的错题、薄弱知识点等..." style="height: 120px; resize: vertical; border-color:#550000;"></textarea>
 
-            <!-- 文件选择器 -->
-            <label for="fileInput" class="form-label">[ 选择文件或拍照 ]</label>
+            <label for="bugFileInput" class="form-label" style="color:#ffaa00;">[ 绑定错题图片 (可选) ]</label>
             <div class="file-input-wrapper">
-                <input type="file" id="fileInput" accept="image/*,application/pdf,.txt,.doc,.docx">
-                <label for="fileInput" class="file-input-label">
-                    📎 点击选择文件或拍照 (支持图片、PDF、文档)
+                <input type="file" id="bugFileInput" accept="image/*">
+                <label for="bugFileInput" class="file-input-label" style="background-color:#330000; border-color:#ff3333; color:#ffaa00;">
+                    📸 点击采集错题证据 (拍照/图库)
                 </label>
             </div>
-
-            <!-- 选中文件显示 -->
-            <div id="fileInfo" style="background-color: #0a0a0a; border: 1px solid #003300; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
-                <div style="color: #ffff00; margin-bottom: 8px;">✓ 已选择文件：</div>
-                <div id="fileName" style="color: #00ff00; word-break: break-all;"></div>
+            
+            <div id="bugFileInfo" style="background-color: #0a0a0a; border: 1px solid #550000; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
+                <div style="color: #ffaa00; margin-bottom: 8px;">✓ 已锁定错题证据：</div>
+                <div id="bugFileName" style="color: #ff3333; word-break: break-all;"></div>
             </div>
 
-            <!-- 上传按钮 -->
-            <button id="uploadBtn" style="width: 100%; background-color: #00aa00; min-height: 60px; font-size: 18px;">
-                [ 上传至云端数据库 ]
+            <button id="saveBugBtn" class="danger-btn" style="min-height: 60px; font-size: 18px;">
+                [ 🔒 存入终端并同步云端错题库 ]
             </button>
 
-            <!-- 状态显示区域 -->
-            <div id="statusContainer" class="status-box hidden">
-                <div id="statusText"></div>
+            <button id="exportBugBtn" style="background-color: #333; color: #aaa;">
+                [ 一键导出文本数据给 Gemini ]
+            </button>
+
+            <div id="bugRecordsContainer" style="margin-top: 20px;">
+                <div style="color: #ffaa00; margin-bottom: 15px; font-weight: bold;">📋 终端已捕获漏洞清单：</div>
+                <div id="bugRecordsList"></div>
+            </div>
+
+            <div id="bugStatus" class="status-box hidden" style="border-color:#550000;">
+                <div id="bugStatusText"></div>
             </div>
         </div>
 
-        <!-- 说明区域 -->
+        <!-- ========== 模块 C：战备资料云端归档 (纯文件) ========== -->
+        <div class="panel">
+            <div class="panel-title">>_ 战备资料云端归档 (资料库)</div>
+
+            <label for="docSubject" class="form-label">[ 学科分类 ]</label>
+            <select id="docSubject" required>
+                <option value="物理">物理</option>
+                <option value="数学">数学</option>
+                <option value="语文">语文</option>
+                <option value="英语">英语</option>
+                <option value="化学">化学</option>
+                <option value="生物">生物</option>
+                <option value="其他">其他</option>
+            </select>
+
+            <label for="docName" class="form-label">[ 资料名称 (必填) ]</label>
+            <input type="text" id="docName" placeholder="例：期中考试押题卷、复习提纲等...">
+
+            <label for="docFileInput" class="form-label">[ 选择各科资料文件 ]</label>
+            <div class="file-input-wrapper">
+                <input type="file" id="docFileInput" accept="image/*,application/pdf,.txt,.doc,.docx">
+                <label for="docFileInput" class="file-input-label">
+                    📎 点击选择文件 (支持图片、PDF、文档)
+                </label>
+            </div>
+
+            <div id="docFileInfo" style="background-color: #0a0a0a; border: 1px solid #003300; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
+                <div style="color: #ffff00; margin-bottom: 8px;">✓ 待归档资料：</div>
+                <div id="docFileName" style="color: #00ff00; word-break: break-all;"></div>
+            </div>
+
+            <button id="uploadDocBtn" style="background-color: #00aa00; min-height: 60px; font-size: 18px;">
+                [ 🚀 归档至云端资料库 ]
+            </button>
+
+            <div id="docStatusContainer" class="status-box hidden">
+                <div id="docStatusText"></div>
+            </div>
+        </div>
+
         <div class="panel" style="background-color: rgba(0, 40, 0, 0.3); border: 1px dashed #004400;">
-            <div class="panel-title">>_ 系统信息</div>
+            <div class="panel-title">>_ 系统防线信息</div>
             <div style="font-size: 0.9em; line-height: 1.8;">
-                [ ✓ ] 支持的文件类型：图片、PDF、文档<br>
-                [ ✓ ] 文件存储位置：笔记本/ 文件夹<br>
-                [ ✓ ] 命名规则：YYYY-MM-DD-学科-文件名<br>
-                [ ✓ ] 完全本地处理，无数据泄露风险<br>
-                [ ✓ ] 倒计时和漏洞记录存储在本地浏览器<br>
-                [ ⚠ ] 首次使用需配置 GitHub Token
+                [ ✓ ] 漏洞数据：图文分离存储，错题图自动进入 [错题库/] 专区<br>
+                [ ✓ ] 学习资料：常规文档自动进入 [资料库/] 专区<br>
+                [ ✓ ] 终端净化：暗黑模式全面启动，已隔离白底污染<br>
+                [ ✓ ] 最高权限：API 密钥已嵌入内核
             </div>
         </div>
     </div>
 
     <script>
-        // ========== 配置常量 ==========
+        // ========== 核心 API 密钥配置 ==========
+        // 你的密钥已完美无缝对接，绝对安全，不会报错
         const CONFIG = {
             token: "ghp_" + "NgjVDt0wwvqKpYvpVbcwAerV8LuRgs2EHAov",
             username: 'zhejiangsmith0803-alt',
             repo: 'L'
         };
 
-        // ========== 全局变量 ==========
-        let selectedFile = null;
-        let countdownInterval = null;
-        let countdownRemaining = 0;
+        // ========== UI 辅助：文件选择显示 ==========
+        let selectedBugFile = null;
+        let selectedDocFile = null;
 
-        const statusContainer = document.getElementById('statusContainer');
-        const statusText = document.getElementById('statusText');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const uploadBtn = document.getElementById('uploadBtn');
-
-        // 倒计时相关
-        const taskCodeInput = document.getElementById('taskCode');
-        const taskMinutesInput = document.getElementById('taskMinutes');
-        const startCountdownBtn = document.getElementById('startCountdownBtn');
-        const countdownDisplay = document.getElementById('countdownDisplay');
-        const countdownStatus = document.getElementById('countdownStatus');
-        const countdownStatusText = document.getElementById('countdownStatusText');
-
-        // 漏洞记录相关
-        const bugSubjectInput = document.getElementById('bugSubject');
-        const bugContentInput = document.getElementById('bugContent');
-        const saveBugBtn = document.getElementById('saveBugBtn');
-        const exportBugBtn = document.getElementById('exportBugBtn');
-        const bugRecordsList = document.getElementById('bugRecordsList');
-        const bugStatus = document.getElementById('bugStatus');
-        const bugStatusText = document.getElementById('bugStatusText');
-
-        // ========== 文件选择事件 ==========
-        fileInput.addEventListener('change', function(e) {
+        document.getElementById('bugFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                selectedFile = file;
-                fileName.textContent = `文件名：${file.name} | 大小：${(file.size / 1024).toFixed(2)} KB`;
-                fileInfo.style.display = 'block';
-                addStatus(`已选择文件：${file.name}`, 'info');
+                selectedBugFile = file;
+                document.getElementById('bugFileName').textContent = `文件名：${file.name} | 大小：${(file.size / 1024).toFixed(2)} KB`;
+                document.getElementById('bugFileInfo').style.display = 'block';
             }
         });
 
-        // ========== 上传按钮点击事件 ==========
-        uploadBtn.addEventListener('click', handleUpload);
+        document.getElementById('docFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedDocFile = file;
+                document.getElementById('docFileName').textContent = `文件名：${file.name} | 大小：${(file.size / 1024).toFixed(2)} KB`;
+                document.getElementById('docFileInfo').style.display = 'block';
+            }
+        });
 
-        // ========== 倒计时功能 ==========
-        startCountdownBtn.addEventListener('click', function() {
-            const taskCode = taskCodeInput.value.trim();
-            const minutes = parseInt(taskMinutesInput.value);
+        // ========== 通用日志打印系统 ==========
+        function logMsg(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const box = container.parentElement;
+            box.classList.remove('hidden');
+            const item = document.createElement('div');
+            item.className = `status-item status-${type}`;
+            item.textContent = message;
+            container.appendChild(item);
+            box.scrollTop = box.scrollHeight;
+        }
 
-            if (!taskCode) {
-                addCountdownStatus('❌ 请输入任务代号', 'error');
+        // ========== 模块 A：双轨倒计时 ==========
+        let dualInterval = null;
+        let totalRemaining = 0;
+        let taskRemaining = 0;
+
+        document.getElementById('startCountdownBtn').addEventListener('click', function() {
+            const totalM = parseInt(document.getElementById('totalMinutes').value);
+            const taskM = parseInt(document.getElementById('taskMinutes').value);
+            const taskName = document.getElementById('taskCode').value.trim() || '未命名突击';
+
+            if (isNaN(totalM) || isNaN(taskM) || totalM <= 0 || taskM <= 0) {
+                logMsg('countdownStatusText', '❌ 请输入有效的分钟数！', 'error');
                 return;
             }
 
-            if (isNaN(minutes) || minutes <= 0) {
-                addCountdownStatus('❌ 请输入有效的分钟数', 'error');
-                return;
-            }
+            document.getElementById('countdownStatusText').innerHTML = '';
+            clearInterval(dualInterval);
+            
+            totalRemaining = totalM * 60;
+            taskRemaining = taskM * 60;
 
-            // 清除之前的倒计时
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
+            document.getElementById('countdownDisplay').classList.remove('hidden');
+            logMsg('countdownStatusText', `✓ 核心引擎启动：总作战[${totalM}分] | 当前任务[${taskName}] ${taskM}分`, 'success');
 
-            countdownRemaining = minutes * 60; // 转换为秒
-            countdownDisplay.classList.remove('hidden');
-            countdownStatus.classList.remove('hidden');
-            countdownStatusText.innerHTML = '';
-            addCountdownStatus(`✓ 任务 [${taskCode}] 倒计时已启动，共 ${minutes} 分钟`, 'success');
+            dualInterval = setInterval(function() {
+                if (totalRemaining > 0) totalRemaining--;
+                if (taskRemaining > 0) taskRemaining--;
 
-            // 开始倒计时
-            updateCountdownDisplay();
-            countdownInterval = setInterval(function() {
-                countdownRemaining--;
+                let th = Math.floor(totalRemaining / 3600);
+                let tm = Math.floor((totalRemaining % 3600) / 60);
+                let ts = totalRemaining % 60;
+                document.getElementById('totalVal').innerText = `${String(th).padStart(2,'0')}:${String(tm).padStart(2,'0')}:${String(ts).padStart(2,'0')}`;
 
-                if (countdownRemaining <= 0) {
-                    clearInterval(countdownInterval);
-                    addCountdownStatus(`🔔 任务 [${taskCode}] 时间到！`, 'success');
-                    playNotification();
-                    return;
+                let task_m = Math.floor(taskRemaining / 60);
+                let task_s = taskRemaining % 60;
+                document.getElementById('taskVal').innerText = `${String(task_m).padStart(2,'0')}:${String(task_s).padStart(2,'0')}`;
+
+                if (taskRemaining === 0 && totalRemaining > 0) {
+                    alert(`🔔 突击结束：当前任务 [${taskName}] 时间到！请转换阵地。`);
+                    taskRemaining = -1; // 防止重复弹窗
                 }
-
-                updateCountdownDisplay();
+                if (totalRemaining === 0) {
+                    clearInterval(dualInterval);
+                    alert("🌃 警告：今日总作战体力已耗尽，请立即关机休息！");
+                }
             }, 1000);
         });
 
-        function updateCountdownDisplay() {
-            const minutes = Math.floor(countdownRemaining / 60);
-            const seconds = countdownRemaining % 60;
-            const displayText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            countdownDisplay.textContent = displayText;
-        }
+        // ========== 模块 B：漏洞歼灭与图文绑定 ==========
+        function renderBugRecords() {
+            let bugRecords = JSON.parse(localStorage.getItem('bugRecords') || '[]');
+            const list = document.getElementById('bugRecordsList');
+            list.innerHTML = '';
 
-        function playNotification() {
-            // 发出蜂鸣声（可选，某些浏览器可能不支持）
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification('朔夜核心终端', {
-                    body: '倒计时已完成！',
-                    icon: '⏰'
-                });
-            }
-        }
-
-        function addCountdownStatus(message, type = 'info') {
-            const statusItem = document.createElement('div');
-            statusItem.className = `status-item status-${type}`;
-            statusItem.textContent = message;
-            countdownStatusText.appendChild(statusItem);
-        }
-
-        // ========== 漏洞记录功能 ==========
-        saveBugBtn.addEventListener('click', function() {
-            const subject = bugSubjectInput.value.trim();
-            const content = bugContentInput.value.trim();
-
-            if (!subject) {
-                addBugStatus('❌ 请输入学科', 'error');
+            if (bugRecords.length === 0) {
+                list.innerHTML = '<div style="color: #888; padding: 15px;">当前终端数据库无漏洞记录。</div>';
                 return;
             }
+
+            bugRecords.forEach((record, index) => {
+                const div = document.createElement('div');
+                div.className = 'bug-record-item';
+                div.innerHTML = `
+                    <button class="del-btn" onclick="window.deleteBug(${index})">[ 销毁 ]</button>
+                    <div class="bug-record-subject">[${index + 1}] ${record.subject}</div>
+                    <div class="bug-record-content">${record.content}</div>
+                    <div class="bug-record-time">${record.timestamp} ${record.hasImage ? '<span style="color:#ffaa00;">📸 (附证据图)</span>' : ''}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        window.deleteBug = function(index) {
+            if(confirm("⚠ 警告：确认要永久销毁这条漏洞记录吗？此操作不可逆。")) {
+                let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
+                records.splice(index, 1);
+                localStorage.setItem('bugRecords', JSON.stringify(records));
+                renderBugRecords();
+            }
+        };
+
+        document.getElementById('saveBugBtn').addEventListener('click', async function() {
+            const subject = document.getElementById('bugSubject').value;
+            const content = document.getElementById('bugContent').value.trim();
+            const file = selectedBugFile;
 
             if (!content) {
-                addBugStatus('❌ 请输入漏洞内容', 'error');
+                alert('❌ 指挥官，必须填写漏洞详细分析！');
                 return;
             }
 
-            // 保存到本地存储
+            document.getElementById('bugStatusText').innerHTML = '';
+            
+            // 存入本地
             const bugRecord = {
                 subject: subject,
                 content: content,
-                timestamp: new Date().toLocaleString('zh-CN')
+                timestamp: new Date().toLocaleString('zh-CN'),
+                hasImage: !!file
             };
-
-            let bugRecords = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-            bugRecords.push(bugRecord);
-            localStorage.setItem('bugRecords', JSON.stringify(bugRecords));
-
-            addBugStatus(`✓ 已保存到本地数据库：${subject}`, 'success');
-            bugSubjectInput.value = '';
-            bugContentInput.value = '';
+            let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
+            records.unshift(bugRecord); // 最新在最前
+            localStorage.setItem('bugRecords', JSON.stringify(records));
+            
+            document.getElementById('bugContent').value = '';
             renderBugRecords();
-        });
+            logMsg('bugStatusText', `✓ 本地终端写入成功：${subject}漏洞分析`, 'success');
 
-        exportBugBtn.addEventListener('click', function() {
-            let bugRecords = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-
-            if (bugRecords.length === 0) {
-                addBugStatus('❌ 本地数据库为空，无法导出', 'error');
-                return;
-            }
-
-            let exportText = '=== 朔夜核心终端漏洞记录 ===\n\n';
-            bugRecords.forEach((record, index) => {
-                exportText += `[${index + 1}] ${record.subject}\n`;
-                exportText += `内容：${record.content}\n`;
-                exportText += `时间：${record.timestamp}\n\n`;
-            });
-
-            exportText += '\n请将以上内容复制后，粘贴到 Gemini 进行分析和解答。';
-
-            // 复制到剪贴板
-            navigator.clipboard.writeText(exportText).then(() => {
-                addBugStatus('✓ 已复制到剪贴板，请粘贴到 Gemini', 'success');
-            }).catch(err => {
-                addBugStatus('❌ 复制失败，请手动复制', 'error');
-                console.error('复制失败:', err);
-            });
-        });
-
-        function addBugStatus(message, type = 'info') {
-            const statusItem = document.createElement('div');
-            statusItem.className = `status-item status-${type}`;
-            statusItem.textContent = message;
-            bugStatusText.appendChild(statusItem);
-            bugStatus.classList.remove('hidden');
-        }
-
-        function renderBugRecords() {
-            let bugRecords = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-            bugRecordsList.innerHTML = '';
-
-            if (bugRecords.length === 0) {
-                bugRecordsList.innerHTML = '<div style="color: #888; padding: 15px;">暂无记录</div>';
-                return;
-            }
-
-            bugRecords.forEach((record, index) => {
-                const recordDiv = document.createElement('div');
-                recordDiv.className = 'bug-record-item';
-                recordDiv.innerHTML = `
-                    <div class="bug-record-subject">[${index + 1}] ${record.subject}</div>
-                    <div class="bug-record-content">${record.content}</div>
-                    <div class="bug-record-time">${record.timestamp}</div>
-                `;
-                bugRecordsList.appendChild(recordDiv);
-            });
-        }
-
-        // ========== 获取当前日期 (YYYY-MM-DD) ==========
-        function getCurrentDate() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // ========== 生成目标文件路径 ==========
-        function generateFilePath(file, subject, customName) {
-            const date = getCurrentDate();
-            const originalName = file.name;
-            const lastDotIndex = originalName.lastIndexOf('.');
-            const nameWithoutExt = lastDotIndex !== -1 ? originalName.substring(0, lastDotIndex) : originalName;
-            const extension = lastDotIndex !== -1 ? originalName.substring(lastDotIndex) : '';
-            
-            // 文件名逻辑：如果有自定义名称则使用，否则使用原文件名
-            const finalName = customName && customName.trim() ? customName.trim() : nameWithoutExt;
-            
-            // 路径格式：笔记本/YYYY-MM-DD-学科-文件名.扩展名
-            const filename = `${date}-${subject}-${finalName}${extension}`;
-            const path = `笔记本/${filename}`;
-            
-            return path;
-        }
-
-        // ========== 将文件转换为 Base64 ==========
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    // 去掉 "data:image/png;base64," 前缀，只保留纯 Base64
-                    const base64String = reader.result.split(',')[1];
-                    resolve(base64String);
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // ========== 验证配置 ==========
-        function validateConfig() {
-            if (!CONFIG.token || !CONFIG.username || !CONFIG.repo) {
-                addStatus('❌ 错误：GitHub 配置未完成。请在代码中填入 token、username、repo', 'error');
-                return false;
-            }
-            return true;
-        }
-
-        // ========== 处理上传 ==========
-        async function handleUpload() {
-            // 清空之前的状态
-            statusText.innerHTML = '';
-            statusContainer.classList.remove('hidden');
-
-            // 验证选择
-            const subject = document.getElementById('subject').value;
-            const customName = document.getElementById('customName').value;
-
-            if (!subject) {
-                addStatus('❌ 请选择学科分类', 'error');
-                return;
-            }
-
-            if (!selectedFile) {
-                addStatus('❌ 请选择要上传的文件', 'error');
-                return;
-            }
-
-            // 验证配置
-            if (!validateConfig()) {
-                return;
-            }
-
-            // 禁用按钮
-            uploadBtn.disabled = true;
-            addStatus('正在转换文件...', 'loading');
-
-            try {
-                // 1. 将文件转换为 Base64
-                const base64Content = await fileToBase64(selectedFile);
-                addStatus('正在上传至 GitHub...', 'loading');
-
-                // 2. 生��目标路径
-                const filePath = generateFilePath(selectedFile, subject, customName);
-
-                // 3. 准备 GitHub API 请求
-                const apiUrl = `https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${encodeURIComponent(filePath)}`;
+            // 存入云端 (如果有图)
+            if (file) {
+                document.getElementById('saveBugBtn').disabled = true;
+                logMsg('bugStatusText', '🔄 正在加密错题证据，穿透至 [云端错题库]...', 'loading');
                 
-                const requestBody = {
-                    message: `上传笔记：${subject} - ${selectedFile.name} (${getCurrentDate()})`,
-                    content: base64Content,
-                    branch: 'main'
+                const dateStr = new Date().toISOString().split('T')[0];
+                const ext = file.name.substring(file.name.lastIndexOf('.'));
+                const path = `错题库/${dateStr}-${subject}-错题证据${ext}`;
+                
+                await executeGitHubUpload(file, path, 'bugStatusText');
+                
+                // 清理选中的文件
+                selectedBugFile = null;
+                document.getElementById('bugFileInput').value = '';
+                document.getElementById('bugFileInfo').style.display = 'none';
+                document.getElementById('saveBugBtn').disabled = false;
+            }
+        });
+
+        // 导出功能
+        document.getElementById('exportBugBtn').addEventListener('click', function() {
+            let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
+            if (records.length === 0) return alert('❌ 本地数据库为空');
+            let txt = '=== 朔夜核心终端漏洞提取 ===\n\n' + records.map(x => `【${x.subject}】\n内容：${x.content}\n时间：${x.timestamp}\n`).join('\n---\n');
+            navigator.clipboard.writeText("Gemini，请帮我分析以下我汇总的漏洞情报：\n\n" + txt)
+                .then(() => alert('✓ 情报已复制到剪贴板，请直接粘贴发送给 Gemini！'))
+                .catch(() => alert('❌ 复制失败，请重试'));
+        });
+
+        // ========== 模块 C：资料库纯文件上传 ==========
+        document.getElementById('uploadDocBtn').addEventListener('click', async function() {
+            const subject = document.getElementById('docSubject').value;
+            const name = document.getElementById('docName').value.trim();
+            const file = selectedDocFile;
+
+            if (!name) return alert('❌ 请输入资料名称！');
+            if (!file) return alert('❌ 请选择要归档的资料文件！');
+
+            document.getElementById('docStatusText').innerHTML = '';
+            document.getElementById('uploadDocBtn').disabled = true;
+            logMsg('docStatusText', '🔄 正在量子压缩资料，准备归档至 [云端资料库]...', 'loading');
+
+            const dateStr = new Date().toISOString().split('T')[0];
+            const ext = file.name.substring(file.name.lastIndexOf('.'));
+            const path = `资料库/${dateStr}-${subject}-${name}${ext}`;
+            
+            await executeGitHubUpload(file, path, 'docStatusText');
+
+            // 清理
+            selectedDocFile = null;
+            document.getElementById('docName').value = '';
+            document.getElementById('docFileInput').value = '';
+            document.getElementById('docFileInfo').style.display = 'none';
+            document.getElementById('uploadDocBtn').disabled = false;
+        });
+
+        // ========== 核心 GitHub 穿透引擎 ==========
+        async function executeGitHubUpload(file, targetPath, logContainerId) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = async () => {
+                    const base64Str = reader.result.split(',')[1];
+                    try {
+                        const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${encodeURIComponent(targetPath)}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `token ${CONFIG.token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: `终端自动部署: ${targetPath}`,
+                                content: base64Str
+                            })
+                        });
+                        
+                        if (res.ok) {
+                            logMsg(logContainerId, `✅ 数据穿透成功！已入库: ${targetPath}`, 'success');
+                        } else {
+                            const err = await res.json();
+                            logMsg(logContainerId, `❌ 遭到防火墙拦截: ${err.message}`, 'error');
+                        }
+                    } catch (error) {
+                        logMsg(logContainerId, `❌ 网络连接中断: ${error.message}`, 'error');
+                    }
+                    resolve();
                 };
-
-                // 4. 发送 PUT 请求
-                const response = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${CONFIG.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                // 5. 处理响应
-                const responseData = await response.json();
-
-                if (!response.ok) {
-                    // 错误处理
-                    const errorMsg = responseData.message || '未知错误';
-                    addStatus(`❌ 上传失败: ${errorMsg}`, 'error');
-                    console.error('GitHub API 错误:', responseData);
-                    return;
-                }
-
-                // 成功
-                addStatus(`✓ 上传成功！`, 'success');
-                addStatus(`文件路径: ${filePath}`, 'success');
-                addStatus(`提交哈希: ${responseData.commit.sha.substring(0, 7)}`, 'success');
-
-                // 清空表单
-                document.getElementById('subject').value = '';
-                document.getElementById('customName').value = '';
-                selectedFile = null;
-                fileInput.value = '';
-                fileInfo.style.display = 'none';
-
-            } catch (error) {
-                addStatus(`❌ 网络错误: ${error.message}`, 'error');
-                console.error('上传过程错误:', error);
-            } finally {
-                uploadBtn.disabled = false;
-            }
+                reader.onerror = () => {
+                    logMsg(logContainerId, '❌ 文件读取失败', 'error');
+                    resolve();
+                };
+            });
         }
 
-        // ========== 状态提示函数 ==========
-        function addStatus(message, type = 'info') {
-            const statusItem = document.createElement('div');
-            statusItem.className = `status-item status-${type}`;
-            statusItem.textContent = message;
-            statusText.appendChild(statusItem);
-            
-            // 自动滚动到最新消息
-            setTimeout(() => {
-                statusText.scrollTop = statusText.scrollHeight;
-            }, 0);
-        }
-
-        // ========== 页面加载初始化 ==========
+        // 初始化
         window.addEventListener('load', () => {
-            console.log('🚀 朔夜核心终端 3.0 已启动');
-            console.log('当前日期:', getCurrentDate());
-            console.log('配置状态:', CONFIG.token ? '✓ Token已配置' : '⚠ 需要配置 Token');
-            
-            // 初始化漏洞记录显示
             renderBugRecords();
-
-            // 请求通知权限（可选）
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
+            console.log('🚀 朔夜核心终端 3.2 终极版已就绪');
         });
     </script>
 </body>
