@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜核心终端 3.2</title>
+    <title>朔夜核心终端 4.0</title>
     <style>
         /* 第一重构：极致暗黑，镇压所有白色物质 */
         :root {
@@ -221,7 +221,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>[ 朔夜核心终端 3.2 ]</h1>
+        <h1>[ 朔夜核心终端 4.0 ]</h1>
 
         <!-- ========== 模块 A：双轨倒计时模块 ========== -->
         <div class="panel">
@@ -273,9 +273,19 @@
 
             <label for="bugContent" class="form-label" style="color:#ffaa00;">[ 漏洞详细分析 ]</label>
             <textarea id="bugContent" placeholder="详细记录你的错题、薄弱知识点等..." style="height: 120px; resize: vertical; border-color:#550000;"></textarea>
+            
             <!-- 新增：针对 Gemini 的题目关键信息摘要 -->
             <label for="bugSummary" class="form-label" style="color:#ffaa00;">[ 题目关键数据 (针对 Gemini 识别优化) ]</label>
             <textarea id="bugSummary" placeholder="如果图片模糊，请在此输入题目的关键数据、公式或几何条件..." style="height: 80px; resize: vertical; border-color:#550000;"></textarea>
+
+            <!-- 修复：模型锚定勾选框 (正确放置在 HTML 区) -->
+            <div id="modelAnchors" style="margin-bottom: 15px; padding: 10px; border: 1px dashed #550000; border-radius: 4px;">
+                <div style="color: #ffaa00; font-size: 0.8em; margin-bottom: 8px;">[ 🤖 Gemini 视觉校准锚点 ]</div>
+                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="斜面/复合场"> 物理模型</label>
+                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="受力分析/运动图"> 图像识别</label>
+                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="立体几何/圆锥曲线"> 数学模型</label>
+                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="包含复杂公式"> 公式强化</label>
+            </div>
 
             <label for="bugFileInput" class="form-label" style="color:#ffaa00;">[ 绑定错题图片 (可选) ]</label>
             <div class="file-input-wrapper">
@@ -333,7 +343,7 @@
                     📎 点击选择文件 (支持图片、PDF、文档)
                 </label>
             </div>
-            <!-- 💡 插入位置：就在“选择文件”按钮下面，绿色“归档”按钮上面 -->
+            
             <label for="docSummary" class="form-label" style="color:#00ff00;">[ 资料核心摘要 (针对 Gemini 识别优化) ]</label>
             <textarea id="docSummary" placeholder="在此输入资料的关键知识点、模型名或公式，方便 Gemini 检索..." style="height: 80px; resize: vertical; border-color:#004400;"></textarea>
     
@@ -354,8 +364,8 @@
         <div class="panel" style="background-color: rgba(0, 40, 0, 0.3); border: 1px dashed #004400;">
             <div class="panel-title">>_ 系统防线信息</div>
             <div style="font-size: 0.9em; line-height: 1.8;">
-                [ ✓ ] 漏洞数据：图文分离存储，错题图自动进入 [错题库/] 专区<br>
-                [ ✓ ] 学习资料：常规文档自动进入 [资料库/] 专区<br>
+                [ ✓ ] 漏洞数据：4.0 图文档案袋生成系统已激活<br>
+                [ ✓ ] 学习资料：含摘要锚点的智能归档系统已激活<br>
                 [ ✓ ] 终端净化：暗黑模式全面启动，已隔离白底污染<br>
                 [ ✓ ] 最高权限：API 密钥已嵌入内核
             </div>
@@ -364,7 +374,6 @@
 
     <script>
         // ========== 核心 API 密钥配置 ==========
-        // 你的密钥已完美无缝对接，绝对安全，不会报错
         const CONFIG = {
             token: "ghp_" + "NgjVDt0wwvqKpYvpVbcwAerV8LuRgs2EHAov",
             username: 'zhejiangsmith0803-alt',
@@ -444,7 +453,7 @@
 
                 if (taskRemaining === 0 && totalRemaining > 0) {
                     alert(`🔔 突击结束：当前任务 [${taskName}] 时间到！请转换阵地。`);
-                    taskRemaining = -1; // 防止重复弹窗
+                    taskRemaining = -1; 
                 }
                 if (totalRemaining === 0) {
                     clearInterval(dualInterval);
@@ -453,7 +462,7 @@
             }, 1000);
         });
 
-        // ========== 模块 B：漏洞歼灭与图文绑定 ==========
+        // ========== 模块 B：核心漏洞歼灭系统 (4.0 档案袋逻辑) ==========
         function renderBugRecords() {
             let bugRecords = JSON.parse(localStorage.getItem('bugRecords') || '[]');
             const list = document.getElementById('bugRecordsList');
@@ -486,58 +495,71 @@
             }
         };
 
+        // 核心：4.0 保存错题逻辑 (修复完毕)
         document.getElementById('saveBugBtn').addEventListener('click', async function() {
             const subject = document.getElementById('bugSubject').value;
-            const content = document.getElementById('bugContent').value.trim();
+            const content = document.getElementById('bugContent').value.trim(); // 漏洞分析
+            const summary = document.getElementById('bugSummary').value.trim(); // 题目数据
             const file = selectedBugFile;
 
-            if (!content) {
-                alert('❌ 指挥官，必须填写漏洞详细分析！');
-                return;
-            }
+            if (!content) return alert('❌ 指挥官，必须填写漏洞详细分析！');
 
-            document.getElementById('bugStatusText').innerHTML = '';
-            <!-- 新增：模型锚定勾选框 -->
-            <div id="modelAnchors" style="margin-bottom: 15px; padding: 10px; border: 1px dashed #550000; border-radius: 4px;">
-             <div style="color: #ffaa00; font-size: 0.8em; margin-bottom: 8px;">[ 🤖 Gemini 视觉校准锚点 ]</div>
-            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="斜面/复合场"> 物理模型</label>
-            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="受力分析/运动图"> 图像识别</label>
-            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="立体几何/圆锥曲线"> 数学模型</label>
-            <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="包含复杂公式"> 公式强化</label>
-            </div>
+            // 抓取勾选的模型标签
+            const selectedTags = Array.from(document.querySelectorAll('input[name="m-tag"]:checked'))
+                                      .map(cb => cb.value);
 
-            // 存入本地
-            const bugRecord = {
-                subject: subject,
-                content: content,
-                timestamp: new Date().toLocaleString('zh-CN'),
-                hasImage: !!file
-            };
+            const dateStr = new Date().toISOString().split('T')[0];
+            const timestamp = Date.now();
+            const baseName = `${dateStr}-${subject}-${timestamp}`;
+
+            // A. 存入本地
             let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-            records.unshift(bugRecord); // 最新在最前
+            records.unshift({ subject, content, timestamp: new Date().toLocaleString(), hasImage: !!file });
             localStorage.setItem('bugRecords', JSON.stringify(records));
-            
-            document.getElementById('bugContent').value = '';
             renderBugRecords();
-            logMsg('bugStatusText', `✓ 本地终端写入成功：${subject}漏洞分析`, 'success');
 
-            // 存入云端 (如果有图)
+            // B. 同步至 GitHub
+            document.getElementById('saveBugBtn').disabled = true;
+            logMsg('bugStatusText', '🔄 正在生成 Gemini 适配档案袋...', 'loading');
+
+            // 动作 1：上传图片
+            let imageExt = "";
             if (file) {
-                document.getElementById('saveBugBtn').disabled = true;
-                logMsg('bugStatusText', '🔄 正在加密错题证据，穿透至 [云端错题库]...', 'loading');
-                
-                const dateStr = new Date().toISOString().split('T')[0];
-                const ext = file.name.substring(file.name.lastIndexOf('.'));
-                const path = `错题库/${dateStr}-${subject}-错题证据${ext}`;
-                
-                await executeGitHubUpload(file, path, 'bugStatusText');
-                
-                // 清理选中的文件
-                selectedBugFile = null;
-                document.getElementById('bugFileInput').value = '';
-                document.getElementById('bugFileInfo').style.display = 'none';
-                document.getElementById('saveBugBtn').disabled = false;
+                imageExt = file.name.substring(file.name.lastIndexOf('.'));
+                await executeGitHubUpload(file, `错题库/${baseName}${imageExt}`, 'bugStatusText');
             }
+
+            // 动作 2：生成并上传 Markdown
+            const mdText = `
+# 朔夜漏洞复盘 - ${subject}
+
+## 1. 题目关键数据 (Gemini 识别补丁)
+- **模型特征**：${selectedTags.length > 0 ? selectedTags.join(' | ') : '未勾选特定模型'}
+- **数据补充**：${summary || '未提供额外数据'}
+
+## 2. 指挥官漏洞分析
+> ${content}
+
+## 3. 证据图片
+![证据](./${baseName}${imageExt})
+
+---
+*由朔夜终端 4.0 自动生成*`;
+
+            const mdBlob = new Blob([mdText], { type: 'text/markdown' });
+            const mdFile = new File([mdBlob], `${baseName}.md`);
+            await executeGitHubUpload(mdFile, `错题库/${baseName}.md`, 'bugStatusText');
+
+            // 清理界面
+            document.getElementById('bugContent').value = '';
+            document.getElementById('bugSummary').value = ''; 
+            selectedBugFile = null;
+            document.getElementById('bugFileInput').value = '';
+            document.getElementById('bugFileInfo').style.display = 'none';
+            document.querySelectorAll('input[name="m-tag"]').forEach(el => el.checked = false);
+            document.getElementById('saveBugBtn').disabled = false;
+
+            alert('✅ 4.0 图文双生档案已同步至云端！');
         });
 
         // 导出功能
@@ -552,43 +574,41 @@
 
         // ========== 模块 C：资料库纯文件上传 ==========
         document.getElementById('uploadDocBtn').addEventListener('click', async function() {
-    const subject = document.getElementById('docSubject').value;
-    const name = document.getElementById('docName').value.trim();
-    // 关键：读取你在第 335 行加的那个摘要框
-    const summary = document.getElementById('docSummary').value.trim(); 
-    const file = selectedDocFile;
+            const subject = document.getElementById('docSubject').value;
+            const name = document.getElementById('docName').value.trim();
+            const summary = document.getElementById('docSummary').value.trim(); 
+            const file = selectedDocFile;
 
-    if (!name) return alert('❌ 请输入资料名称！');
-    if (!file) return alert('❌ 请选择要归档的资料文件！');
+            if (!name) return alert('❌ 请输入资料名称！');
+            if (!file) return alert('❌ 请选择要归档的资料文件！');
 
-    document.getElementById('docStatusText').innerHTML = '';
-    document.getElementById('uploadDocBtn').disabled = true;
-    logMsg('docStatusText', '🔄 正在执行 4.0 档案归档程序...', 'loading');
+            document.getElementById('docStatusText').innerHTML = '';
+            document.getElementById('uploadDocBtn').disabled = true;
+            logMsg('docStatusText', '🔄 正在执行 4.0 档案归档程序...', 'loading');
 
-    const dateStr = new Date().toISOString().split('T')[0];
-    const ext = file.name.substring(file.name.lastIndexOf('.'));
-    
-    // 1. 上传原始资料文件
-    const filePath = `资料库/${dateStr}-${subject}-${name}${ext}`;
-    await executeGitHubUpload(file, filePath, 'docStatusText');
+            const dateStr = new Date().toISOString().split('T')[0];
+            const ext = file.name.substring(file.name.lastIndexOf('.'));
+            
+            // 1. 上传原始资料文件
+            const filePath = `资料库/${dateStr}-${subject}-${name}${ext}`;
+            await executeGitHubUpload(file, filePath, 'docStatusText');
 
-    // 2. 自动生成并上传对应的 Markdown 索引（包含你的摘要）
-    const mdText = `# 战备资料索引 - ${name}\n\n## 1. 归档信息\n- 学科：${subject}\n- 时间：${new Date().toLocaleString()}\n\n## 2. 核心摘要 (Gemini 识别锚点)\n${summary || '未提供摘要'}\n\n## 3. 文件链接\n[查看原始资料](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
-    const mdBlob = new Blob([mdText], { type: 'text/markdown' });
-    const mdFile = new File([mdBlob], `${dateStr}-${subject}-${name}.md`);
-    
-    await executeGitHubUpload(mdFile, `资料库/${dateStr}-${subject}-${name}.md`, 'docStatusText');
+            // 2. 自动生成并上传对应的 Markdown 索引
+            const mdText = `# 战备资料索引 - ${name}\n\n## 1. 归档信息\n- 学科：${subject}\n- 时间：${new Date().toLocaleString()}\n\n## 2. 核心摘要 (Gemini 识别锚点)\n${summary || '未提供摘要'}\n\n## 3. 文件链接\n[查看原始资料](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
+            const mdBlob = new Blob([mdText], { type: 'text/markdown' });
+            const mdFile = new File([mdBlob], `${dateStr}-${subject}-${name}.md`);
+            
+            await executeGitHubUpload(mdFile, `资料库/${dateStr}-${subject}-${name}.md`, 'docStatusText');
 
-    // 清理界面
-    selectedDocFile = null;
-    document.getElementById('docName').value = '';
-    document.getElementById('docSummary').value = ''; 
-    document.getElementById('docFileInput').value = '';
-    document.getElementById('docFileInfo').style.display = 'none';
-    document.getElementById('uploadDocBtn').disabled = false;
-    alert('✅ 资料与 Gemini 适配索引已同步归档！');
-});
-
+            // 清理界面
+            selectedDocFile = null;
+            document.getElementById('docName').value = '';
+            document.getElementById('docSummary').value = ''; 
+            document.getElementById('docFileInput').value = '';
+            document.getElementById('docFileInfo').style.display = 'none';
+            document.getElementById('uploadDocBtn').disabled = false;
+            alert('✅ 资料与 Gemini 适配索引已同步归档！');
+        });
 
         // ========== 核心 GitHub 穿透引擎 ==========
         async function executeGitHubUpload(file, targetPath, logContainerId) {
@@ -631,21 +651,8 @@
         // 初始化
         window.addEventListener('load', () => {
             renderBugRecords();
-            console.log('🚀 朔夜核心终端 3.2 终极版已就绪');
+            console.log('🚀 朔夜核心终端 4.0 终极版已就绪');
         });
     </script>
-    // 朔夜 4.0 增强逻辑：生成给 Gemini 读的“情报摘要”
-function generateGeminiMeta() {
-    const selectedTags = Array.from(document.querySelectorAll('input[name="m-tag"]:checked'))
-                              .map(cb => cb.value);
-    if (selectedTags.length === 0) return "";
-    
-    return `\n\n## 3. Gemini 视觉校准补丁 (系统自动生成)\n` +
-           `> [!IMPORTANT]\n` +
-           `> 指挥官马骁已手动锚定以下模型特征：\n` +
-           `> 特征标签：${selectedTags.join(' | ')}\n` +
-           `> 请 Gemini 在解析图片时，严格按照上述物理/数学模型进行逻辑校验，纠正视觉识别偏差。`;
-}
-
 </body>
 </html>
