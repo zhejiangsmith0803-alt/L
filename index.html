@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜战术终端 4.5</title>
+    <title>朔夜战术终端 4.6</title>
     <style>
         /* 极致暗黑，战术系统核心色调 */
         :root { color-scheme: dark; }
 
         html, body {
             margin: 0; padding: 0;
-            background-color: #030303;
-            color: #00ff00;
+            background-color: #030303; color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
             min-height: 100vh; width: 100vw;
             overflow-x: hidden; user-select: none; -webkit-touch-callout: none;
@@ -26,13 +25,10 @@
             50% { box-shadow: inset 0 0 40px 10px rgba(255, 0, 0, 0.4); border-color: #ff0000; }
             100% { box-shadow: inset 0 0 0px 0px rgba(255, 0, 0, 0); }
         }
-        body.extraction-warning {
-            animation: extractionPulse 2s infinite;
-        }
+        body.extraction-warning { animation: extractionPulse 2s infinite; }
 
         .container {
-            padding: 20px 20px 40px 20px;
-            max-width: 900px; margin: 0 auto;
+            padding: 20px 20px 40px 20px; max-width: 900px; margin: 0 auto;
             padding-top: max(20px, env(safe-area-inset-top));
         }
 
@@ -59,11 +55,16 @@
         }
 
         /* 表单控件 */
-        input[type="text"], select, textarea {
+        input[type="text"], input[type="number"], select, textarea {
             background-color: #050505; color: #00ff00; border: 1px solid #004400;
             padding: 16px; width: 100%; box-sizing: border-box; margin-bottom: 15px;
             font-family: 'Courier New', monospace; font-size: 16px; border-radius: 4px;
             -webkit-appearance: none; appearance: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 12px center;
+            background-size: 20px; padding-right: 50px;
         }
         input:focus, select:focus, textarea:focus {
             outline: none; border-color: #00ff00;
@@ -78,31 +79,12 @@
         }
         button:active { transform: scale(0.98); box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
         .danger-btn { background-color: #aa0000; color: #ffffff; }
-        .danger-btn:active { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
-
-        /* 任务三维分类系统 */
-        .task-types { display: flex; gap: 10px; margin-bottom: 15px; }
-        .type-radio {
-            flex: 1; text-align: center; padding: 12px 5px; border: 1px solid #333;
-            border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold;
-            transition: all 0.3s; opacity: 0.6;
-        }
-        .type-radio input { display: none; }
-        .type-radio input:checked + span { opacity: 1; }
-        .type-a { color: #ff5555; border-color: #550000; }
-        .type-a input:checked ~ span { text-shadow: 0 0 8px #ff0000; }
-        .type-b { color: #ffaa00; border-color: #554400; }
-        .type-b input:checked ~ span { text-shadow: 0 0 8px #ffaa00; }
-        .type-c { color: #00aaff; border-color: #003355; }
-        .type-c input:checked ~ span { text-shadow: 0 0 8px #00aaff; }
 
         .status-box {
             background-color: #080808; border: 1px solid #003300; padding: 15px;
             margin-top: 15px; border-radius: 4px; max-height: 200px; overflow-y: auto;
         }
         .status-item { padding: 8px; margin-bottom: 5px; border-left: 3px solid; font-size: 0.9em; }
-        .status-success { border-left-color: #00ff00; color: #00ff00; }
-        .status-error { border-left-color: #ff3333; color: #ff6666; }
         .status-info { border-left-color: #ffaa00; color: #ffdd00; }
 
         input[type="file"] { display: none; }
@@ -119,89 +101,80 @@
         .task-timer { background: #002200; border-color: #00ff00; color: #00ff00; }
         .timer-val { font-size: 2.2em; font-weight: bold; letter-spacing: 2px; margin-top: 5px;}
 
-        /* 漏洞记录清单 & 净化动效 */
-        .bug-record-item {
+        /* 列表容器通用样式 */
+        .list-item {
             background-color: #0a0a0a; border: 1px solid #330000; padding: 15px;
             padding-right: 80px; margin: 10px 0; border-radius: 4px; position: relative;
             transition: all 0.5s ease; overflow: hidden;
         }
-        /* 净化时的酷炫毁灭动画 */
-        .bug-record-item.destroying {
+        .list-item.destroying {
             background-color: #003300; border-color: #00ff00; transform: scale(0.95);
             opacity: 0; filter: blur(5px);
         }
-        .bug-record-item.destroying * { color: #00ff00 !important; }
-        
-        .bug-record-subject { color: #ffff00; font-weight: bold; margin-bottom: 5px; }
-        .bug-record-content { color: #aaa; font-size: 0.9em; line-height: 1.4; white-space: pre-wrap; }
-        .bug-record-time { color: #666; font-size: 0.8em; margin-top: 8px; }
+        .list-item.destroying * { color: #00ff00 !important; }
         
         .del-btn {
-            position: absolute; right: 10px; top: 10px; background-color: #330000;
+            position: absolute; right: 10px; background-color: #330000;
             color: #ff5555; border: 1px solid #ff0000; width: auto; padding: 5px 10px; font-size: 12px;
         }
-
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 赛博 HUD 抬头显示器 -->
+        <!-- HUD 抬头显示器 -->
         <div class="hud-bar">
             <div class="hud-item"><span class="hud-blink">🔴</span> USER: MA_XIAO</div>
             <div class="hud-item" id="systemClock">00:00:00</div>
-            <div class="hud-item" style="color:#00aaff;">OS_V: 4.5 [STABLE]</div>
+            <div class="hud-item" style="color:#00aaff;">OS_V: 4.6 [QUEUE]</div>
         </div>
 
-        <!-- ========== 模块 A：任务指令中枢 ========== -->
+        <!-- ========== 模块 A：战术任务队列中枢 ========== -->
         <div class="panel" style="border-color: #00aaff; box-shadow: 0 0 15px rgba(0,170,255,0.1);">
-            <div class="panel-title" style="color:#00aaff; border-color:#00aaff;">>_ 战术任务调理中枢</div>
+            <div class="panel-title" style="color:#00aaff; border-color:#00aaff;">>_ 任务调度中心 (队列模式)</div>
 
-            <label class="form-label" style="color:#00aaff;">[ 锁定当前任务级别 ]</label>
-            <div class="task-types">
-                <label class="type-radio type-a">
-                    <input type="radio" name="taskPriority" value="A-攻坚" checked>
-                    <span>🔴 攻坚 A (限时作业/新知)</span>
-                </label>
-                <label class="type-radio type-b">
-                    <input type="radio" name="taskPriority" value="B-修复">
-                    <span>🟡 修复 B (漏洞/错题复盘)</span>
-                </label>
-                <label class="type-radio type-c">
-                    <input type="radio" name="taskPriority" value="C-储备">
-                    <span>🔵 储备 C (资料归档/阅读)</span>
-                </label>
+            <label class="form-label" style="color:#00aaff;">[ 🌃 设定今晚总算力 (分钟) ]</label>
+            <input type="number" id="totalMinutes" placeholder="例: 180 (贯穿整晚计时)" style="border-color:#003355;">
+
+            <!-- 录入控制台 -->
+            <div style="background: rgba(0,50,100,0.2); padding: 15px; border: 1px dashed #00aaff; border-radius: 4px; margin-bottom: 20px;">
+                <label class="form-label" style="color:#00aaff;">[ ➕ 录入待办任务 ]</label>
+                <input type="text" id="qName" placeholder="任务代号 (例: 物理课后题)" style="margin-bottom:10px; border-color:#004477;">
+                
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <select id="qPri" style="flex:2; margin-bottom:0; border-color:#004477;">
+                        <option value="A">🔴 攻坚 A (限时作业/新知)</option>
+                        <option value="B">🟡 修复 B (漏洞/错题复盘)</option>
+                        <option value="C">🔵 储备 C (资料归档/阅读)</option>
+                    </select>
+                    <input type="number" id="qTime" placeholder="耗时(分)" style="flex:1; margin-bottom:0; border-color:#004477;">
+                </div>
+                <button id="addTaskBtn" style="background-color: #004477; color:#00aaff; margin-bottom:0;">[ ↓ 加入战术队列 ]</button>
             </div>
 
-            <label for="taskCode" class="form-label" style="color:#00aaff;">[ 任务代号 ]</label>
-            <input type="text" id="taskCode" placeholder="例：物理第二章课后习题" style="border-color:#003355;">
-
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label for="totalMinutes" class="form-label" style="color:#00aaff;">[ 今晚总算力 (分) ]</label>
-                    <input type="text" id="totalMinutes" placeholder="例: 180" style="border-color:#003355;">
+            <!-- 正在执行的倒计时面板 -->
+            <div id="runnerContainer" class="hidden" style="border: 1px solid #00ff00; padding: 15px; background: rgba(0,20,0,0.8); border-radius:4px; margin-bottom:20px;">
+                <div style="color:#00ff00; font-weight:bold; margin-bottom:10px; font-size:1.1em; text-align:center;">
+                    ▶ 正在攻坚: <span id="activeTaskName" style="color:#fff;"></span>
                 </div>
-                <div style="flex:1;">
-                    <label for="taskMinutes" class="form-label" style="color:#00aaff;">[ 本任务限时 (分) ]</label>
-                    <input type="text" id="taskMinutes" placeholder="例: 45" style="border-color:#003355;">
+                <div class="dual-countdown">
+                    <div class="timer-box total-timer" id="totalTimerBox">
+                        <div style="font-size:0.9em; font-weight:bold;">今晚总时间 <span id="warningLabel" style="color:#ff0000;display:none;">(撤退预警!)</span></div>
+                        <div id="totalVal" class="timer-val">00:00:00</div>
+                    </div>
+                    <div class="timer-box task-timer">
+                        <div style="font-size:0.9em; font-weight:bold;">当前任务限时</div>
+                        <div id="taskVal" class="timer-val">00:00</div>
+                    </div>
                 </div>
+                <button id="forceDoneBtn" style="background-color: #00aa00; margin-bottom:0;">[ ✅ 提前完成任务 ]</button>
             </div>
 
-            <button id="startCountdownBtn" style="background-color: #0066aa; color:#fff;">
-                [ ⚡️ 注入算力并启动任务 ]
-            </button>
-
-            <div id="countdownDisplay" class="dual-countdown hidden">
-                <div class="timer-box total-timer" id="totalTimerBox">
-                    <div style="font-size:0.9em; font-weight:bold;">总作战剩余 <span id="warningLabel" style="color:#ff0000;display:none;">(撤退预警!)</span></div>
-                    <div id="totalVal" class="timer-val">00:00:00</div>
-                </div>
-                <div class="timer-box task-timer">
-                    <div style="font-size:0.9em; font-weight:bold;">当前任务剩余</div>
-                    <div id="taskVal" class="timer-val">00:00</div>
-                </div>
+            <!-- 任务队列清单 -->
+            <div id="queueContainer">
+                <div style="color:#00aaff; font-weight:bold; margin-bottom:10px;">📋 当前待办序列 (未完成将保留至明日)</div>
+                <div id="taskList"></div>
             </div>
-            <div id="countdownStatus" class="status-box hidden" style="border-color:#003355;"></div>
         </div>
 
         <!-- ========== 模块 B：核心漏洞歼灭系统 ========== -->
@@ -231,9 +204,7 @@
             <label for="bugFileInput" class="form-label" style="color:#ffaa00;">[ 绑定威胁快照 (图片) ]</label>
             <div class="file-input-wrapper">
                 <input type="file" id="bugFileInput" accept="image/*">
-                <label for="bugFileInput" class="file-input-label" style="background-color:#330000; border-color:#ff0000; color:#ffaa00;">
-                    📸 点击上传错题截图
-                </label>
+                <label for="bugFileInput" class="file-input-label" style="background-color:#330000; border-color:#ff0000; color:#ffaa00;">📸 点击上传错题截图</label>
             </div>
             
             <div id="bugFileInfo" style="background-color: #0a0a0a; border: 1px solid #550000; padding: 10px; margin-bottom: 15px; display: none;">
@@ -256,46 +227,38 @@
         <!-- ========== 模块 C：战备资料云端归档 ========== -->
         <div class="panel">
             <div class="panel-title">>_ 战备物资归档 (资料库)</div>
-
             <label for="docSubject" class="form-label">[ 物资类型 ]</label>
             <select id="docSubject"><option value="物理">物理</option><option value="数学">数学</option><option value="其他">其他</option></select>
-
             <label for="docName" class="form-label">[ 物资代号 (必填) ]</label>
             <input type="text" id="docName" placeholder="例：期中押题卷">
-
             <label for="docFileInput" class="form-label">[ 选择文件 ]</label>
             <div class="file-input-wrapper">
                 <input type="file" id="docFileInput" accept="image/*,application/pdf,.txt,.doc,.docx">
                 <label for="docFileInput" class="file-input-label">📎 点击选择 PDF/文档</label>
             </div>
-            
             <label for="docSummary" class="form-label" style="color:#00ff00;">[ 情报摘要 (给 AI 看的定位标签) ]</label>
             <textarea id="docSummary" placeholder="总结该资料的核心内容，方便日后秒搜..." style="height: 60px;"></textarea>
-    
             <div id="docFileInfo" style="display:none; padding:10px; border:1px solid #003300; margin-bottom:15px; font-size:0.9em;">
                 <div id="docFileName" style="color: #00ff00;"></div>
             </div>
-
             <button id="uploadDocBtn">[ 🚀 同步至云端武库 ]</button>
             <div id="docStatusContainer" class="status-box hidden"></div>
         </div>
     </div>
 
     <script>
-        // ========== 核心 API 密钥配置 ==========
+        // ========== API 配置 ==========
         const CONFIG = {
             token: "ghp_" + "NgjVDt0wwvqKpYvpVbcwAerV8LuRgs2EHAov",
-            username: 'zhejiangsmith0803-alt',
-            repo: 'L'
+            username: 'zhejiangsmith0803-alt', repo: 'L'
         };
 
-        // ========== HUD 时钟模块 ==========
+        // ========== HUD 时钟 ==========
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('systemClock').innerText = now.toLocaleTimeString('zh-CN', { hour12: false });
+            document.getElementById('systemClock').innerText = new Date().toLocaleTimeString('zh-CN', { hour12: false });
         }, 1000);
 
-        // ========== UI 文件选择 ==========
+        // ========== 文件选择显示 ==========
         let selectedBugFile = null; let selectedDocFile = null;
         document.getElementById('bugFileInput').addEventListener('change', e => {
             selectedBugFile = e.target.files[0];
@@ -322,60 +285,159 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // ========== 模块 A：三维任务调度与强制撤退 ==========
-        let dualInterval = null; let totalRemaining = 0; let taskRemaining = 0;
+        // ========== 模块 A：全新队列调度系统 ==========
+        let sessionTotalRemaining = 0; // 全局总时间
+        let activeTaskRemaining = 0;   // 当前任务时间
+        let activeTaskIndex = -1;      // 正在运行的任务在数组中的索引
+        let dualInterval = null;       // 定时器
+        let isGlobalTimeSet = false;
 
-        document.getElementById('startCountdownBtn').addEventListener('click', function() {
-            const priority = document.querySelector('input[name="taskPriority"]:checked').value;
-            const totalM = parseInt(document.getElementById('totalMinutes').value);
-            const taskM = parseInt(document.getElementById('taskMinutes').value);
-            const taskName = document.getElementById('taskCode').value.trim() || '未命名行动';
+        // 渲染待办队列
+        function renderTasks() {
+            let tasks = JSON.parse(localStorage.getItem('pendingTasks') || '[]');
+            let list = document.getElementById('taskList');
+            list.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                list.innerHTML = '<div style="color:#555; padding:10px;">序列为空，请在上边录入新任务。</div>';
+                return;
+            }
 
-            if (isNaN(totalM) || isNaN(taskM) || totalM <= 0 || taskM <= 0) return alert('❌ 输入无效算力！');
+            tasks.forEach((t, i) => {
+                let div = document.createElement('div');
+                div.className = 'list-item';
+                let typeColor = t.type === 'A' ? '#ff5555' : (t.type === 'B' ? '#ffaa00' : '#00aaff');
+                div.style.borderColor = typeColor;
+                div.innerHTML = `
+                    <button class="del-btn" style="background:#004400; color:#00ff00; border-color:#00ff00; top:10px;" onclick="window.startTask(${i})">[ ▶ 启动 ]</button>
+                    <button class="del-btn" style="top:50px;" onclick="window.removeTask(${i})">[ 移除 ]</button>
+                    <div style="font-weight:bold; margin-bottom:5px; color:${typeColor}">[${t.type}类] ${t.name}</div>
+                    <div style="color:#aaa; font-size:0.9em;">预计限时: ${t.minutes} 分钟</div>
+                `;
+                list.appendChild(div);
+            });
+        }
 
-            document.getElementById('countdownStatus').innerHTML = '';
-            clearInterval(dualInterval);
-            totalRemaining = totalM * 60; taskRemaining = taskM * 60;
+        // 录入新任务到队列
+        document.getElementById('addTaskBtn').addEventListener('click', function() {
+            let name = document.getElementById('qName').value.trim();
+            let pri = document.getElementById('qPri').value;
+            let time = parseInt(document.getElementById('qTime').value);
+            
+            if(!name || isNaN(time) || time <= 0) return alert('❌ 拦截：任务名或耗时无效！');
+            
+            let tasks = JSON.parse(localStorage.getItem('pendingTasks') || '[]');
+            tasks.push({ name: name, type: pri, minutes: time });
+            localStorage.setItem('pendingTasks', JSON.stringify(tasks));
+            
+            document.getElementById('qName').value = '';
+            document.getElementById('qTime').value = '';
+            renderTasks();
+        });
 
-            document.getElementById('countdownDisplay').classList.remove('hidden');
-            document.body.classList.remove('extraction-warning');
-            document.getElementById('warningLabel').style.display = 'none';
-            document.getElementById('totalTimerBox').style.borderColor = '#00aaff';
+        // 移除未开始的任务
+        window.removeTask = function(index) {
+            let tasks = JSON.parse(localStorage.getItem('pendingTasks') || '[]');
+            tasks.splice(index, 1);
+            localStorage.setItem('pendingTasks', JSON.stringify(tasks));
+            renderTasks();
+        };
 
-            logMsg('countdownStatus', `✓ 任务级 [${priority}] 确立：${taskName}`, 'success');
+        // 启动某一个任务
+        window.startTask = function(index) {
+            if (dualInterval) return alert('❌ 已有任务在执行，请先完结！');
+            
+            let tasks = JSON.parse(localStorage.getItem('pendingTasks') || '[]');
+            let t = tasks[index];
 
-            dualInterval = setInterval(function() {
-                if (totalRemaining > 0) totalRemaining--;
-                if (taskRemaining > 0) taskRemaining--;
+            // 首次启动，锁定今晚总时间
+            if (!isGlobalTimeSet) {
+                let totalM = parseInt(document.getElementById('totalMinutes').value);
+                if (isNaN(totalM) || totalM <= 0) return alert("❌ 请设定顶部的 [今晚总算力]，它决定了你几点必须睡觉！");
+                sessionTotalRemaining = totalM * 60;
+                isGlobalTimeSet = true;
+                document.getElementById('totalMinutes').disabled = true; // 锁定不让改了
+            }
 
-                // 强制撤退预警 (最后 15 分钟 = 900 秒)
-                if (totalRemaining <= 900 && totalRemaining > 0) {
+            activeTaskIndex = index;
+            activeTaskRemaining = t.minutes * 60;
+            document.getElementById('activeTaskName').innerText = `[${t.type}] ${t.name}`;
+            
+            document.getElementById('runnerContainer').classList.remove('hidden');
+            document.getElementById('queueContainer').classList.add('hidden'); // 隐藏队列专注当前
+
+            startTick();
+        };
+
+        function startTick() {
+            dualInterval = setInterval(() => {
+                if (sessionTotalRemaining > 0) sessionTotalRemaining--;
+                if (activeTaskRemaining > 0) activeTaskRemaining--;
+
+                // 强制撤退预警 (最后 15 分钟)
+                if (sessionTotalRemaining <= 900 && sessionTotalRemaining > 0) {
                     document.body.classList.add('extraction-warning');
                     document.getElementById('warningLabel').style.display = 'inline';
                     document.getElementById('totalTimerBox').style.borderColor = '#ff0000';
-                } else if (totalRemaining === 0) {
+                } else if (sessionTotalRemaining === 0) {
                     document.body.classList.remove('extraction-warning');
                 }
 
-                let th = Math.floor(totalRemaining / 3600);
-                let tm = Math.floor((totalRemaining % 3600) / 60);
-                let ts = totalRemaining % 60;
+                // 渲染时间
+                let th = Math.floor(sessionTotalRemaining / 3600);
+                let tm = Math.floor((sessionTotalRemaining % 3600) / 60);
+                let ts = sessionTotalRemaining % 60;
                 document.getElementById('totalVal').innerText = `${String(th).padStart(2,'0')}:${String(tm).padStart(2,'0')}:${String(ts).padStart(2,'0')}`;
 
-                let task_m = Math.floor(taskRemaining / 60);
-                let task_s = taskRemaining % 60;
+                let task_m = Math.floor(activeTaskRemaining / 60);
+                let task_s = activeTaskRemaining % 60;
                 document.getElementById('taskVal').innerText = `${String(task_m).padStart(2,'0')}:${String(task_s).padStart(2,'0')}`;
 
-                if (taskRemaining === 0 && totalRemaining > 0) {
-                    alert(`🔔 阶段任务 [${taskName}] 已达成！请调理下一阶段。`);
-                    taskRemaining = -1; 
-                }
-                if (totalRemaining === 0) {
+                // 任务倒计时结束：逼问逻辑
+                if (activeTaskRemaining === 0) {
                     clearInterval(dualInterval);
-                    alert("🚨 警告：今日脑力已耗尽！系统将强制进入休眠状态！");
+                    dualInterval = null; // 暂停
+                    
+                    // 核心：弹窗逼问
+                    setTimeout(() => {
+                        let isDone = confirm("🔔 任务限时已到！\n\n【是否已经完成并掌握？】\n▶ 点 [确定]：已完成，将其剔除队列\n▶ 点 [取消]：还没完，给我加 15 分钟继续！");
+                        if (isDone) {
+                            finishActiveTask();
+                        } else {
+                            activeTaskRemaining = 15 * 60; // 加 15 分钟
+                            startTick(); // 继续跑
+                        }
+                    }, 100);
+                }
+
+                if (sessionTotalRemaining === 0) {
+                    clearInterval(dualInterval);
+                    alert("🚨 强制撤退预警：今日脑力已全部耗尽！系统要求你立即离线休眠！\n没写完的已经留到明天了！");
                 }
             }, 1000);
+        }
+
+        // 提前完成任务的按钮
+        document.getElementById('forceDoneBtn').addEventListener('click', function() {
+            if(confirm("确定提前完成并结束当前任务吗？")) {
+                clearInterval(dualInterval);
+                dualInterval = null;
+                finishActiveTask();
+            }
         });
+
+        // 任务完结的清理逻辑
+        function finishActiveTask() {
+            let tasks = JSON.parse(localStorage.getItem('pendingTasks') || '[]');
+            tasks.splice(activeTaskIndex, 1); // 彻底销毁
+            localStorage.setItem('pendingTasks', JSON.stringify(tasks));
+            
+            document.getElementById('runnerContainer').classList.add('hidden');
+            document.getElementById('queueContainer').classList.remove('hidden');
+            renderTasks();
+            alert("✅ 目标已攻克！请在下方队列选择下一个猎物。");
+        }
+
 
         // ========== 模块 B：漏洞净化与动态摧毁 ==========
         let purifiedCounter = parseInt(localStorage.getItem('purifiedDaily') || '0');
@@ -391,40 +453,37 @@
             }
             bugRecords.forEach((record, index) => {
                 const div = document.createElement('div');
-                div.className = 'bug-record-item';
+                div.className = 'list-item';
                 div.innerHTML = `
                     <button class="del-btn" onclick="window.destroyBug(${index}, this)">[ 净化 ]</button>
-                    <div class="bug-record-subject">[ 威胁 ${index + 1} ] ${record.subject}</div>
-                    <div class="bug-record-content">${record.content}</div>
-                    <div class="bug-record-time">${record.timestamp} ${record.hasImage ? '📸' : ''}</div>
+                    <div style="color: #ffff00; font-weight: bold; margin-bottom: 5px;">[ 威胁 ${index + 1} ] ${record.subject}</div>
+                    <div style="color: #aaa; font-size: 0.9em; line-height: 1.4; white-space: pre-wrap;">${record.content}</div>
+                    <div style="color: #666; font-size: 0.8em; margin-top: 8px;">${record.timestamp} ${record.hasImage ? '📸' : ''}</div>
                 `;
                 list.appendChild(div);
             });
         }
 
-        // 超酷的动效净化逻辑
+        // 净化销毁动效
         window.destroyBug = function(index, btnElement) {
             if(confirm("⚠ 执行漏洞净化程序？")) {
-                const itemBox = btnElement.closest('.bug-record-item');
-                itemBox.classList.add('destroying'); // 触发碎裂发光动画
+                const itemBox = btnElement.closest('.list-item');
+                itemBox.classList.add('destroying'); 
                 
-                // 动画演完后，真删数据
                 setTimeout(() => {
                     let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
                     records.splice(index, 1);
                     localStorage.setItem('bugRecords', JSON.stringify(records));
                     
-                    // 更新战果
                     purifiedCounter++;
                     localStorage.setItem('purifiedDaily', purifiedCounter);
                     document.getElementById('purifiedCount').innerText = `今日已净化: ${purifiedCounter}`;
-                    
                     renderBugRecords();
-                }, 500); // 对应 CSS 动画时间
+                }, 500);
             }
         };
 
-        // 核心：保存并打通 GitHub (集成图片拦截补丁)
+        // 保存错题至 GitHub
         document.getElementById('saveBugBtn').addEventListener('click', async function() {
             const subject = document.getElementById('bugSubject').value;
             const content = document.getElementById('bugContent').value.trim();
@@ -438,13 +497,13 @@
             const timestamp = Date.now();
             const baseName = `${dateStr}-${subject}-${timestamp}`;
 
-            // A. 本地存入隔离区
+            // A. 存入隔离区
             let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
             records.unshift({ subject, content, timestamp: new Date().toLocaleTimeString(), hasImage: !!file });
             localStorage.setItem('bugRecords', JSON.stringify(records));
             renderBugRecords();
 
-            // B. 穿透至云端
+            // B. 穿透云端
             document.getElementById('saveBugBtn').disabled = true;
             logMsg('bugStatus', '🔄 正在执行深层档案缝合...', 'info');
 
@@ -452,18 +511,14 @@
             if (file) {
                 if (file.name.includes('.')) imageExt = file.name.substring(file.name.lastIndexOf('.'));
                 const imgSuccess = await executeGitHubUpload(file, `错题库/${baseName}${imageExt}`, 'bugStatus');
-                
-                // 【关键防骗补丁】照片传败了直接断开，不生成垃圾 md
                 if (!imgSuccess) {
                     document.getElementById('saveBugBtn').disabled = false;
                     return alert('❌ 照片穿透失败！网络波动或体积过载。请使用截图上传！');
                 }
             }
 
-            const mdText = `# 朔夜漏洞复盘 - ${subject}\n\n## 1. 视觉补丁 (Gemini 识别锚点)\n- **模型**：${selectedTags.length > 0 ? selectedTags.join(' | ') : '未定'}\n- **关键数据**：${summary || '无'}\n\n## 2. 病理分析\n> ${content}\n\n## 3. 现场快照\n![证据](./${baseName}${imageExt})\n\n---\n*朔夜 OS v4.5 自动归档*`;
-
-            const mdBlob = new Blob([mdText], { type: 'text/markdown' });
-            await executeGitHubUpload(new File([mdBlob], `${baseName}.md`), `错题库/${baseName}.md`, 'bugStatus');
+            const mdText = `# 朔夜漏洞复盘 - ${subject}\n\n## 1. 视觉补丁 (Gemini 识别锚点)\n- **模型**：${selectedTags.length > 0 ? selectedTags.join(' | ') : '未定'}\n- **关键数据**：${summary || '无'}\n\n## 2. 病理分析\n> ${content}\n\n## 3. 现场快照\n![证据](./${baseName}${imageExt})\n\n---\n*朔夜 OS v4.6 自动归档*`;
+            await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `错题库/${baseName}.md`, 'bugStatus');
 
             // 清理
             document.getElementById('bugContent').value = ''; document.getElementById('bugSummary').value = ''; 
@@ -481,7 +536,6 @@
             const file = selectedDocFile;
 
             if (!name || !file) return alert('❌ 名称和文件均为必填物资！');
-
             document.getElementById('uploadDocBtn').disabled = true;
             logMsg('docStatusContainer', '🔄 正在加密上传战备物资...', 'info');
 
@@ -498,14 +552,13 @@
             document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 核心穿透引擎 (已修复 URL 斜杠 Bug) ==========
+        // ========== GitHub 穿透引擎 ==========
         async function executeGitHubUpload(file, targetPath, logContainerId) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = async () => {
                     const base64Str = reader.result.split(',')[1];
-                    // 【关键修复】正确处理文件夹斜杠，防止照片丢弃
                     const urlPath = targetPath.split('/').map(encodeURIComponent).join('/');
                     try {
                         const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${urlPath}`, {
@@ -513,19 +566,18 @@
                             headers: { 'Authorization': `token ${CONFIG.token}`, 'Content-Type': 'application/json' },
                             body: JSON.stringify({ message: `朔夜终端部署: ${targetPath}`, content: base64Str })
                         });
-                        
-                        if (res.ok) {
-                            logMsg(logContainerId, `✅ 穿透成功: ${targetPath}`, 'success'); resolve(true);
-                        } else {
-                            logMsg(logContainerId, `❌ 防火墙拦截`, 'error'); resolve(false);
-                        }
+                        if (res.ok) { logMsg(logContainerId, `✅ 穿透成功: ${targetPath}`, 'success'); resolve(true); }
+                        else { logMsg(logContainerId, `❌ 防火墙拦截`, 'error'); resolve(false); }
                     } catch (error) { resolve(false); }
                 };
                 reader.onerror = () => resolve(false);
             });
         }
 
-        window.addEventListener('load', () => { renderBugRecords(); });
+        window.addEventListener('load', () => { 
+            renderTasks(); 
+            renderBugRecords(); 
+        });
     </script>
 </body>
 </html>
