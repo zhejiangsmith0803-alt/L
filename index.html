@@ -5,370 +5,279 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜核心终端 4.0</title>
+    <title>朔夜战术终端 4.5</title>
     <style>
-        /* 第一重构：极致暗黑，镇压所有白色物质 */
-        :root {
-            color-scheme: dark;
-        }
+        /* 极致暗黑，战术系统核心色调 */
+        :root { color-scheme: dark; }
 
-        /* 全局样式 - 极致黑客风格 */
         html, body {
-            margin: 0;
-            padding: 0;
-            background-color: #000000;
+            margin: 0; padding: 0;
+            background-color: #030303;
             color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
-            min-height: 100vh;
-            width: 100vw;
-            overflow-x: hidden;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
+            min-height: 100vh; width: 100vw;
+            overflow-x: hidden; user-select: none; -webkit-touch-callout: none;
+            transition: all 0.3s ease;
         }
 
-        /* 容器 - iPad 安全距离 */
+        /* 强制撤退预警：全屏红光闪烁 */
+        @keyframes extractionPulse {
+            0% { box-shadow: inset 0 0 0px 0px rgba(255, 0, 0, 0); }
+            50% { box-shadow: inset 0 0 40px 10px rgba(255, 0, 0, 0.4); border-color: #ff0000; }
+            100% { box-shadow: inset 0 0 0px 0px rgba(255, 0, 0, 0); }
+        }
+        body.extraction-warning {
+            animation: extractionPulse 2s infinite;
+        }
+
         .container {
-            padding: 30px 20px 40px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-            padding-top: max(30px, env(safe-area-inset-top));
-            padding-bottom: max(40px, env(safe-area-inset-bottom));
+            padding: 20px 20px 40px 20px;
+            max-width: 900px; margin: 0 auto;
+            padding-top: max(20px, env(safe-area-inset-top));
         }
 
-        /* 标题 */
-        h1 {
-            border-bottom: 2px dashed #00ff00;
-            padding-bottom: 15px;
-            text-shadow: 0 0 10px #00ff00;
-            margin: 0 0 30px 0;
-            font-size: 1.8em;
-            letter-spacing: 2px;
+        /* 顶部 HUD 抬头显示器 */
+        .hud-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #00ff00; padding-bottom: 10px; margin-bottom: 25px;
+            font-size: 0.9em; font-weight: bold; text-shadow: 0 0 5px #00ff00;
         }
+        .hud-item { display: flex; align-items: center; gap: 8px; }
+        .hud-blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.3; } }
 
-        /* 面板 - 增加微弱发光边框 */
+        /* 面板样式 */
         .panel {
-            border: 1px solid #005500;
-            background-color: rgba(0, 20, 0, 0.4);
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.08);
+            border: 1px solid #004400; background-color: rgba(0, 15, 0, 0.6);
+            padding: 20px; margin-bottom: 30px; border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.05); position: relative;
         }
-
         .panel-title {
-            color: #00ff00;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border-left: 4px solid #00ff00;
-            padding-left: 12px;
-            font-size: 1.1em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #00ff00; font-weight: bold; margin-bottom: 15px;
+            border-left: 4px solid #00ff00; padding-left: 12px; font-size: 1.1em;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
-        /* 表单控件 - 大而清晰，适配iPad */
-        input[type="text"],
-        input[type="file"],
-        select,
-        textarea {
-            background-color: #050505;
-            color: #00ff00;
-            border: 1px solid #004400;
-            padding: 18px;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            border-radius: 4px;
-            -webkit-appearance: none;
-            appearance: none;
+        /* 表单控件 */
+        input[type="text"], select, textarea {
+            background-color: #050505; color: #00ff00; border: 1px solid #004400;
+            padding: 16px; width: 100%; box-sizing: border-box; margin-bottom: 15px;
+            font-family: 'Courier New', monospace; font-size: 16px; border-radius: 4px;
+            -webkit-appearance: none; appearance: none;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.4), inset 0 0 5px rgba(0, 255, 0, 0.1);
         }
 
-        /* 下拉菜单自定义样式 */
-        select {
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 20px;
-            padding-right: 50px;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #00ff00;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.6), inset 0 0 10px rgba(0, 255, 0, 0.1);
-        }
-
-        /* 按钮 */
         button {
-            background-color: #00ff00;
-            color: #000000;
-            border: none;
-            padding: 16px 30px;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            min-height: 50px;
-            width: 100%;
+            background-color: #00ff00; color: #000000; border: none; padding: 16px;
+            font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace;
+            font-size: 16px; border-radius: 4px; margin-bottom: 10px; width: 100%;
+            text-transform: uppercase; transition: all 0.2s;
         }
-
-        button:active {
-            transform: scale(0.98);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
-        }
-
-        /* 危险按钮 */
+        button:active { transform: scale(0.98); box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
         .danger-btn { background-color: #aa0000; color: #ffffff; }
         .danger-btn:active { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
 
-        /* 状态显示区域 */
-        .status-box {
-            background-color: #080808;
-            border: 1px solid #004400;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 4px;
-            min-height: 60px;
-            display: flex;
-            flex-direction: column;
-            max-height: 300px;
-            overflow-y: auto;
+        /* 任务三维分类系统 */
+        .task-types { display: flex; gap: 10px; margin-bottom: 15px; }
+        .type-radio {
+            flex: 1; text-align: center; padding: 12px 5px; border: 1px solid #333;
+            border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold;
+            transition: all 0.3s; opacity: 0.6;
         }
+        .type-radio input { display: none; }
+        .type-radio input:checked + span { opacity: 1; }
+        .type-a { color: #ff5555; border-color: #550000; }
+        .type-a input:checked ~ span { text-shadow: 0 0 8px #ff0000; }
+        .type-b { color: #ffaa00; border-color: #554400; }
+        .type-b input:checked ~ span { text-shadow: 0 0 8px #ffaa00; }
+        .type-c { color: #00aaff; border-color: #003355; }
+        .type-c input:checked ~ span { text-shadow: 0 0 8px #00aaff; }
 
-        .status-item {
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 3px solid #00ff00;
-            padding-left: 15px;
-            word-wrap: break-word;
-            font-size: 0.95em;
-            line-height: 1.6;
+        .status-box {
+            background-color: #080808; border: 1px solid #003300; padding: 15px;
+            margin-top: 15px; border-radius: 4px; max-height: 200px; overflow-y: auto;
         }
+        .status-item { padding: 8px; margin-bottom: 5px; border-left: 3px solid; font-size: 0.9em; }
         .status-success { border-left-color: #00ff00; color: #00ff00; }
         .status-error { border-left-color: #ff3333; color: #ff6666; }
         .status-info { border-left-color: #ffaa00; color: #ffdd00; }
 
         input[type="file"] { display: none; }
         .file-input-label {
-            display: flex;
-            background-color: #005500;
-            color: #00ff00;
-            border: 1px dashed #00ff00;
-            padding: 18px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            min-height: 50px;
-            align-items: center;
-            justify-content: center;
+            display: flex; background-color: #003300; color: #00ff00; border: 1px dashed #00ff00;
+            padding: 18px; justify-content: center; border-radius: 4px; margin-bottom: 15px; font-weight: bold;
         }
-        .file-input-label:active { background-color: #007700; }
 
-        .form-label { display: block; margin-bottom: 8px; color: #ffff00; font-weight: bold; font-size: 0.95em; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9em; }
 
-        /* 双轨倒计时显示 */
         .dual-countdown { display: flex; gap: 10px; margin: 15px 0; }
-        .timer-box { flex: 1; padding: 20px; text-align: center; border-radius: 4px; font-family: monospace; }
-        .total-timer { background: #001133; border: 2px solid #00aaff; }
-        .task-timer { background: #0a0a0a; border: 2px solid #00ff00; }
-        .timer-title { font-size: 1em; margin-bottom: 8px; font-weight: bold; }
-        .timer-val { font-size: 2.5em; font-weight: bold; letter-spacing: 2px; }
+        .timer-box { flex: 1; padding: 15px; text-align: center; border-radius: 4px; border: 2px solid; }
+        .total-timer { background: #001122; border-color: #00aaff; color: #00aaff; }
+        .task-timer { background: #002200; border-color: #00ff00; color: #00ff00; }
+        .timer-val { font-size: 2.2em; font-weight: bold; letter-spacing: 2px; margin-top: 5px;}
 
-        /* 漏洞记录列表 & 销毁按钮 */
+        /* 漏洞记录清单 & 净化动效 */
         .bug-record-item {
-            background-color: #0a0a0a;
-            border: 1px solid #003300;
-            padding: 15px;
-            padding-right: 80px; /* 给删除按钮留空间 */
-            margin: 10px 0;
-            border-radius: 4px;
-            word-break: break-all;
-            position: relative;
+            background-color: #0a0a0a; border: 1px solid #330000; padding: 15px;
+            padding-right: 80px; margin: 10px 0; border-radius: 4px; position: relative;
+            transition: all 0.5s ease; overflow: hidden;
         }
-        .bug-record-subject { color: #ffff00; font-weight: bold; margin-bottom: 8px; }
-        .bug-record-content { color: #00ff00; font-size: 0.95em; line-height: 1.6; white-space: pre-wrap; }
-        .bug-record-time { color: #888; font-size: 0.85em; margin-top: 8px; }
+        /* 净化时的酷炫毁灭动画 */
+        .bug-record-item.destroying {
+            background-color: #003300; border-color: #00ff00; transform: scale(0.95);
+            opacity: 0; filter: blur(5px);
+        }
+        .bug-record-item.destroying * { color: #00ff00 !important; }
+        
+        .bug-record-subject { color: #ffff00; font-weight: bold; margin-bottom: 5px; }
+        .bug-record-content { color: #aaa; font-size: 0.9em; line-height: 1.4; white-space: pre-wrap; }
+        .bug-record-time { color: #666; font-size: 0.8em; margin-top: 8px; }
         
         .del-btn {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            background-color: #550000;
-            color: #ffaa00;
-            border: 1px solid #ff3333;
-            width: auto;
-            min-width: 0;
-            min-height: 0;
-            padding: 6px 12px;
-            font-size: 12px;
-            margin: 0;
+            position: absolute; right: 10px; top: 10px; background-color: #330000;
+            color: #ff5555; border: 1px solid #ff0000; width: auto; padding: 5px 10px; font-size: 12px;
         }
 
-        @media (min-width: 800px) { .container { padding: 40px 40px 60px 40px; } h1 { font-size: 2.2em; } }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>[ 朔夜核心终端 4.0 ]</h1>
+        <!-- 赛博 HUD 抬头显示器 -->
+        <div class="hud-bar">
+            <div class="hud-item"><span class="hud-blink">🔴</span> USER: MA_XIAO</div>
+            <div class="hud-item" id="systemClock">00:00:00</div>
+            <div class="hud-item" style="color:#00aaff;">OS_V: 4.5 [STABLE]</div>
+        </div>
 
-        <!-- ========== 模块 A：双轨倒计时模块 ========== -->
-        <div class="panel">
-            <div class="panel-title">>_ 纯手动双轨倒计时系统</div>
+        <!-- ========== 模块 A：任务指令中枢 ========== -->
+        <div class="panel" style="border-color: #00aaff; box-shadow: 0 0 15px rgba(0,170,255,0.1);">
+            <div class="panel-title" style="color:#00aaff; border-color:#00aaff;">>_ 战术任务调理中枢</div>
 
-            <label for="totalMinutes" class="form-label" style="color:#00aaff;">[ 🌃 今日总作战限时 (分钟) ]</label>
-            <input type="text" id="totalMinutes" placeholder="例如：180">
+            <label class="form-label" style="color:#00aaff;">[ 锁定当前任务级别 ]</label>
+            <div class="task-types">
+                <label class="type-radio type-a">
+                    <input type="radio" name="taskPriority" value="A-攻坚" checked>
+                    <span>🔴 攻坚 A (限时作业/新知)</span>
+                </label>
+                <label class="type-radio type-b">
+                    <input type="radio" name="taskPriority" value="B-修复">
+                    <span>🟡 修复 B (漏洞/错题复盘)</span>
+                </label>
+                <label class="type-radio type-c">
+                    <input type="radio" name="taskPriority" value="C-储备">
+                    <span>🔵 储备 C (资料归档/阅读)</span>
+                </label>
+            </div>
 
-            <label for="taskCode" class="form-label">[ 当前突击任务代号 ]</label>
-            <input type="text" id="taskCode" placeholder="例：攻克物理动能定理">
+            <label for="taskCode" class="form-label" style="color:#00aaff;">[ 任务代号 ]</label>
+            <input type="text" id="taskCode" placeholder="例：物理第二章课后习题" style="border-color:#003355;">
 
-            <label for="taskMinutes" class="form-label">[ 当前任务限时 (分钟) ]</label>
-            <input type="text" id="taskMinutes" placeholder="例如：45">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label for="totalMinutes" class="form-label" style="color:#00aaff;">[ 今晚总算力 (分) ]</label>
+                    <input type="text" id="totalMinutes" placeholder="例: 180" style="border-color:#003355;">
+                </div>
+                <div style="flex:1;">
+                    <label for="taskMinutes" class="form-label" style="color:#00aaff;">[ 本任务限时 (分) ]</label>
+                    <input type="text" id="taskMinutes" placeholder="例: 45" style="border-color:#003355;">
+                </div>
+            </div>
 
-            <button id="startCountdownBtn" style="background-color: #00aa00; min-height: 60px; font-size: 18px;">
-                [ ⚡️ 启动双轨倒计时 ]
+            <button id="startCountdownBtn" style="background-color: #0066aa; color:#fff;">
+                [ ⚡️ 注入算力并启动任务 ]
             </button>
 
             <div id="countdownDisplay" class="dual-countdown hidden">
-                <div class="timer-box total-timer">
-                    <div class="timer-title" style="color:#00aaff;">总作战剩余</div>
-                    <div id="totalVal" class="timer-val" style="color:#00aaff;">00:00:00</div>
+                <div class="timer-box total-timer" id="totalTimerBox">
+                    <div style="font-size:0.9em; font-weight:bold;">总作战剩余 <span id="warningLabel" style="color:#ff0000;display:none;">(撤退预警!)</span></div>
+                    <div id="totalVal" class="timer-val">00:00:00</div>
                 </div>
                 <div class="timer-box task-timer">
-                    <div class="timer-title" style="color:#00ff00;">当前任务剩余</div>
-                    <div id="taskVal" class="timer-val" style="color:#00ff00;">00:00</div>
+                    <div style="font-size:0.9em; font-weight:bold;">当前任务剩余</div>
+                    <div id="taskVal" class="timer-val">00:00</div>
                 </div>
             </div>
-
-            <div id="countdownStatus" class="status-box hidden">
-                <div id="countdownStatusText"></div>
-            </div>
+            <div id="countdownStatus" class="status-box hidden" style="border-color:#003355;"></div>
         </div>
 
-        <!-- ========== 模块 B：核心漏洞歼灭系统 (图文绑定) ========== -->
+        <!-- ========== 模块 B：核心漏洞歼灭系统 ========== -->
         <div class="panel" style="border-color: #550000; box-shadow: 0 0 15px rgba(255,0,0,0.1);">
-            <div class="panel-title" style="color:#ff3333; border-left-color:#ff3333;">>_ 核心漏洞歼灭系统 (错题库)</div>
+            <div class="panel-title" style="color:#ff3333; border-left-color:#ff3333;">>_ 核心漏洞净化器 (错题库)</div>
 
-            <label for="bugSubject" class="form-label" style="color:#ffaa00;">[ 漏洞学科 ]</label>
-            <select id="bugSubject" required style="border-color:#550000;">
-                <option value="物理">物理</option>
-                <option value="数学">数学</option>
-                <option value="语文">语文</option>
-                <option value="英语">英语</option>
-                <option value="化学">化学</option>
-                <option value="生物">生物</option>
-                <option value="其他">其他</option>
+            <label for="bugSubject" class="form-label" style="color:#ffaa00;">[ 威胁来源 ]</label>
+            <select id="bugSubject" style="border-color:#550000;">
+                <option value="物理">物理</option> <option value="数学">数学</option>
+                <option value="语文">语文</option> <option value="英语">英语</option>
+                <option value="化学">化学</option> <option value="生物">生物</option>
             </select>
 
-            <label for="bugContent" class="form-label" style="color:#ffaa00;">[ 漏洞详细分析 ]</label>
-            <textarea id="bugContent" placeholder="详细记录你的错题、薄弱知识点等..." style="height: 120px; resize: vertical; border-color:#550000;"></textarea>
+            <label for="bugContent" class="form-label" style="color:#ffaa00;">[ 漏洞病理分析 ]</label>
+            <textarea id="bugContent" placeholder="在此解析你的错误思路..." style="height: 100px; border-color:#550000;"></textarea>
             
-            <!-- 新增：针对 Gemini 的题目关键信息摘要 -->
-            <label for="bugSummary" class="form-label" style="color:#ffaa00;">[ 题目关键数据 (针对 Gemini 识别优化) ]</label>
-            <textarea id="bugSummary" placeholder="如果图片模糊，请在此输入题目的关键数据、公式或几何条件..." style="height: 80px; resize: vertical; border-color:#550000;"></textarea>
+            <label for="bugSummary" class="form-label" style="color:#ffaa00;">[ 视觉补丁 (Gemini 专用数据) ]</label>
+            <textarea id="bugSummary" placeholder="输入图中的关键条件: μ=0.2, AB⊥BC..." style="height: 60px; border-color:#550000;"></textarea>
 
-            <!-- 修复：模型锚定勾选框 (正确放置在 HTML 区) -->
             <div id="modelAnchors" style="margin-bottom: 15px; padding: 10px; border: 1px dashed #550000; border-radius: 4px;">
-                <div style="color: #ffaa00; font-size: 0.8em; margin-bottom: 8px;">[ 🤖 Gemini 视觉校准锚点 ]</div>
-                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="斜面/复合场"> 物理模型</label>
-                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="受力分析/运动图"> 图像识别</label>
-                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="立体几何/圆锥曲线"> 数学模型</label>
-                <label style="margin-right:10px;"><input type="checkbox" name="m-tag" value="包含复杂公式"> 公式强化</label>
+                <div style="color: #ffaa00; font-size: 0.8em; margin-bottom: 8px;">[ 🤖 Gemini 模型锚点 ]</div>
+                <label style="margin-right:10px; font-size:0.9em;"><input type="checkbox" name="m-tag" value="斜面/复合场"> 物理模型</label>
+                <label style="margin-right:10px; font-size:0.9em;"><input type="checkbox" name="m-tag" value="受力/运动图"> 图像识别</label>
+                <label style="margin-right:10px; font-size:0.9em;"><input type="checkbox" name="m-tag" value="立体几何"> 数学模型</label>
             </div>
 
-            <label for="bugFileInput" class="form-label" style="color:#ffaa00;">[ 绑定错题图片 (可选) ]</label>
+            <label for="bugFileInput" class="form-label" style="color:#ffaa00;">[ 绑定威胁快照 (图片) ]</label>
             <div class="file-input-wrapper">
                 <input type="file" id="bugFileInput" accept="image/*">
-                <label for="bugFileInput" class="file-input-label" style="background-color:#330000; border-color:#ff3333; color:#ffaa00;">
-                    📸 点击采集错题证据 (拍照/图库)
+                <label for="bugFileInput" class="file-input-label" style="background-color:#330000; border-color:#ff0000; color:#ffaa00;">
+                    📸 点击上传错题截图
                 </label>
             </div>
             
-            <div id="bugFileInfo" style="background-color: #0a0a0a; border: 1px solid #550000; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
-                <div style="color: #ffaa00; margin-bottom: 8px;">✓ 已锁定错题证据：</div>
-                <div id="bugFileName" style="color: #ff3333; word-break: break-all;"></div>
+            <div id="bugFileInfo" style="background-color: #0a0a0a; border: 1px solid #550000; padding: 10px; margin-bottom: 15px; display: none;">
+                <div id="bugFileName" style="color: #ff3333; font-size:0.9em;"></div>
             </div>
 
-            <button id="saveBugBtn" class="danger-btn" style="min-height: 60px; font-size: 18px;">
-                [ 🔒 存入终端并同步云端错题库 ]
-            </button>
+            <button id="saveBugBtn" class="danger-btn">[ 🔒 隔离并穿透至 GitHub ]</button>
 
-            <button id="exportBugBtn" style="background-color: #333; color: #aaa;">
-                [ 一键导出文本数据给 Gemini ]
-            </button>
-
-            <div id="bugRecordsContainer" style="margin-top: 20px;">
-                <div style="color: #ffaa00; margin-bottom: 15px; font-weight: bold;">📋 终端已捕获漏洞清单：</div>
+            <!-- 动态战果墙 -->
+            <div id="bugRecordsContainer" style="margin-top: 25px; border-top: 1px dashed #330000; padding-top: 15px;">
+                <div style="display:flex; justify-content:space-between; color:#ffaa00; font-weight:bold; margin-bottom:10px;">
+                    <span>📋 待净化威胁清单</span>
+                    <span id="purifiedCount" style="color:#00ff00;">今日已净化: 0</span>
+                </div>
                 <div id="bugRecordsList"></div>
             </div>
-
-            <div id="bugStatus" class="status-box hidden" style="border-color:#550000;">
-                <div id="bugStatusText"></div>
-            </div>
+            <div id="bugStatus" class="status-box hidden" style="border-color:#550000;"></div>
         </div>
 
-        <!-- ========== 模块 C：战备资料云端归档 (纯文件) ========== -->
+        <!-- ========== 模块 C：战备资料云端归档 ========== -->
         <div class="panel">
-            <div class="panel-title">>_ 战备资料云端归档 (资料库)</div>
+            <div class="panel-title">>_ 战备物资归档 (资料库)</div>
 
-            <label for="docSubject" class="form-label">[ 学科分类 ]</label>
-            <select id="docSubject" required>
-                <option value="物理">物理</option>
-                <option value="数学">数学</option>
-                <option value="语文">语文</option>
-                <option value="英语">英语</option>
-                <option value="化学">化学</option>
-                <option value="生物">生物</option>
-                <option value="其他">其他</option>
-            </select>
+            <label for="docSubject" class="form-label">[ 物资类型 ]</label>
+            <select id="docSubject"><option value="物理">物理</option><option value="数学">数学</option><option value="其他">其他</option></select>
 
-            <label for="docName" class="form-label">[ 资料名称 (必填) ]</label>
-            <input type="text" id="docName" placeholder="例：期中考试押题卷、复习提纲等...">
+            <label for="docName" class="form-label">[ 物资代号 (必填) ]</label>
+            <input type="text" id="docName" placeholder="例：期中押题卷">
 
-            <label for="docFileInput" class="form-label">[ 选择各科资料文件 ]</label>
+            <label for="docFileInput" class="form-label">[ 选择文件 ]</label>
             <div class="file-input-wrapper">
                 <input type="file" id="docFileInput" accept="image/*,application/pdf,.txt,.doc,.docx">
-                <label for="docFileInput" class="file-input-label">
-                    📎 点击选择文件 (支持图片、PDF、文档)
-                </label>
+                <label for="docFileInput" class="file-input-label">📎 点击选择 PDF/文档</label>
             </div>
             
-            <label for="docSummary" class="form-label" style="color:#00ff00;">[ 资料核心摘要 (针对 Gemini 识别优化) ]</label>
-            <textarea id="docSummary" placeholder="在此输入资料的关键知识点、模型名或公式，方便 Gemini 检索..." style="height: 80px; resize: vertical; border-color:#004400;"></textarea>
+            <label for="docSummary" class="form-label" style="color:#00ff00;">[ 情报摘要 (给 AI 看的定位标签) ]</label>
+            <textarea id="docSummary" placeholder="总结该资料的核心内容，方便日后秒搜..." style="height: 60px;"></textarea>
     
-            <div id="docFileInfo" style="background-color: #0a0a0a; border: 1px solid #003300; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: none;">
-                <div style="color: #ffff00; margin-bottom: 8px;">✓ 待归档资料：</div>
-                <div id="docFileName" style="color: #00ff00; word-break: break-all;"></div>
+            <div id="docFileInfo" style="display:none; padding:10px; border:1px solid #003300; margin-bottom:15px; font-size:0.9em;">
+                <div id="docFileName" style="color: #00ff00;"></div>
             </div>
 
-            <button id="uploadDocBtn" style="background-color: #00aa00; min-height: 60px; font-size: 18px;">
-                [ 🚀 归档至云端资料库 ]
-            </button>
-
-            <div id="docStatusContainer" class="status-box hidden">
-                <div id="docStatusText"></div>
-            </div>
-        </div>
-
-        <div class="panel" style="background-color: rgba(0, 40, 0, 0.3); border: 1px dashed #004400;">
-            <div class="panel-title">>_ 系统防线信息</div>
-            <div style="font-size: 0.9em; line-height: 1.8;">
-                [ ✓ ] 漏洞数据：4.0 图文档案袋生成系统已激活<br>
-                [ ✓ ] 学习资料：含摘要锚点的智能归档系统已激活<br>
-                [ ✓ ] 终端净化：暗黑模式全面启动，已隔离白底污染<br>
-                [ ✓ ] 最高权限：API 密钥已嵌入内核
-            </div>
+            <button id="uploadDocBtn">[ 🚀 同步至云端武库 ]</button>
+            <div id="docStatusContainer" class="status-box hidden"></div>
         </div>
     </div>
 
@@ -380,67 +289,73 @@
             repo: 'L'
         };
 
-        // ========== UI 辅助：文件选择显示 ==========
-        let selectedBugFile = null;
-        let selectedDocFile = null;
+        // ========== HUD 时钟模块 ==========
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('systemClock').innerText = now.toLocaleTimeString('zh-CN', { hour12: false });
+        }, 1000);
 
-        document.getElementById('bugFileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                selectedBugFile = file;
-                document.getElementById('bugFileName').textContent = `文件名：${file.name} | 大小：${(file.size / 1024).toFixed(2)} KB`;
+        // ========== UI 文件选择 ==========
+        let selectedBugFile = null; let selectedDocFile = null;
+        document.getElementById('bugFileInput').addEventListener('change', e => {
+            selectedBugFile = e.target.files[0];
+            if (selectedBugFile) {
+                document.getElementById('bugFileName').textContent = `[已锁定]: ${selectedBugFile.name}`;
                 document.getElementById('bugFileInfo').style.display = 'block';
             }
         });
-
-        document.getElementById('docFileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                selectedDocFile = file;
-                document.getElementById('docFileName').textContent = `文件名：${file.name} | 大小：${(file.size / 1024).toFixed(2)} KB`;
+        document.getElementById('docFileInput').addEventListener('change', e => {
+            selectedDocFile = e.target.files[0];
+            if (selectedDocFile) {
+                document.getElementById('docFileName').textContent = `[已锁定]: ${selectedDocFile.name}`;
                 document.getElementById('docFileInfo').style.display = 'block';
             }
         });
 
-        // ========== 通用日志打印系统 ==========
         function logMsg(containerId, message, type = 'info') {
             const container = document.getElementById(containerId);
-            const box = container.parentElement;
-            box.classList.remove('hidden');
+            container.classList.remove('hidden');
             const item = document.createElement('div');
             item.className = `status-item status-${type}`;
             item.textContent = message;
             container.appendChild(item);
-            box.scrollTop = box.scrollHeight;
+            container.scrollTop = container.scrollHeight;
         }
 
-        // ========== 模块 A：双轨倒计时 ==========
-        let dualInterval = null;
-        let totalRemaining = 0;
-        let taskRemaining = 0;
+        // ========== 模块 A：三维任务调度与强制撤退 ==========
+        let dualInterval = null; let totalRemaining = 0; let taskRemaining = 0;
 
         document.getElementById('startCountdownBtn').addEventListener('click', function() {
+            const priority = document.querySelector('input[name="taskPriority"]:checked').value;
             const totalM = parseInt(document.getElementById('totalMinutes').value);
             const taskM = parseInt(document.getElementById('taskMinutes').value);
-            const taskName = document.getElementById('taskCode').value.trim() || '未命名突击';
+            const taskName = document.getElementById('taskCode').value.trim() || '未命名行动';
 
-            if (isNaN(totalM) || isNaN(taskM) || totalM <= 0 || taskM <= 0) {
-                logMsg('countdownStatusText', '❌ 请输入有效的分钟数！', 'error');
-                return;
-            }
+            if (isNaN(totalM) || isNaN(taskM) || totalM <= 0 || taskM <= 0) return alert('❌ 输入无效算力！');
 
-            document.getElementById('countdownStatusText').innerHTML = '';
+            document.getElementById('countdownStatus').innerHTML = '';
             clearInterval(dualInterval);
-            
-            totalRemaining = totalM * 60;
-            taskRemaining = taskM * 60;
+            totalRemaining = totalM * 60; taskRemaining = taskM * 60;
 
             document.getElementById('countdownDisplay').classList.remove('hidden');
-            logMsg('countdownStatusText', `✓ 核心引擎启动：总作战[${totalM}分] | 当前任务[${taskName}] ${taskM}分`, 'success');
+            document.body.classList.remove('extraction-warning');
+            document.getElementById('warningLabel').style.display = 'none';
+            document.getElementById('totalTimerBox').style.borderColor = '#00aaff';
+
+            logMsg('countdownStatus', `✓ 任务级 [${priority}] 确立：${taskName}`, 'success');
 
             dualInterval = setInterval(function() {
                 if (totalRemaining > 0) totalRemaining--;
                 if (taskRemaining > 0) taskRemaining--;
+
+                // 强制撤退预警 (最后 15 分钟 = 900 秒)
+                if (totalRemaining <= 900 && totalRemaining > 0) {
+                    document.body.classList.add('extraction-warning');
+                    document.getElementById('warningLabel').style.display = 'inline';
+                    document.getElementById('totalTimerBox').style.borderColor = '#ff0000';
+                } else if (totalRemaining === 0) {
+                    document.body.classList.remove('extraction-warning');
+                }
 
                 let th = Math.floor(totalRemaining / 3600);
                 let tm = Math.floor((totalRemaining % 3600) / 60);
@@ -452,207 +367,165 @@
                 document.getElementById('taskVal').innerText = `${String(task_m).padStart(2,'0')}:${String(task_s).padStart(2,'0')}`;
 
                 if (taskRemaining === 0 && totalRemaining > 0) {
-                    alert(`🔔 突击结束：当前任务 [${taskName}] 时间到！请转换阵地。`);
+                    alert(`🔔 阶段任务 [${taskName}] 已达成！请调理下一阶段。`);
                     taskRemaining = -1; 
                 }
                 if (totalRemaining === 0) {
                     clearInterval(dualInterval);
-                    alert("🌃 警告：今日总作战体力已耗尽，请立即关机休息！");
+                    alert("🚨 警告：今日脑力已耗尽！系统将强制进入休眠状态！");
                 }
             }, 1000);
         });
 
-        // ========== 模块 B：核心漏洞歼灭系统 (4.0 档案袋逻辑) ==========
+        // ========== 模块 B：漏洞净化与动态摧毁 ==========
+        let purifiedCounter = parseInt(localStorage.getItem('purifiedDaily') || '0');
+        document.getElementById('purifiedCount').innerText = `今日已净化: ${purifiedCounter}`;
+
         function renderBugRecords() {
             let bugRecords = JSON.parse(localStorage.getItem('bugRecords') || '[]');
             const list = document.getElementById('bugRecordsList');
             list.innerHTML = '';
-
             if (bugRecords.length === 0) {
-                list.innerHTML = '<div style="color: #888; padding: 15px;">当前终端数据库无漏洞记录。</div>';
+                list.innerHTML = '<div style="color: #444; padding: 10px;">系统纯净，暂无遗留威胁。</div>';
                 return;
             }
-
             bugRecords.forEach((record, index) => {
                 const div = document.createElement('div');
                 div.className = 'bug-record-item';
                 div.innerHTML = `
-                    <button class="del-btn" onclick="window.deleteBug(${index})">[ 销毁 ]</button>
-                    <div class="bug-record-subject">[${index + 1}] ${record.subject}</div>
+                    <button class="del-btn" onclick="window.destroyBug(${index}, this)">[ 净化 ]</button>
+                    <div class="bug-record-subject">[ 威胁 ${index + 1} ] ${record.subject}</div>
                     <div class="bug-record-content">${record.content}</div>
-                    <div class="bug-record-time">${record.timestamp} ${record.hasImage ? '<span style="color:#ffaa00;">📸 (附证据图)</span>' : ''}</div>
+                    <div class="bug-record-time">${record.timestamp} ${record.hasImage ? '📸' : ''}</div>
                 `;
                 list.appendChild(div);
             });
         }
 
-        window.deleteBug = function(index) {
-            if(confirm("⚠ 警告：确认要永久销毁这条漏洞记录吗？此操作不可逆。")) {
-                let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-                records.splice(index, 1);
-                localStorage.setItem('bugRecords', JSON.stringify(records));
-                renderBugRecords();
+        // 超酷的动效净化逻辑
+        window.destroyBug = function(index, btnElement) {
+            if(confirm("⚠ 执行漏洞净化程序？")) {
+                const itemBox = btnElement.closest('.bug-record-item');
+                itemBox.classList.add('destroying'); // 触发碎裂发光动画
+                
+                // 动画演完后，真删数据
+                setTimeout(() => {
+                    let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
+                    records.splice(index, 1);
+                    localStorage.setItem('bugRecords', JSON.stringify(records));
+                    
+                    // 更新战果
+                    purifiedCounter++;
+                    localStorage.setItem('purifiedDaily', purifiedCounter);
+                    document.getElementById('purifiedCount').innerText = `今日已净化: ${purifiedCounter}`;
+                    
+                    renderBugRecords();
+                }, 500); // 对应 CSS 动画时间
             }
         };
 
-        // 核心：4.0 保存错题逻辑 (修复完毕)
+        // 核心：保存并打通 GitHub (集成图片拦截补丁)
         document.getElementById('saveBugBtn').addEventListener('click', async function() {
             const subject = document.getElementById('bugSubject').value;
-            const content = document.getElementById('bugContent').value.trim(); // 漏洞分析
-            const summary = document.getElementById('bugSummary').value.trim(); // 题目数据
+            const content = document.getElementById('bugContent').value.trim();
+            const summary = document.getElementById('bugSummary').value.trim();
             const file = selectedBugFile;
 
-            if (!content) return alert('❌ 指挥官，必须填写漏洞详细分析！');
+            if (!content) return alert('❌ 拦截：病理分析不可为空！');
 
-            // 抓取勾选的模型标签
-            const selectedTags = Array.from(document.querySelectorAll('input[name="m-tag"]:checked'))
-                                      .map(cb => cb.value);
-
+            const selectedTags = Array.from(document.querySelectorAll('input[name="m-tag"]:checked')).map(cb => cb.value);
             const dateStr = new Date().toISOString().split('T')[0];
             const timestamp = Date.now();
             const baseName = `${dateStr}-${subject}-${timestamp}`;
 
-            // A. 存入本地
+            // A. 本地存入隔离区
             let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-            records.unshift({ subject, content, timestamp: new Date().toLocaleString(), hasImage: !!file });
+            records.unshift({ subject, content, timestamp: new Date().toLocaleTimeString(), hasImage: !!file });
             localStorage.setItem('bugRecords', JSON.stringify(records));
             renderBugRecords();
 
-            // B. 同步至 GitHub
+            // B. 穿透至云端
             document.getElementById('saveBugBtn').disabled = true;
-            logMsg('bugStatusText', '🔄 正在生成 Gemini 适配档案袋...', 'loading');
+            logMsg('bugStatus', '🔄 正在执行深层档案缝合...', 'info');
 
-            // 动作 1：上传图片
             let imageExt = "";
             if (file) {
-                imageExt = file.name.substring(file.name.lastIndexOf('.'));
-                await executeGitHubUpload(file, `错题库/${baseName}${imageExt}`, 'bugStatusText');
+                if (file.name.includes('.')) imageExt = file.name.substring(file.name.lastIndexOf('.'));
+                const imgSuccess = await executeGitHubUpload(file, `错题库/${baseName}${imageExt}`, 'bugStatus');
+                
+                // 【关键防骗补丁】照片传败了直接断开，不生成垃圾 md
+                if (!imgSuccess) {
+                    document.getElementById('saveBugBtn').disabled = false;
+                    return alert('❌ 照片穿透失败！网络波动或体积过载。请使用截图上传！');
+                }
             }
 
-            // 动作 2：生成并上传 Markdown
-            const mdText = `
-# 朔夜漏洞复盘 - ${subject}
-
-## 1. 题目关键数据 (Gemini 识别补丁)
-- **模型特征**：${selectedTags.length > 0 ? selectedTags.join(' | ') : '未勾选特定模型'}
-- **数据补充**：${summary || '未提供额外数据'}
-
-## 2. 指挥官漏洞分析
-> ${content}
-
-## 3. 证据图片
-![证据](./${baseName}${imageExt})
-
----
-*由朔夜终端 4.0 自动生成*`;
+            const mdText = `# 朔夜漏洞复盘 - ${subject}\n\n## 1. 视觉补丁 (Gemini 识别锚点)\n- **模型**：${selectedTags.length > 0 ? selectedTags.join(' | ') : '未定'}\n- **关键数据**：${summary || '无'}\n\n## 2. 病理分析\n> ${content}\n\n## 3. 现场快照\n![证据](./${baseName}${imageExt})\n\n---\n*朔夜 OS v4.5 自动归档*`;
 
             const mdBlob = new Blob([mdText], { type: 'text/markdown' });
-            const mdFile = new File([mdBlob], `${baseName}.md`);
-            await executeGitHubUpload(mdFile, `错题库/${baseName}.md`, 'bugStatusText');
+            await executeGitHubUpload(new File([mdBlob], `${baseName}.md`), `错题库/${baseName}.md`, 'bugStatus');
 
-            // 清理界面
-            document.getElementById('bugContent').value = '';
-            document.getElementById('bugSummary').value = ''; 
-            selectedBugFile = null;
-            document.getElementById('bugFileInput').value = '';
+            // 清理
+            document.getElementById('bugContent').value = ''; document.getElementById('bugSummary').value = ''; 
+            selectedBugFile = null; document.getElementById('bugFileInput').value = '';
             document.getElementById('bugFileInfo').style.display = 'none';
             document.querySelectorAll('input[name="m-tag"]').forEach(el => el.checked = false);
             document.getElementById('saveBugBtn').disabled = false;
-
-            alert('✅ 4.0 图文双生档案已同步至云端！');
         });
 
-        // 导出功能
-        document.getElementById('exportBugBtn').addEventListener('click', function() {
-            let records = JSON.parse(localStorage.getItem('bugRecords') || '[]');
-            if (records.length === 0) return alert('❌ 本地数据库为空');
-            let txt = '=== 朔夜核心终端漏洞提取 ===\n\n' + records.map(x => `【${x.subject}】\n内容：${x.content}\n时间：${x.timestamp}\n`).join('\n---\n');
-            navigator.clipboard.writeText("Gemini，请帮我分析以下我汇总的漏洞情报：\n\n" + txt)
-                .then(() => alert('✓ 情报已复制到剪贴板，请直接粘贴发送给 Gemini！'))
-                .catch(() => alert('❌ 复制失败，请重试'));
-        });
-
-        // ========== 模块 C：资料库纯文件上传 ==========
+        // ========== 模块 C：资料归档 ==========
         document.getElementById('uploadDocBtn').addEventListener('click', async function() {
             const subject = document.getElementById('docSubject').value;
             const name = document.getElementById('docName').value.trim();
             const summary = document.getElementById('docSummary').value.trim(); 
             const file = selectedDocFile;
 
-            if (!name) return alert('❌ 请输入资料名称！');
-            if (!file) return alert('❌ 请选择要归档的资料文件！');
+            if (!name || !file) return alert('❌ 名称和文件均为必填物资！');
 
-            document.getElementById('docStatusText').innerHTML = '';
             document.getElementById('uploadDocBtn').disabled = true;
-            logMsg('docStatusText', '🔄 正在执行 4.0 档案归档程序...', 'loading');
+            logMsg('docStatusContainer', '🔄 正在加密上传战备物资...', 'info');
 
             const dateStr = new Date().toISOString().split('T')[0];
             const ext = file.name.substring(file.name.lastIndexOf('.'));
             
-            // 1. 上传原始资料文件
-            const filePath = `资料库/${dateStr}-${subject}-${name}${ext}`;
-            await executeGitHubUpload(file, filePath, 'docStatusText');
+            await executeGitHubUpload(file, `资料库/${dateStr}-${subject}-${name}${ext}`, 'docStatusContainer');
 
-            // 2. 自动生成并上传对应的 Markdown 索引
-            const mdText = `# 战备资料索引 - ${name}\n\n## 1. 归档信息\n- 学科：${subject}\n- 时间：${new Date().toLocaleString()}\n\n## 2. 核心摘要 (Gemini 识别锚点)\n${summary || '未提供摘要'}\n\n## 3. 文件链接\n[查看原始资料](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
-            const mdBlob = new Blob([mdText], { type: 'text/markdown' });
-            const mdFile = new File([mdBlob], `${dateStr}-${subject}-${name}.md`);
-            
-            await executeGitHubUpload(mdFile, `资料库/${dateStr}-${subject}-${name}.md`, 'docStatusText');
+            const mdText = `# 战备资料 - ${name}\n\n## 1. 归档：${subject} | ${new Date().toLocaleDateString()}\n\n## 2. 核心情报 (Gemini 检索词)\n${summary || '无摘要'}\n\n## 3. 直接访问\n[点此提取原始物资](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
+            await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${dateStr}-${subject}-${name}.md`), `资料库/${dateStr}-${subject}-${name}.md`, 'docStatusContainer');
 
-            // 清理界面
-            selectedDocFile = null;
-            document.getElementById('docName').value = '';
-            document.getElementById('docSummary').value = ''; 
-            document.getElementById('docFileInput').value = '';
-            document.getElementById('docFileInfo').style.display = 'none';
+            selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; 
+            document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none';
             document.getElementById('uploadDocBtn').disabled = false;
-            alert('✅ 资料与 Gemini 适配索引已同步归档！');
         });
 
-        // ========== 核心 GitHub 穿透引擎 ==========
+        // ========== 核心穿透引擎 (已修复 URL 斜杠 Bug) ==========
         async function executeGitHubUpload(file, targetPath, logContainerId) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = async () => {
                     const base64Str = reader.result.split(',')[1];
+                    // 【关键修复】正确处理文件夹斜杠，防止照片丢弃
+                    const urlPath = targetPath.split('/').map(encodeURIComponent).join('/');
                     try {
-                        const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${encodeURIComponent(targetPath)}`, {
+                        const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${urlPath}`, {
                             method: 'PUT',
-                            headers: {
-                                'Authorization': `token ${CONFIG.token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: `终端自动部署: ${targetPath}`,
-                                content: base64Str
-                            })
+                            headers: { 'Authorization': `token ${CONFIG.token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message: `朔夜终端部署: ${targetPath}`, content: base64Str })
                         });
                         
                         if (res.ok) {
-                            logMsg(logContainerId, `✅ 数据穿透成功！已入库: ${targetPath}`, 'success');
+                            logMsg(logContainerId, `✅ 穿透成功: ${targetPath}`, 'success'); resolve(true);
                         } else {
-                            const err = await res.json();
-                            logMsg(logContainerId, `❌ 遭到防火墙拦截: ${err.message}`, 'error');
+                            logMsg(logContainerId, `❌ 防火墙拦截`, 'error'); resolve(false);
                         }
-                    } catch (error) {
-                        logMsg(logContainerId, `❌ 网络连接中断: ${error.message}`, 'error');
-                    }
-                    resolve();
+                    } catch (error) { resolve(false); }
                 };
-                reader.onerror = () => {
-                    logMsg(logContainerId, '❌ 文件读取失败', 'error');
-                    resolve();
-                };
+                reader.onerror = () => resolve(false);
             });
         }
 
-        // 初始化
-        window.addEventListener('load', () => {
-            renderBugRecords();
-            console.log('🚀 朔夜核心终端 4.0 终极版已就绪');
-        });
+        window.addEventListener('load', () => { renderBugRecords(); });
     </script>
 </body>
 </html>
