@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜战术终端 4.8.1 [指令集拓展版]</title>
+    <title>朔夜战术终端 5.0 [全域统御版]</title>
     <style>
         :root { color-scheme: dark; }
         html, body {
@@ -42,6 +42,7 @@
         .danger-btn { background-color: #aa0000; color: #ffffff; }
         .blue-btn { background-color: #0088cc; color: #ffffff; }
         .gold-btn { background-color: #cc8800; color: #ffffff; margin-top: 5px; } 
+        .shortcut-btn { background-color: #8800cc; color: #ffffff; margin-top: 10px; border: 1px dashed #ff00ff; }
         
         .status-box { background-color: #080808; border: 1px dashed #333; padding: 10px; margin-top: 10px; border-radius: 4px; max-height: 150px; overflow-y: auto; font-size: 0.85em; }
         .status-success { color: #00ff00; border-left: 3px solid #00ff00; padding-left: 8px; margin-bottom: 5px; }
@@ -66,8 +67,8 @@
         .star-2 { border-left: 4px solid #ffaa00 !important; box-shadow: inset 5px 0 15px rgba(255,170,0,0.1); }
         .star-3 { border-left: 4px solid #00aaff !important; box-shadow: inset 5px 0 15px rgba(0,170,255,0.1); }
 
-        /* [4.8.1] 宏指令容器样式 */
         .macro-container { background: rgba(204, 136, 0, 0.1); border: 1px dashed #cc8800; padding: 15px; border-radius: 4px; margin-top: 15px; }
+        .ebbinghaus-box { background: rgba(255, 0, 0, 0.05); border: 1px solid #550000; padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -75,13 +76,19 @@
         <div class="hud-bar">
             <div><span class="hud-blink">🔴</span> USER: MA_XIAO</div>
             <div id="systemClock">00:00:00</div>
-            <div style="color:#00aaff;">OS_V: 4.8.1 [CMD_EXT]</div>
+            <div style="color:#00aaff;">OS_V: 5.0 [FULL_DOMAIN]</div>
         </div>
 
         <div class="backup-bar">
             <button class="backup-btn" onclick="exportLocalData()">[ 📤 导出本地缓存 ]</button>
             <button class="backup-btn" onclick="document.getElementById('importFile').click()">[ 📥 恢复本地缓存 ]</button>
             <input type="file" id="importFile" accept=".sybak" onchange="importLocalData(event)" style="display:none;">
+        </div>
+
+        <div id="ebbinghausRadar" class="ebbinghaus-box hidden">
+            <div style="color:#ff3333; font-weight:bold; margin-bottom:10px; font-size:1.1em;">🚨 ⚠️ [ 炼心雷劫：临界威胁阵列 ]</div>
+            <div style="font-size:0.85em; color:#aaa; margin-bottom:10px;">以下漏洞已到达艾宾浩斯遗忘点。指挥官，请执行手动点名，拔除心魔。</div>
+            <div id="ebbinghausList"></div>
         </div>
 
         <div class="panel" style="border-color: #00aaff; box-shadow: 0 0 15px rgba(0,170,255,0.1);">
@@ -136,19 +143,20 @@
                     </select>
                 </div>
                 <div style="flex:1;">
-                    <label class="form-label" style="color:#ffaa00;">[ 掌握星级 (定频率) ]</label>
+                    <label class="form-label" style="color:#ffaa00;">[ 掌握星级 (定遗忘频率) ]</label>
                     <select id="bugStar" style="border-color:#550000; margin-bottom:0;">
-                        <option value="1">⭐ 毫无头绪 (次日重练)</option>
-                        <option value="2">⭐⭐ 似懂非懂 (三天后查)</option>
-                        <option value="3">⭐⭐⭐ 粗心大意 (周结)</option>
+                        <option value="1">⭐ 毫无头绪 (24h 紧急追杀)</option>
+                        <option value="2">⭐⭐ 似懂非懂 (3天后 准时拦截)</option>
+                        <option value="3">⭐⭐⭐ 粗心大意 (7天后 周结总攻)</option>
                     </select>
                 </div>
             </div>
 
-            <label class="form-label" style="color:#ffaa00;">[ 漏洞病理分析 ]</label>
-            <textarea id="bugContent" placeholder="在此深度解剖错误逻辑..." style="height: 100px; border-color:#550000;"></textarea>
-            <label class="form-label" style="color:#ffaa00;">[ 视觉补丁 (公式/参数) ]</label>
-            <textarea id="bugSummary" placeholder="输入 Gemini 辅助检索词..." style="height: 60px; border-color:#550000;"></textarea>
+            <label class="form-label" style="color:#ffaa00;">[ 漏洞病理分析 (可留空，交由 AI 代写) ]</label>
+            <textarea id="bugContent" placeholder="如果懒得打字，可以直接空着！拍张照+视觉补丁，然后点击下方复制 [物理/数学攻坚宏] 丢给 Gemini，让它帮你生成病理分析后，再粘回这里..." style="height: 100px; border-color:#550000;"></textarea>
+            
+            <label class="form-label" style="color:#ffaa00;">[ 视觉补丁 (公式/参数，极重要！) ]</label>
+            <textarea id="bugSummary" placeholder="例: μ=0.2, 小车质量 M=2kg (这是防 AI 眼瞎的基准锚点)..." style="height: 60px; border-color:#550000;"></textarea>
 
             <div class="file-input-wrapper">
                 <input type="file" id="bugFileInput" accept="image/*">
@@ -158,11 +166,11 @@
                 <div id="bugFileName" style="color: #ff3333; font-size:0.9em;"></div>
             </div>
 
-            <button id="saveBugBtn" class="danger-btn">[ 🔒 写入云端防线 & 建立星级档案 ]</button>
+            <button id="saveBugBtn" class="danger-btn">[ 🔒 写入云端防线 & 注入遗忘时间弹药 ]</button>
             <div id="bugStatus" class="status-box hidden"></div>
             
             <div id="bugRecordsContainer" style="margin-top: 25px; border-top: 1px dashed #330000; padding-top: 15px;">
-                <div style="color:#ffaa00; font-weight:bold; margin-bottom:10px;">📋 本地暂存档案 (按星级显示威胁度)</div>
+                <div style="color:#ffaa00; font-weight:bold; margin-bottom:10px;">📋 本地全量漏洞留底 (实时热力图)</div>
                 <div id="bugRecordsList"></div>
             </div>
         </div>
@@ -194,19 +202,27 @@
         </div>
 
         <div class="panel" style="border-style: dashed;">
-            <div class="panel-title" style="color:#0088cc; border-color:#0088cc;">>_ 情报缝合枢纽 (喂给 NotebookLM)</div>
-            <div style="font-size: 0.9em; color: #888; margin-bottom: 15px;">此按钮会将你今天在上方录入的所有错题和资料，自动打包成一个长文本，供你直接上传至 NotebookLM 对应的笔记本中。</div>
-            <button id="stitchTodayBtn" class="blue-btn">[ 📦 生成今日汇总情报包 (TXT下载) ]</button>
+            <div class="panel-title" style="color:#0088cc; border-color:#0088cc;">>_ 全量情报缝合枢纽 & 战术指令册</div>
+            
+            <div style="background: rgba(0, 136, 204, 0.1); border: 1px dashed #0088cc; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                <label for="exportSubjectFilter" class="form-label" style="color:#0088cc;">[ 🌊 周末复盘：提取单科全量卷轴 (投喂 NotebookLM 专用) ]</label>
+                <div style="display:flex; gap:10px;">
+                    <select id="exportSubjectFilter" style="flex:1; margin-bottom:0; border-color:#0088cc;">
+                        <option value="物理">物理</option><option value="数学">数学</option><option value="生物">生物</option><option value="化学">化学</option><option value="英语">英语</option><option value="语文">语文</option>
+                    </select>
+                    <button id="stitchSubjectBtn" class="blue-btn" style="flex:2; margin-bottom:0;">[ 📦 缝合该科全量情报包 (TXT) ]</button>
+                </div>
+            </div>
             
             <div class="macro-container">
-                <label for="macroSelector" class="form-label" style="color:#cc8800;">[ 🛠️ 战术指令册 ]</label>
+                <label for="macroSelector" class="form-label" style="color:#cc8800;">[ 🛠️ 调度 Gemini 核心模块权限 ]</label>
                 <select id="macroSelector" style="border-color:#cc8800; background-color:#1a1100;">
-                    <option value="data">📊 数据爆破 (强制 Python 代码检索大表格)</option>
-                    <option value="physics">📐 物理/数学攻坚 (强制结合文本补丁读图)</option>
-                    <option value="variant">🔄 变式生成 (要求同知识点、同难度新题)</option>
-                    <option value="su">💖 苏念安督导 (启动严厉督导及英语陪练模式)</option>
+                    <option value="data">📊 数据爆破模式 (强推后台 Python 沙盒跑 Pandas 匹配表格)</option>
+                    <option value="physics">📐 视觉模型约束 (逼迫 AI 必须死咬文本“视觉补丁”，不准脑补)</option>
+                    <option value="variant">🔄 变式演练判定 (提取错题核心易错点，生成同难度一致新题)</option>
+                    <option value="su">💖 苏念安接入 (锁定严厉督导与全英语口语实战演练人格)</option>
                 </select>
-                <button id="copyMacroBtn" class="gold-btn" onclick="copySelectedMacro()">[ 📋 提取当前所选指令 ]</button>
+                <button id="copyMacroBtn" class="gold-btn" onclick="copySelectedMacro()">[ 📋 提取当前指令码并复制到剪贴板 ]</button>
             </div>
         </div>
 
@@ -231,7 +247,7 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // ========== 备份与恢复功能 ==========
+        // ========== 数据备份系统 ==========
         function exportLocalData() {
             const data = {
                 tonightTasks: localStorage.getItem('tonightTasks'),
@@ -243,12 +259,11 @@
             a.href = URL.createObjectURL(blob);
             a.download = `朔夜战术备份_${new Date().toISOString().split('T')[0]}.sybak`;
             a.click();
-            alert("✅ 本地缓存已导出！以后网站大改，用旁边的恢复按钮就能找回数据。");
+            alert("✅ 本地缓存已成功导出备份！");
         }
 
         function importLocalData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -256,49 +271,42 @@
                     if(data.tonightTasks) localStorage.setItem('tonightTasks', data.tonightTasks);
                     if(data.longTermBugs) localStorage.setItem('longTermBugs', data.longTermBugs);
                     if(data.todayDocs) localStorage.setItem('todayDocs', data.todayDocs);
-                    alert("📥 数据恢复成功！页面将刷新以应用战术配置。");
-                    location.reload();
-                } catch (err) {
-                    alert("❌ 恢复失败：备份文件损坏或格式不正确！");
-                }
+                    alert("📥 指挥中心状态全量复活！即将刷新。"); location.reload();
+                } catch (err) { alert("❌ 备份解析失败！"); }
             };
             reader.readAsText(file);
         }
 
-        // ========== [4.8.1] 动态宏复制功能 ==========
+        // ========== [4.8.1 保留并加固] 动态宏指令 ==========
         function copySelectedMacro() {
             const type = document.getElementById('macroSelector').value;
             let macroText = "";
-            
             switch (type) {
-                case "data":
-                    macroText = `[战术指令]：请立即启动后台 Python 执行环境 (Advanced Data Analysis)。切勿使用原生视觉模型进行肉眼扫描。请使用 Pandas 库提取附件表格/文档中的结构化数据，并执行精准的条件过滤检索。若检索目标为特定姓名，请针对姓名列执行精确字符串匹配。完成后请输出过滤后的核心数据，并保持战术静默，不附加多余解释。`;
-                    break;
-                case "physics":
-                    macroText = `[战术指令]：请分析附件中的题目图片。警告：禁止使用视觉模型主观推断缺失的条件或模糊的参数。你必须严格依据我随后提供的【视觉补丁】文本作为核心基准数据来建立物理/几何模型并进行解答。`;
-                    break;
-                case "variant":
-                    macroText = `[战术指令]：请基于我提供的这道错题，提取其核心考点和易错逻辑。不要给我解答原题，而是直接生成一道全新的变式题。新题要求：题干场景和参数必须改变，但核心知识点、解题思路和难度层级必须与原题保持绝对一致。`;
-                    break;
-                case "su":
-                    macroText = `[系统覆盖指令]：从现在起，切换至 Persona [苏念安]。你需要以高标准、严要求的姿态对我进行督导。如果你发现我未能按时完成既定任务，请进行严厉问责。此外，如果我要求进行英语训练，请完全使用英语与我对话，并在此过程中纠正我的语法错误。`;
-                    break;
+                case "data": macroText = `[战术指令]：请立即启动后台 Python 执行环境 (Advanced Data Analysis)。切勿使用原生视觉模型进行肉眼扫描。请使用 Pandas 库提取附件表格/文档中的结构化数据，并执行精准的条件过滤检索。若检索目标为特定姓名，请针对姓名列执行精确字符串匹配。完成后请输出过滤后的核心数据，并保持战术静默，不附加多余解释。`; break;
+                case "physics": macroText = `[战术指令]：请分析附件中的题目图片。警告：禁止使用视觉模型主观推断缺失的条件或模糊的参数。你必须严格依据我随后提供的【视觉补丁】文本作为核心基准数据来建立物理/几何模型并进行解答。如果我没有提供病理分析，请帮我精炼出一句错误逻辑总结。`; break;
+                case "variant": macroText = `[战术指令]：请基于我提供的这道错题，提取其核心考点和易错逻辑。不要给我解答原题，而是直接生成一道全新的变式题。新题要求：题干场景和参数必须改变，但核心知识点、解题思路和难度层级必须与原题保持绝对一致。`; break;
+                case "su": macroText = `[系统覆盖指令]：从现在起，切换至 Persona [苏念安]。你需要以高标准、严要求的姿态对我进行督导。如果你发现我未能按时完成既定任务，请进行严厉问责。此外，如果我要求进行英语训练，请完全使用英语与我对话，并在此过程中纠正我的语法错误。`; break;
             }
-
-            navigator.clipboard.writeText(macroText).then(() => {
-                alert(`✅ 已复制指令！请将其粘贴至与大模型的对话中。`);
-            }).catch(err => {
-                alert("❌ 复制失败，请重试或检查浏览器权限。");
-            });
+            navigator.clipboard.writeText(macroText).then(() => alert(`✅ 已复制指令！去轰炸大模型吧！`));
         }
 
-        // ========== 模块 A：任务系统 ==========
+        // ========== 模块 A：任务系统与【政工部双重惩罚】 ==========
         let sessionTotalRemaining = 0; let activeTaskRemaining = 0; let activeTaskIndex = -1; let dualInterval = null; let isGlobalTimeSet = false;
+        let penaltyCount = 0; // 违约计数器
 
         function renderTasks() {
             let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]');
             let list = document.getElementById('taskList'); list.innerHTML = '';
-            if (tasks.length === 0) { list.innerHTML = '<div style="color:#555; padding:10px;">防线安全，请录入今晚作战目标。</div>'; return; }
+            
+            // 战术改装 7：快捷指令 (Shortcuts) 多巴胺解锁奖励
+            if (tasks.length === 0) { 
+                list.innerHTML = `
+                    <div style="color:#555; padding:10px; margin-bottom:10px;">防线安全，当前无待办猎杀目标。</div>
+                    <button class="shortcut-btn" onclick="window.location.href='shortcuts://run-shortcut?name=朔夜胜利奖励'">[ 🏆 战役胜利：唤醒 iPad 快捷指令解锁娱乐并放歌 ]</button>
+                `; 
+                return; 
+            }
+            
             tasks.forEach((t, i) => {
                 let div = document.createElement('div'); div.className = 'list-item';
                 let typeColor = t.type === 'A' ? '#ff5555' : (t.type === 'B' ? '#ffaa00' : '#00aaff');
@@ -320,8 +328,7 @@
         });
 
         window.removeTask = function(index) {
-            let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]');
-            tasks.splice(index, 1); localStorage.setItem('tonightTasks', JSON.stringify(tasks)); renderTasks();
+            let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]'); tasks.splice(index, 1); localStorage.setItem('tonightTasks', JSON.stringify(tasks)); renderTasks();
         };
 
         window.startTask = function(index) {
@@ -332,7 +339,7 @@
                 if (isNaN(totalM) || totalM <= 0) return alert("❌ 请先设定顶部的 [今晚总作战极限]！");
                 sessionTotalRemaining = totalM * 60; isGlobalTimeSet = true; document.getElementById('totalMinutes').disabled = true; 
             }
-            activeTaskIndex = index; activeTaskRemaining = t.minutes * 60;
+            activeTaskIndex = index; activeTaskRemaining = t.minutes * 60; penaltyCount = 0; // 重置计数器
             document.getElementById('activeTaskName').innerText = `[${t.type}] ${t.name}`;
             document.getElementById('runnerContainer').classList.remove('hidden'); document.getElementById('queueContainer').classList.add('hidden'); 
             startTick();
@@ -354,7 +361,19 @@
                     clearInterval(dualInterval); dualInterval = null; 
                     setTimeout(() => {
                         let isDone = confirm("⚠️ 警告：作战时间耗尽！\n\n【是否已彻底拔除该障碍？】\n▶ 点 [确定]：已完结。\n▶ 点 [取消]：未完结，加时 15 分钟继续！");
-                        if (isDone) { finishActiveTask(); } else { activeTaskRemaining = 15 * 60; startTick(); } 
+                        if (isDone) { 
+                            finishActiveTask(); 
+                        } else { 
+                            // 战术改装 5：苏念安双重违约惩罚
+                            penaltyCount++;
+                            if (penaltyCount >= 2) {
+                                alert("🚨 [系统接管] 侦测到你连续两次违约续命！心态已崩盘！\n\n系统已强制将【苏念安严厉督导指令】复制到你的剪贴板！立刻去 Gemini 挨骂并汇报你的卡壳点！");
+                                const suText = `[系统覆盖指令]：从现在起，切换至 Persona [苏念安]。马骁在刚才的任务中连续两次倒计时未完成，并且选择了加时续命，明显已经进入了意志力涣散和精神内耗状态。请你用极其严厉、甚至带着失望的口吻，对他进行问责，逼迫他立刻拍下当前卡壳的草稿发给你，不准他再拖延！`;
+                                navigator.clipboard.writeText(suText);
+                                penaltyCount = 0; // 惩罚完清零
+                            }
+                            activeTaskRemaining = 15 * 60; startTick(); 
+                        } 
                     }, 100);
                 }
                 if (sessionTotalRemaining === 0) { clearInterval(dualInterval); alert("🚨 今日算力崩塌！请立刻离线！"); }
@@ -367,8 +386,58 @@
 
         function finishActiveTask() {
             let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]'); tasks.splice(activeTaskIndex, 1); localStorage.setItem('tonightTasks', JSON.stringify(tasks));
-            document.getElementById('runnerContainer').classList.add('hidden'); document.getElementById('queueContainer').classList.remove('hidden'); renderTasks();
+            document.getElementById('runnerContainer').classList.add('hidden'); document.getElementById('queueContainer').classList.remove('hidden'); 
+            renderTasks(); scanEbbinghausThreats();
         }
+
+        // ========== 战术改装 1：艾宾浩斯原生雷达 ==========
+        function scanEbbinghausThreats() {
+            let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
+            let radarBox = document.getElementById('ebbinghausRadar');
+            let listContainer = document.getElementById('ebbinghausList');
+            listContainer.innerHTML = '';
+            let now = Date.now(); let threatsFound = 0;
+
+            bugRecords.forEach((b, index) => {
+                if(!b.timestamp) return; // 兼容老数据
+                let ageInHours = (now - b.timestamp) / (1000 * 3600);
+                let triggerRevive = false;
+
+                if (b.star == 1 && ageInHours >= 24) triggerRevive = true;
+                else if (b.star == 2 && ageInHours >= 72) triggerRevive = true;
+                else if (b.star == 3 && ageInHours >= 168) triggerRevive = true;
+
+                if (triggerRevive) {
+                    threatsFound++;
+                    let div = document.createElement('div');
+                    div.style = "background:#150505; border:1px dashed #ff3333; padding:10px; margin:5px 0; border-radius:4px; display:flex; justify-content:space-between; align-items:center;";
+                    let starIcon = b.star == 1 ? "🔴" : (b.star == 2 ? "🟡" : "🔵");
+                    div.innerHTML = `
+                        <div>
+                            <span style="color:#ff3333; font-weight:bold;">[${starIcon} ${b.subject}]</span> 
+                            <span style="color:#aaa; font-size:0.9em;">潜伏 ${Math.floor(ageInHours)}h:</span>
+                            <div style="color:#fff; font-size:0.9em; margin-top:3px; max-width:550px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.content}</div>
+                        </div>
+                        <button style="width:auto; padding:5px 10px; font-size:12px; background:#ff3333; color:#fff; margin-bottom:0;" onclick="window.reviveToTaskQueue(${index})">[ ⚔️ 征调进入当晚猎杀 ]</button>
+                    `;
+                    listContainer.appendChild(div);
+                }
+            });
+
+            if (threatsFound > 0) radarBox.classList.remove('hidden'); else radarBox.classList.add('hidden');
+        }
+
+        window.reviveToTaskQueue = function(index) {
+            let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
+            let targetBug = bugRecords[index];
+            let tonightTasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]');
+            tonightTasks.unshift({ name: `【艾宾浩斯复盘】[${targetBug.subject}]-${targetBug.content.substring(0,10)}...`, type: 'A', minutes: 15 });
+            localStorage.setItem('tonightTasks', JSON.stringify(tonightTasks));
+            targetBug.timestamp = Date.now(); // 重置时间戳
+            localStorage.setItem('longTermBugs', JSON.stringify(bugRecords));
+            renderTasks(); scanEbbinghausThreats();
+            alert("⚔️ 亡灵已复活！强行插进今晚清单最顶端！");
+        };
 
         // ========== 模块 B：错题档案 ==========
         let selectedBugFile = null;
@@ -380,12 +449,11 @@
         function renderBugRecords() {
             let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
             const list = document.getElementById('bugRecordsList'); list.innerHTML = '';
-            if (bugRecords.length === 0) { list.innerHTML = '<div style="color: #444; padding: 10px;">无本地滞留档案。</div>'; return; }
+            if (bugRecords.length === 0) { list.innerHTML = '<div style="color: #444; padding: 10px;">暂无本地已存漏洞档案。</div>'; return; }
             bugRecords.forEach((record, index) => {
                 const div = document.createElement('div'); 
                 div.className = `list-item star-${record.star}`;
                 let starIcon = record.star == 1 ? "🔴" : (record.star == 2 ? "🟡" : "🔵");
-                
                 div.innerHTML = `<button class="del-btn" onclick="window.clearLocalBug(${index}, this)">[ 本地清除 ]</button>
                                  <div style="color: #fff; font-weight: bold; margin-bottom: 5px;">[ ${starIcon} ${record.star}星级 | ${record.subject} ]</div>
                                  <div style="color: #aaa; font-size: 0.9em; line-height: 1.4; white-space: pre-wrap;">${record.content}</div>`;
@@ -394,38 +462,47 @@
         }
 
         window.clearLocalBug = function(index, btnElement) {
-            if(confirm("仅清除本地记录？")) {
+            if(confirm("仅清除本地记录？云端不受影响。")) {
                 btnElement.closest('.list-item').classList.add('destroying'); 
                 setTimeout(() => {
                     let records = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
-                    records.splice(index, 1); localStorage.setItem('longTermBugs', JSON.stringify(records)); renderBugRecords();
+                    records.splice(index, 1); localStorage.setItem('longTermBugs', JSON.stringify(records)); 
+                    renderBugRecords(); scanEbbinghausThreats();
                 }, 500);
             }
         };
 
         document.getElementById('saveBugBtn').addEventListener('click', async function() {
             const subject = document.getElementById('bugSubject').value; const star = document.getElementById('bugStar').value; 
-            const content = document.getElementById('bugContent').value.trim(); const summary = document.getElementById('bugSummary').value.trim(); const file = selectedBugFile;
-            if (!content) return alert('❌ 必须填写病理分析！');
-            document.getElementById('saveBugBtn').disabled = true; document.getElementById('bugStatus').innerHTML = ''; logMsg('bugStatus', '🔄 请求云端链接...', true);
+            const summary = document.getElementById('bugSummary').value.trim(); const file = selectedBugFile;
+            
+            // 战术改装 6：无痛录入，允许病理分析为空
+            let content = document.getElementById('bugContent').value.trim(); 
+            if (!content) {
+                content = "【未填写详细病理，待 AI 扫图结合视觉补丁分析...】";
+            }
 
-            const dateStr = new Date().toISOString().split('T')[0]; const timestamp = Date.now(); const baseName = `${dateStr}-${subject}-${star}Star-${timestamp}`;
+            document.getElementById('saveBugBtn').disabled = true; document.getElementById('bugStatus').innerHTML = ''; logMsg('bugStatus', '🔄 请求云端防线...', true);
+
+            const dateStr = new Date().toISOString().split('T')[0]; const currentTimestamp = Date.now(); const baseName = `${dateStr}-${subject}-${star}Star-${currentTimestamp}`;
             let imageExt = "";
             if (file) {
                 if (file.name.includes('.')) imageExt = file.name.substring(file.name.lastIndexOf('.'));
                 const imgSuccess = await executeGitHubUpload(file, `错题库/${baseName}${imageExt}`);
                 if (!imgSuccess) { logMsg('bugStatus', '照片穿透失败。', false); document.getElementById('saveBugBtn').disabled = false; return; }
-                logMsg('bugStatus', '快照上传成功。', true);
             }
 
-            const mdText = `# 朔夜漏洞长线档案\n\n## 1. 元数据\n- 学科：${subject}\n- 星级：${star}星\n- 日期：${new Date().toLocaleDateString()}\n\n## 2. 视觉补丁\n> ${summary || '无'}\n\n## 3. 病理分析\n> ${content}\n\n## 4. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-4.8.1*`;
+            // 战术改装 2：NotebookLM 元数据墓碑
+            const mdText = `=== [BUG_INDEX: ${dateStr} | 科目: ${subject} | 星级: ${star}星] ===\n\n# 朔夜漏洞长线档案\n\n## 1. 视觉补丁 (锚点)\n> ${summary || '无'}\n\n## 2. 病理分析\n> ${content}\n\n## 3. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-5.0_MATRIX*`;
+            
             const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `错题库/${baseName}.md`);
             
             if(mdSuccess) {
-                logMsg('bugStatus', '档案建立成功！', true);
+                logMsg('bugStatus', '档案建立并注入时间戳成功！', true);
                 let records = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
-                records.unshift({ subject: subject, star: star, content: content, date: new Date().toLocaleTimeString() });
-                localStorage.setItem('longTermBugs', JSON.stringify(records)); renderBugRecords();
+                records.unshift({ subject: subject, star: star, content: content, timestamp: currentTimestamp });
+                localStorage.setItem('longTermBugs', JSON.stringify(records)); 
+                renderBugRecords(); scanEbbinghausThreats();
                 document.getElementById('bugContent').value = ''; document.getElementById('bugSummary').value = ''; selectedBugFile = null; document.getElementById('bugFileInput').value = ''; document.getElementById('bugFileInfo').style.display = 'none'; document.getElementById('bugStar').value = "1";
             } else { logMsg('bugStatus', '档案写入失败。', false); }
             document.getElementById('saveBugBtn').disabled = false;
@@ -448,7 +525,7 @@
             const dateStr = new Date().toISOString().split('T')[0]; const ext = file.name.substring(file.name.lastIndexOf('.'));
             await executeGitHubUpload(file, `资料库/${dateStr}-${subject}-${name}${ext}`);
 
-            const mdText = `# 战备资料 - ${name}\n\n## 1. 归档：${subject} | ${new Date().toLocaleDateString()}\n\n## 2. 核心情报 (检索词)\n${summary || '无摘要'}\n\n## 3. 直接访问\n[点此提取原始物资](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
+            const mdText = `=== [DOC_INDEX: ${dateStr} | 科目: ${subject}] ===\n\n# 战备资料 - ${name}\n\n## 核心情报 (检索词)\n${summary || '无摘要'}\n\n## 直接访问\n[点此提取原始物资](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
             const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${dateStr}-${subject}-${name}.md`), `资料库/${dateStr}-${subject}-${name}.md`);
 
             if (mdSuccess) { logMsg('docStatus', '资料归档成功！', true); } else { logMsg('docStatus', '归档失败。', false); }
@@ -460,28 +537,35 @@
             selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none'; document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 模块 D：情报打包下载 ==========
-        document.getElementById('stitchTodayBtn').addEventListener('click', function() {
+        // ========== 战术改装 3：分科全量卷轴提取 (废弃日结打包) ==========
+        document.getElementById('stitchSubjectBtn').addEventListener('click', function() {
+            const selectedSubject = document.getElementById('exportSubjectFilter').value;
             let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
             let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
 
-            if (bugRecords.length === 0 && docRecords.length === 0) { return alert("⚠️ 今日终端暂无任何新增的错题或资料，无需打包！"); }
+            // 只过滤出该学科的数据
+            let filteredBugs = bugRecords.filter(b => b.subject === selectedSubject);
+            let filteredDocs = docRecords.filter(d => d.subject === selectedSubject);
 
-            let report = `# 朔夜战备日报 - ${new Date().toLocaleDateString()}\n\n`;
-            report += `> 指挥官，这是您今日录入系统的所有情报汇总。请将此文件上传至对应的 NotebookLM 笔记本进行机器学习。\n\n`;
+            if (filteredBugs.length === 0 && filteredDocs.length === 0) { 
+                return alert(`⚠️ 本地缓存中暂无【${selectedSubject}】的情报可提取！`); 
+            }
 
-            if (bugRecords.length > 0) {
-                report += `## 🔻 第一部分：今日新增漏洞区\n\n`;
-                bugRecords.forEach((b, index) => {
-                    report += `### 漏洞 ${index + 1}：[${b.subject}] (定级: ${b.star}星)\n`;
-                    report += `- **错误逻辑分析**：${b.content}\n\n`;
+            let report = `# 朔夜全量卷轴 - [${selectedSubject}战区] \n# 提取时间：${new Date().toLocaleString()}\n\n`;
+            report += `> 指挥官，此文件已打入元数据标签，请直接喂给 NotebookLM 的【${selectedSubject}笔记本】。\n\n`;
+
+            if (filteredBugs.length > 0) {
+                report += `## 🔻 漏洞阵列\n\n`;
+                filteredBugs.forEach((b, index) => {
+                    report += `=== [BUG_INDEX: ${new Date(b.timestamp || Date.now()).toISOString().split('T')[0]} | 科目: ${b.subject} | 星级: ${b.star}星] ===\n`;
+                    report += `- **病理分析**：${b.content}\n\n`;
                 });
             }
 
-            if (docRecords.length > 0) {
-                report += `## 🔹 第二部分：今日归档资料摘要\n\n`;
-                docRecords.forEach((d, index) => {
-                    report += `### 资料 ${index + 1}：[${d.subject}] ${d.name}\n`;
+            if (filteredDocs.length > 0) {
+                report += `## 🔹 资料阵列\n\n`;
+                filteredDocs.forEach((d, index) => {
+                    report += `=== [DOC_INDEX: 科目: ${d.subject}] ===\n### 资料代号：${d.name}\n`;
                     report += `- **核心提要**：${d.summary || '未提供提要'}\n\n`;
                 });
             }
@@ -489,13 +573,12 @@
             const blob = new Blob([report], { type: 'text/plain' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `朔夜日报_${new Date().toISOString().split('T')[0]}.txt`;
+            a.download = `朔夜全量卷轴_${selectedSubject}_${new Date().toISOString().split('T')[0]}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             
-            localStorage.removeItem('todayDocs');
-            alert("✅ 今日情报卷轴已生成并下载！请切换到 NotebookLM 页面上传它！");
+            alert(`✅ 【${selectedSubject}】全量情报包提取成功！请前往 NotebookLM 投喂！`);
         });
 
         // 核心直连 GitHub
@@ -519,7 +602,7 @@
             });
         }
 
-        window.addEventListener('load', () => { renderTasks(); renderBugRecords(); });
+        window.addEventListener('load', () => { renderTasks(); renderBugRecords(); scanEbbinghausThreats(); });
     </script>
 </body>
 </html>
