@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- [ VERSION_HASH: SY-4.7-FULL_RECOVERY ] -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜战术终端 4.7 [完整双轨版]</title>
+    <title>朔夜战术终端 4.8 [装甲强化版]</title>
     <style>
         :root { color-scheme: dark; }
         html, body {
@@ -23,9 +22,14 @@
         body.extraction-warning { animation: extractionPulse 2s infinite; }
         .container { padding: 20px; max-width: 900px; margin: 0 auto; padding-top: max(20px, env(safe-area-inset-top)); }
         
-        .hud-bar { display: flex; justify-content: space-between; border-bottom: 2px solid #00ff00; padding-bottom: 10px; margin-bottom: 25px; font-size: 0.9em; font-weight: bold; text-shadow: 0 0 5px #00ff00; }
+        .hud-bar { display: flex; justify-content: space-between; border-bottom: 2px solid #00ff00; padding-bottom: 10px; margin-bottom: 10px; font-size: 0.9em; font-weight: bold; text-shadow: 0 0 5px #00ff00; }
         .hud-blink { animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.3; } }
+
+        /* [4.8 升级] 备份控制台样式 */
+        .backup-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 25px; border-bottom: 1px dashed #004400; padding-bottom: 10px; }
+        .backup-btn { background-color: #111; color: #aaa; border: 1px solid #333; padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 3px; font-family: monospace; }
+        .backup-btn:hover { background-color: #333; color: #fff; border-color: #555; }
         
         .panel { border: 1px solid #004400; background-color: rgba(0, 15, 0, 0.6); padding: 20px; margin-bottom: 30px; border-radius: 6px; box-shadow: 0 0 15px rgba(0, 255, 0, 0.05); }
         .panel-title { color: #00ff00; font-weight: bold; margin-bottom: 15px; border-left: 4px solid #00ff00; padding-left: 12px; font-size: 1.1em; text-transform: uppercase; }
@@ -38,6 +42,8 @@
         button:active { transform: scale(0.98); box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
         .danger-btn { background-color: #aa0000; color: #ffffff; }
         .blue-btn { background-color: #0088cc; color: #ffffff; }
+        /* [4.8 升级] 宏按钮样式 */
+        .gold-btn { background-color: #cc8800; color: #ffffff; margin-top: 5px; } 
         
         .status-box { background-color: #080808; border: 1px dashed #333; padding: 10px; margin-top: 10px; border-radius: 4px; max-height: 150px; overflow-y: auto; font-size: 0.85em; }
         .status-success { color: #00ff00; border-left: 3px solid #00ff00; padding-left: 8px; margin-bottom: 5px; }
@@ -57,18 +63,27 @@
         .list-item.destroying { background-color: #003300; border-color: #00ff00; transform: scale(0.95); opacity: 0; filter: blur(5px); }
         .del-btn { position: absolute; right: 10px; background-color: #330000; color: #ff5555; border: 1px solid #ff0000; width: auto; padding: 5px 10px; font-size: 12px; }
         .hidden { display: none !important; }
+
+        /* [4.8 升级] 错题星级战术灯效 */
+        .star-1 { border-left: 4px solid #ff0000 !important; box-shadow: inset 5px 0 15px rgba(255,0,0,0.1); }
+        .star-2 { border-left: 4px solid #ffaa00 !important; box-shadow: inset 5px 0 15px rgba(255,170,0,0.1); }
+        .star-3 { border-left: 4px solid #00aaff !important; box-shadow: inset 5px 0 15px rgba(0,170,255,0.1); }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- HUD 抬头显示器 -->
         <div class="hud-bar">
             <div><span class="hud-blink">🔴</span> USER: MA_XIAO</div>
             <div id="systemClock">00:00:00</div>
-            <div style="color:#00aaff;">OS_V: 4.7 [FULL]</div>
+            <div style="color:#00aaff;">OS_V: 4.8 [TACTICAL]</div>
         </div>
 
-        <!-- ========== 模块 A：当晚任务指挥台 ========== -->
+        <div class="backup-bar">
+            <button class="backup-btn" onclick="exportLocalData()">[ 📤 导出本地缓存 ]</button>
+            <button class="backup-btn" onclick="document.getElementById('importFile').click()">[ 📥 恢复本地缓存 ]</button>
+            <input type="file" id="importFile" accept=".sybak" onchange="importLocalData(event)" style="display:none;">
+        </div>
+
         <div class="panel" style="border-color: #00aaff; box-shadow: 0 0 15px rgba(0,170,255,0.1);">
             <div class="panel-title" style="color:#00aaff; border-color:#00aaff;">>_ 今晚任务指挥台</div>
 
@@ -110,7 +125,6 @@
             </div>
         </div>
 
-        <!-- ========== 模块 B：长线错题档案库 ========== -->
         <div class="panel" style="border-color: #550000; box-shadow: 0 0 15px rgba(255,0,0,0.1);">
             <div class="panel-title" style="color:#ff3333; border-left-color:#ff3333;">>_ 长线漏洞档案库</div>
 
@@ -148,12 +162,11 @@
             <div id="bugStatus" class="status-box hidden"></div>
             
             <div id="bugRecordsContainer" style="margin-top: 25px; border-top: 1px dashed #330000; padding-top: 15px;">
-                <div style="color:#ffaa00; font-weight:bold; margin-bottom:10px;">📋 本地暂存档案</div>
+                <div style="color:#ffaa00; font-weight:bold; margin-bottom:10px;">📋 本地暂存档案 (按星级显示威胁度)</div>
                 <div id="bugRecordsList"></div>
             </div>
         </div>
 
-        <!-- ========== 模块 C：战备资料云端归档 (已恢复) ========== -->
         <div class="panel">
             <div class="panel-title">>_ 战备物资归档 (资料库)</div>
             
@@ -180,11 +193,12 @@
             <div id="docStatus" class="status-box hidden"></div>
         </div>
 
-        <!-- ========== 模块 D：NotebookLM 一键投喂系统 ========== -->
         <div class="panel" style="border-style: dashed;">
             <div class="panel-title" style="color:#0088cc; border-color:#0088cc;">>_ 情报缝合枢纽 (喂给 NotebookLM)</div>
             <div style="font-size: 0.9em; color: #888; margin-bottom: 15px;">此按钮会将你今天在上方录入的所有错题和资料，自动打包成一个长文本，供你直接上传至 NotebookLM 对应的笔记本中。</div>
             <button id="stitchTodayBtn" class="blue-btn">[ 📦 生成今日汇总情报包 (TXT下载) ]</button>
+            
+            <button id="copyMacroBtn" class="gold-btn" onclick="copyMacro()">[ 📋 复制大模型强制检索指令 (防眼瞎) ]</button>
         </div>
 
     </div>
@@ -206,6 +220,50 @@
             div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;
+        }
+
+        // ========== [4.8 升级] 备份与恢复功能 ==========
+        function exportLocalData() {
+            const data = {
+                tonightTasks: localStorage.getItem('tonightTasks'),
+                longTermBugs: localStorage.getItem('longTermBugs'),
+                todayDocs: localStorage.getItem('todayDocs')
+            };
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `朔夜战术备份_${new Date().toISOString().split('T')[0]}.sybak`;
+            a.click();
+            alert("✅ 本地缓存已导出！以后网站大改，用旁边的恢复按钮就能找回数据。");
+        }
+
+        function importLocalData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(data.tonightTasks) localStorage.setItem('tonightTasks', data.tonightTasks);
+                    if(data.longTermBugs) localStorage.setItem('longTermBugs', data.longTermBugs);
+                    if(data.todayDocs) localStorage.setItem('todayDocs', data.todayDocs);
+                    alert("📥 数据恢复成功！页面将刷新以应用战术配置。");
+                    location.reload();
+                } catch (err) {
+                    alert("❌ 恢复失败：备份文件损坏或格式不正确！");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ========== [4.8 升级] 战术宏复制功能 ==========
+        function copyMacro() {
+            const macroText = `[战术指令]：请立即启动后台 Python 执行环境 (Advanced Data Analysis)。切勿使用原生视觉模型进行肉眼扫描。请使用 Pandas 库提取附件表格/文档中的结构化数据，并执行精准的条件过滤检索。若检索目标为特定姓名，请针对姓名列执行精确字符串匹配。完成后请输出过滤后的核心数据，并保持战术静默，不附加多余解释。`;
+            navigator.clipboard.writeText(macroText).then(() => {
+                alert("✅ 强制检索指令已复制！直接去 Gemini 对话框 Ctrl+V 粘贴并附上你的表格吧。");
+            }).catch(err => {
+                alert("❌ 复制失败，请手动选取代码。");
+            });
         }
 
         // ========== 模块 A：任务系统 ==========
@@ -298,9 +356,14 @@
             const list = document.getElementById('bugRecordsList'); list.innerHTML = '';
             if (bugRecords.length === 0) { list.innerHTML = '<div style="color: #444; padding: 10px;">无本地滞留档案。</div>'; return; }
             bugRecords.forEach((record, index) => {
-                const div = document.createElement('div'); div.className = 'list-item';
+                const div = document.createElement('div'); 
+                // [4.8 升级] 注入星级专属样式类
+                div.className = `list-item star-${record.star}`;
+                
+                let starIcon = record.star == 1 ? "🔴" : (record.star == 2 ? "🟡" : "🔵");
+                
                 div.innerHTML = `<button class="del-btn" onclick="window.clearLocalBug(${index}, this)">[ 本地清除 ]</button>
-                                 <div style="color: #ffff00; font-weight: bold; margin-bottom: 5px;">[ ${record.star}星 | ${record.subject} ]</div>
+                                 <div style="color: #fff; font-weight: bold; margin-bottom: 5px;">[ ${starIcon} ${record.star}星级 | ${record.subject} ]</div>
                                  <div style="color: #aaa; font-size: 0.9em; line-height: 1.4; white-space: pre-wrap;">${record.content}</div>`;
                 list.appendChild(div);
             });
@@ -331,7 +394,7 @@
                 logMsg('bugStatus', '快照上传成功。', true);
             }
 
-            const mdText = `# 朔夜漏洞长线档案\n\n## 1. 元数据\n- 学科：${subject}\n- 星级：${star}星\n- 日期：${new Date().toLocaleDateString()}\n\n## 2. 视觉补丁\n> ${summary || '无'}\n\n## 3. 病理分析\n> ${content}\n\n## 4. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-4.7*`;
+            const mdText = `# 朔夜漏洞长线档案\n\n## 1. 元数据\n- 学科：${subject}\n- 星级：${star}星\n- 日期：${new Date().toLocaleDateString()}\n\n## 2. 视觉补丁\n> ${summary || '无'}\n\n## 3. 病理分析\n> ${content}\n\n## 4. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-4.8*`;
             const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `错题库/${baseName}.md`);
             
             if(mdSuccess) {
@@ -344,7 +407,7 @@
             document.getElementById('saveBugBtn').disabled = false;
         });
 
-        // ========== 模块 C：资料归档 (已恢复) ==========
+        // ========== 模块 C：资料归档 ==========
         let selectedDocFile = null;
         document.getElementById('docFileInput').addEventListener('change', e => {
             selectedDocFile = e.target.files[0];
@@ -366,7 +429,6 @@
 
             if (mdSuccess) { logMsg('docStatus', '资料归档成功！', true); } else { logMsg('docStatus', '归档失败。', false); }
             
-            // 顺便把摘要记在本地，用来打包
             let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
             docRecords.push({ subject: subject, name: name, summary: summary });
             localStorage.setItem('todayDocs', JSON.stringify(docRecords));
@@ -374,7 +436,7 @@
             selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none'; document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 模块 D：情报打包下载 (已恢复) ==========
+        // ========== 模块 D：情报打包下载 ==========
         document.getElementById('stitchTodayBtn').addEventListener('click', function() {
             let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
             let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
@@ -400,7 +462,6 @@
                 });
             }
 
-            // 转化为 TXT 下载
             const blob = new Blob([report], { type: 'text/plain' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -409,7 +470,6 @@
             a.click();
             document.body.removeChild(a);
             
-            // 清理掉今日打包过的资料本地缓存 (错题保留，因为要在本地展示)
             localStorage.removeItem('todayDocs');
             alert("✅ 今日情报卷轴已生成并下载！请切换到 NotebookLM 页面上传它！");
         });
