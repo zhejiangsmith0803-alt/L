@@ -302,7 +302,7 @@
             if (tasks.length === 0) { 
                 list.innerHTML = `
                     <div style="color:#555; padding:10px; margin-bottom:10px;">防线安全，当前无待办猎杀目标。</div>
-                    <button class="shortcut-btn" onclick="window.location.href='shortcuts://run-shortcut?name=朔夜胜利奖励'">[ 🏆 战役胜利：唤醒 iPad 快捷指令解锁娱乐并放歌 ]</button>
+                    <button class="shortcut-btn" onclick="navigator.clipboard.writeText('自由身'); window.location.href='shortcuts://run-shortcut?name=朔夜胜利奖励'">[ 🏆 战役胜利：唤醒 iPad 快捷指令解锁娱乐并放歌 ]</button>
                 `; 
                 return; 
             }
@@ -342,6 +342,14 @@
             activeTaskIndex = index; activeTaskRemaining = t.minutes * 60; penaltyCount = 0; // 重置计数器
             document.getElementById('activeTaskName').innerText = `[${t.type}] ${t.name}`;
             document.getElementById('runnerContainer').classList.remove('hidden'); document.getElementById('queueContainer').classList.add('hidden'); 
+            
+            // === [新增补丁：自动发放暗号] ===
+            navigator.clipboard.writeText("逆仙闭环中").then(() => {
+                console.log("战术暗号已物理注入剪贴板！");
+            }).catch(err => {
+                console.log("暗号注入失败，请检查浏览器权限。");
+            });
+
             startTick();
         };
 
@@ -387,6 +395,10 @@
         function finishActiveTask() {
             let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]'); tasks.splice(activeTaskIndex, 1); localStorage.setItem('tonightTasks', JSON.stringify(tasks));
             document.getElementById('runnerContainer').classList.add('hidden'); document.getElementById('queueContainer').classList.remove('hidden'); 
+            
+            // === [新增补丁：解除防线，冲洗暗号] ===
+            navigator.clipboard.writeText("自由身");
+
             renderTasks(); scanEbbinghausThreats();
         }
 
