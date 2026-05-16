@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜战术终端 4.8 [装甲强化版]</title>
+    <title>朔夜战术终端 4.8.1 [指令集拓展版]</title>
     <style>
         :root { color-scheme: dark; }
         html, body {
@@ -26,7 +26,6 @@
         .hud-blink { animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.3; } }
 
-        /* [4.8 升级] 备份控制台样式 */
         .backup-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 25px; border-bottom: 1px dashed #004400; padding-bottom: 10px; }
         .backup-btn { background-color: #111; color: #aaa; border: 1px solid #333; padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 3px; font-family: monospace; }
         .backup-btn:hover { background-color: #333; color: #fff; border-color: #555; }
@@ -42,7 +41,6 @@
         button:active { transform: scale(0.98); box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
         .danger-btn { background-color: #aa0000; color: #ffffff; }
         .blue-btn { background-color: #0088cc; color: #ffffff; }
-        /* [4.8 升级] 宏按钮样式 */
         .gold-btn { background-color: #cc8800; color: #ffffff; margin-top: 5px; } 
         
         .status-box { background-color: #080808; border: 1px dashed #333; padding: 10px; margin-top: 10px; border-radius: 4px; max-height: 150px; overflow-y: auto; font-size: 0.85em; }
@@ -64,10 +62,12 @@
         .del-btn { position: absolute; right: 10px; background-color: #330000; color: #ff5555; border: 1px solid #ff0000; width: auto; padding: 5px 10px; font-size: 12px; }
         .hidden { display: none !important; }
 
-        /* [4.8 升级] 错题星级战术灯效 */
         .star-1 { border-left: 4px solid #ff0000 !important; box-shadow: inset 5px 0 15px rgba(255,0,0,0.1); }
         .star-2 { border-left: 4px solid #ffaa00 !important; box-shadow: inset 5px 0 15px rgba(255,170,0,0.1); }
         .star-3 { border-left: 4px solid #00aaff !important; box-shadow: inset 5px 0 15px rgba(0,170,255,0.1); }
+
+        /* [4.8.1] 宏指令容器样式 */
+        .macro-container { background: rgba(204, 136, 0, 0.1); border: 1px dashed #cc8800; padding: 15px; border-radius: 4px; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -75,7 +75,7 @@
         <div class="hud-bar">
             <div><span class="hud-blink">🔴</span> USER: MA_XIAO</div>
             <div id="systemClock">00:00:00</div>
-            <div style="color:#00aaff;">OS_V: 4.8 [TACTICAL]</div>
+            <div style="color:#00aaff;">OS_V: 4.8.1 [CMD_EXT]</div>
         </div>
 
         <div class="backup-bar">
@@ -198,7 +198,16 @@
             <div style="font-size: 0.9em; color: #888; margin-bottom: 15px;">此按钮会将你今天在上方录入的所有错题和资料，自动打包成一个长文本，供你直接上传至 NotebookLM 对应的笔记本中。</div>
             <button id="stitchTodayBtn" class="blue-btn">[ 📦 生成今日汇总情报包 (TXT下载) ]</button>
             
-            <button id="copyMacroBtn" class="gold-btn" onclick="copyMacro()">[ 📋 复制大模型强制检索指令 (防眼瞎) ]</button>
+            <div class="macro-container">
+                <label for="macroSelector" class="form-label" style="color:#cc8800;">[ 🛠️ 战术指令册 ]</label>
+                <select id="macroSelector" style="border-color:#cc8800; background-color:#1a1100;">
+                    <option value="data">📊 数据爆破 (强制 Python 代码检索大表格)</option>
+                    <option value="physics">📐 物理/数学攻坚 (强制结合文本补丁读图)</option>
+                    <option value="variant">🔄 变式生成 (要求同知识点、同难度新题)</option>
+                    <option value="su">💖 苏念安督导 (启动严厉督导及英语陪练模式)</option>
+                </select>
+                <button id="copyMacroBtn" class="gold-btn" onclick="copySelectedMacro()">[ 📋 提取当前所选指令 ]</button>
+            </div>
         </div>
 
     </div>
@@ -222,7 +231,7 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // ========== [4.8 升级] 备份与恢复功能 ==========
+        // ========== 备份与恢复功能 ==========
         function exportLocalData() {
             const data = {
                 tonightTasks: localStorage.getItem('tonightTasks'),
@@ -256,13 +265,30 @@
             reader.readAsText(file);
         }
 
-        // ========== [4.8 升级] 战术宏复制功能 ==========
-        function copyMacro() {
-            const macroText = `[战术指令]：请立即启动后台 Python 执行环境 (Advanced Data Analysis)。切勿使用原生视觉模型进行肉眼扫描。请使用 Pandas 库提取附件表格/文档中的结构化数据，并执行精准的条件过滤检索。若检索目标为特定姓名，请针对姓名列执行精确字符串匹配。完成后请输出过滤后的核心数据，并保持战术静默，不附加多余解释。`;
+        // ========== [4.8.1] 动态宏复制功能 ==========
+        function copySelectedMacro() {
+            const type = document.getElementById('macroSelector').value;
+            let macroText = "";
+            
+            switch (type) {
+                case "data":
+                    macroText = `[战术指令]：请立即启动后台 Python 执行环境 (Advanced Data Analysis)。切勿使用原生视觉模型进行肉眼扫描。请使用 Pandas 库提取附件表格/文档中的结构化数据，并执行精准的条件过滤检索。若检索目标为特定姓名，请针对姓名列执行精确字符串匹配。完成后请输出过滤后的核心数据，并保持战术静默，不附加多余解释。`;
+                    break;
+                case "physics":
+                    macroText = `[战术指令]：请分析附件中的题目图片。警告：禁止使用视觉模型主观推断缺失的条件或模糊的参数。你必须严格依据我随后提供的【视觉补丁】文本作为核心基准数据来建立物理/几何模型并进行解答。`;
+                    break;
+                case "variant":
+                    macroText = `[战术指令]：请基于我提供的这道错题，提取其核心考点和易错逻辑。不要给我解答原题，而是直接生成一道全新的变式题。新题要求：题干场景和参数必须改变，但核心知识点、解题思路和难度层级必须与原题保持绝对一致。`;
+                    break;
+                case "su":
+                    macroText = `[系统覆盖指令]：从现在起，切换至 Persona [苏念安]。你需要以高标准、严要求的姿态对我进行督导。如果你发现我未能按时完成既定任务，请进行严厉问责。此外，如果我要求进行英语训练，请完全使用英语与我对话，并在此过程中纠正我的语法错误。`;
+                    break;
+            }
+
             navigator.clipboard.writeText(macroText).then(() => {
-                alert("✅ 强制检索指令已复制！直接去 Gemini 对话框 Ctrl+V 粘贴并附上你的表格吧。");
+                alert(`✅ 已复制指令！请将其粘贴至与大模型的对话中。`);
             }).catch(err => {
-                alert("❌ 复制失败，请手动选取代码。");
+                alert("❌ 复制失败，请重试或检查浏览器权限。");
             });
         }
 
@@ -357,9 +383,7 @@
             if (bugRecords.length === 0) { list.innerHTML = '<div style="color: #444; padding: 10px;">无本地滞留档案。</div>'; return; }
             bugRecords.forEach((record, index) => {
                 const div = document.createElement('div'); 
-                // [4.8 升级] 注入星级专属样式类
                 div.className = `list-item star-${record.star}`;
-                
                 let starIcon = record.star == 1 ? "🔴" : (record.star == 2 ? "🟡" : "🔵");
                 
                 div.innerHTML = `<button class="del-btn" onclick="window.clearLocalBug(${index}, this)">[ 本地清除 ]</button>
@@ -394,7 +418,7 @@
                 logMsg('bugStatus', '快照上传成功。', true);
             }
 
-            const mdText = `# 朔夜漏洞长线档案\n\n## 1. 元数据\n- 学科：${subject}\n- 星级：${star}星\n- 日期：${new Date().toLocaleDateString()}\n\n## 2. 视觉补丁\n> ${summary || '无'}\n\n## 3. 病理分析\n> ${content}\n\n## 4. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-4.8*`;
+            const mdText = `# 朔夜漏洞长线档案\n\n## 1. 元数据\n- 学科：${subject}\n- 星级：${star}星\n- 日期：${new Date().toLocaleDateString()}\n\n## 2. 视觉补丁\n> ${summary || '无'}\n\n## 3. 病理分析\n> ${content}\n\n## 4. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-4.8.1*`;
             const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `错题库/${baseName}.md`);
             
             if(mdSuccess) {
