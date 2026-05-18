@@ -293,6 +293,10 @@
         // ========== 模块 A：任务系统与【政工部双重惩罚】 ==========
         let sessionTotalRemaining = 0; let activeTaskRemaining = 0; let activeTaskIndex = -1; let dualInterval = null; let isGlobalTimeSet = false;
         let penaltyCount = 0; // 违约计数器
+        
+        // 【核心修改 1：新增绝对时间锁锚点】
+        let sessionEndTime = 0; 
+        let taskEndTime = 0; 
 
         function renderTasks() {
             let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]');
@@ -340,6 +344,12 @@
                 sessionTotalRemaining = totalM * 60; isGlobalTimeSet = true; document.getElementById('totalMinutes').disabled = true; 
             }
             activeTaskIndex = index; activeTaskRemaining = t.minutes * 60; penaltyCount = 0; // 重置计数器
+            
+            // 【核心修改 2：打死绝对时间锚点】
+            let now = Date.now();
+            sessionEndTime = now + (sessionTotalRemaining * 1000);
+            taskEndTime = now + (activeTaskRemaining * 1000);
+
             document.getElementById('activeTaskName').innerText = `[${t.type}] ${t.name}`;
             document.getElementById('runnerContainer').classList.remove('hidden'); document.getElementById('queueContainer').classList.add('hidden'); 
             
@@ -354,8 +364,19 @@
         };
 
         function startTick() {
-            dualInterval = setInterval(() => {
-                if (sessionTotalRemaining > 0) sessionTotalRemaining--; if (activeTaskRemaining > 0) activeTaskRemaining--;
+            if (dualInterval) clearInterval(dualInterval);
+            
+            // 【核心修改 3：将计算逻辑封装，使用时间差强制对齐】
+            window.__forceTimerUpdate = function() {
+                let now = Date.now();
+                
+                if (sessionTotalRemaining > 0) {
+                    sessionTotalRemaining = Math.max(0, Math.round((sessionEndTime - now) / 1000));
+                }
+                if (activeTaskRemaining > 0) {
+                    activeTaskRemaining = Math.max(0, Math.round((taskEndTime - now) / 1000));
+                }
+
                 if (sessionTotalRemaining <= 900 && sessionTotalRemaining > 0) {
                     document.body.classList.add('extraction-warning'); document.getElementById('warningLabel').style.display = 'inline'; document.getElementById('totalTimerBox').style.borderColor = '#ff0000';
                 } else if (sessionTotalRemaining === 0) { document.body.classList.remove('extraction-warning'); }
@@ -365,7 +386,7 @@
                 let task_m = Math.floor(activeTaskRemaining / 60); let task_s = activeTaskRemaining % 60;
                 document.getElementById('taskVal').innerText = `${String(task_m).padStart(2,'0')}:${String(task_s).padStart(2,'0')}`;
 
-                if (activeTaskRemaining === 0) {
+                if (activeTaskRemaining === 0 && dualInterval !== null) {
                     clearInterval(dualInterval); dualInterval = null; 
                     setTimeout(() => {
                         let isDone = confirm("⚠️ 警告：作战时间耗尽！\n\n【是否已彻底拔除该障碍？】\n▶ 点 [确定]：已完结。\n▶ 点 [取消]：未完结，加时 15 分钟继续！");
@@ -380,13 +401,30 @@
                                 navigator.clipboard.writeText(suText);
                                 penaltyCount = 0; // 惩罚完清零
                             }
-                            activeTaskRemaining = 15 * 60; startTick(); 
+                            activeTaskRemaining = 15 * 60; 
+                            
+                            // 【核心修改 4：由于弹窗期间时间静止，加时后必须刷新锚点】
+                            let newNow = Date.now();
+                            taskEndTime = newNow + (activeTaskRemaining * 1000);
+                            sessionEndTime = newNow + (sessionTotalRemaining * 1000);
+                            
+                            startTick(); 
                         } 
                     }, 100);
                 }
-                if (sessionTotalRemaining === 0) { clearInterval(dualInterval); alert("🚨 今日算力崩塌！请立刻离线！"); }
-            }, 1000);
+                if (sessionTotalRemaining === 0 && dualInterval !== null) { clearInterval(dualInterval); dualInterval = null; alert("🚨 今日算力崩塌！请立刻离线！"); }
+            };
+
+            window.__forceTimerUpdate(); // 立即执行一次
+            dualInterval = setInterval(window.__forceTimerUpdate, 1000);
         }
+
+        // 【核心修改 5：监听前台唤醒，瞬间执行时间追回】
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && dualInterval && typeof window.__forceTimerUpdate === 'function') {
+                window.__forceTimerUpdate();
+            }
+        });
 
         document.getElementById('forceDoneBtn').addEventListener('click', function() {
             if(confirm("确定已提前攻克此阵地？")) { clearInterval(dualInterval); dualInterval = null; finishActiveTask(); }
