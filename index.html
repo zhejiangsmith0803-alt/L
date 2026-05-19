@@ -522,11 +522,11 @@
             }
         };
 
+        // ========== 升级版：错题档案写入 (自动生成 学科/年月 智能文件夹) ==========
         document.getElementById('saveBugBtn').addEventListener('click', async function() {
             const subject = document.getElementById('bugSubject').value; const star = document.getElementById('bugStar').value; 
             const summary = document.getElementById('bugSummary').value.trim(); const file = selectedBugFile;
             
-            // 战术改装 6：无痛录入，允许病理分析为空
             let content = document.getElementById('bugContent').value.trim(); 
             if (!content) {
                 content = "【未填写详细病理，待 AI 扫图结合视觉补丁分析...】";
@@ -534,23 +534,31 @@
 
             document.getElementById('saveBugBtn').disabled = true; document.getElementById('bugStatus').innerHTML = ''; logMsg('bugStatus', '🔄 请求云端防线...', true);
 
-            const dateStr = new Date().toISOString().split('T')[0]; const currentTimestamp = Date.now(); const baseName = `${dateStr}-${subject}-${star}Star-${currentTimestamp}`;
+            const dateObj = new Date();
+            const dateStr = dateObj.toISOString().split('T')[0]; 
+            const yearMonth = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`; // 生成如 2026-05
+            const currentTimestamp = Date.now(); 
+            const baseName = `${dateStr}-${subject}-${star}Star-${currentTimestamp}`;
+            
+            // 【核心降维：动态拼装 GitHub 智能路径 -> 错题库/物理/2026-05/ 】
+            const cloudPath = `错题库/${subject}/${yearMonth}`;
+            
             let imageExt = "";
             if (file) {
                 if (file.name.includes('.')) imageExt = file.name.substring(file.name.lastIndexOf('.'));
-                const imgSuccess = await executeGitHubUpload(file, `错题库/${baseName}${imageExt}`);
+                const imgSuccess = await executeGitHubUpload(file, `${cloudPath}/${baseName}${imageExt}`);
                 if (!imgSuccess) { logMsg('bugStatus', '照片穿透失败。', false); document.getElementById('saveBugBtn').disabled = false; return; }
             }
 
-            // 战术改装 2：NotebookLM 元数据墓碑
             const mdText = `=== [BUG_INDEX: ${dateStr} | 科目: ${subject} | 星级: ${star}星] ===\n\n# 朔夜漏洞长线档案\n\n## 1. 视觉补丁 (锚点)\n> ${summary || '无'}\n\n## 2. 病理分析\n> ${content}\n\n## 3. 现场证据\n![证据](./${baseName}${imageExt})\n\n---\n*SY-5.0_MATRIX*`;
             
-            const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `错题库/${baseName}.md`);
+            const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `${cloudPath}/${baseName}.md`);
             
             if(mdSuccess) {
-                logMsg('bugStatus', '档案建立并注入时间戳成功！', true);
+                logMsg('bugStatus', `档案已锁定至云端 [${subject}/${yearMonth}] 目录！`, true);
                 let records = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
-                records.unshift({ subject: subject, star: star, content: content, timestamp: currentTimestamp });
+                // 在本地记录里，把云端真实路径存下来，方便周末打包时提取
+                records.unshift({ subject: subject, star: star, content: content, timestamp: currentTimestamp, cloudFolder: cloudPath, baseName: baseName, imageExt: imageExt });
                 localStorage.setItem('longTermBugs', JSON.stringify(records)); 
                 renderBugRecords(); scanEbbinghausThreats();
                 document.getElementById('bugContent').value = ''; document.getElementById('bugSummary').value = ''; selectedBugFile = null; document.getElementById('bugFileInput').value = ''; document.getElementById('bugFileInfo').style.display = 'none'; document.getElementById('bugStar').value = "1";
@@ -565,6 +573,7 @@
             if (selectedDocFile) { document.getElementById('docFileName').textContent = `[锁定物资]: ${selectedDocFile.name}`; document.getElementById('docFileInfo').style.display = 'block'; }
         });
 
+        // ========== 升级版：战备物资归档 (自动生成 学科/年月 智能文件夹) ==========
         document.getElementById('uploadDocBtn').addEventListener('click', async function() {
             const subject = document.getElementById('docSubject').value; const name = document.getElementById('docName').value.trim();
             const summary = document.getElementById('docSummary').value.trim(); const file = selectedDocFile;
@@ -572,28 +581,35 @@
             if (!name || !file) return alert('❌ 名称和文件均为必填！');
             document.getElementById('uploadDocBtn').disabled = true; document.getElementById('docStatus').innerHTML = ''; logMsg('docStatus', '🔄 加密上传...', true);
 
-            const dateStr = new Date().toISOString().split('T')[0]; const ext = file.name.substring(file.name.lastIndexOf('.'));
-            await executeGitHubUpload(file, `资料库/${dateStr}-${subject}-${name}${ext}`);
+            const dateObj = new Date();
+            const dateStr = dateObj.toISOString().split('T')[0]; 
+            const yearMonth = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+            const ext = file.name.substring(file.name.lastIndexOf('.'));
+            
+            // 【核心降维：动态拼装 GitHub 智能路径 -> 资料库/物理/2026-05/ 】
+            const cloudPath = `资料库/${subject}/${yearMonth}`;
+            const baseName = `${dateStr}-${subject}-${name}`;
 
-            const mdText = `=== [DOC_INDEX: ${dateStr} | 科目: ${subject}] ===\n\n# 战备资料 - ${name}\n\n## 核心情报 (检索词)\n${summary || '无摘要'}\n\n## 直接访问\n[点此提取原始物资](./${encodeURIComponent(dateStr + '-' + subject + '-' + name + ext)})`;
-            const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${dateStr}-${subject}-${name}.md`), `资料库/${dateStr}-${subject}-${name}.md`);
+            await executeGitHubUpload(file, `${cloudPath}/${baseName}${ext}`);
 
-            if (mdSuccess) { logMsg('docStatus', '资料归档成功！', true); } else { logMsg('docStatus', '归档失败。', false); }
+            const mdText = `=== [DOC_INDEX: ${dateStr} | 科目: ${subject}] ===\n\n# 战备资料 - ${name}\n\n## 核心情报 (检索词)\n${summary || '无摘要'}\n\n## 直接访问\n[点此提取原始物资](./${encodeURIComponent(baseName + ext)})`;
+            const mdSuccess = await executeGitHubUpload(new File([new Blob([mdText], { type: 'text/markdown' })], `${baseName}.md`), `${cloudPath}/${baseName}.md`);
+
+            if (mdSuccess) { logMsg('docStatus', `资料归档至云端 [${subject}/${yearMonth}] 成功！`, true); } else { logMsg('docStatus', '归档失败。', false); }
             
             let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
-            docRecords.push({ subject: subject, name: name, summary: summary });
+            docRecords.push({ subject: subject, name: name, summary: summary, cloudFolder: cloudPath, baseName: baseName, fileExt: ext });
             localStorage.setItem('todayDocs', JSON.stringify(docRecords));
 
             selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none'; document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 战术改装 3：分科全量卷轴提取 (本地文字 + GitHub 远程文件高维索引缝合版) ==========
+        // ========== 升级版：分科全量卷轴提取 (精准追踪智能文件夹路径 + 本地自动冲洗) ==========
         document.getElementById('stitchSubjectBtn').addEventListener('click', function() {
             const selectedSubject = document.getElementById('exportSubjectFilter').value;
             let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
             let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
 
-            // 只过滤出该学科的数据
             let filteredBugs = bugRecords.filter(b => b.subject === selectedSubject);
             let filteredDocs = docRecords.filter(d => d.subject === selectedSubject);
 
@@ -602,31 +618,50 @@
             }
 
             let report = `# 朔夜全量卷轴 - [${selectedSubject}战区] \n# 提取时间：${new Date().toLocaleString()}\n\n`;
-            report += `> 指挥官，此文件已打入元数据标签，并成功绑定 GitHub 远程防御链路，请直接喂给 NotebookLM 的【${selectedSubject}笔记本】。\n\n`;
+            report += `> 指挥官，此文件已打入元数据标签，并成功绑定 GitHub 远程智能防御链路，请直接喂给 NotebookLM 的【${selectedSubject}笔记本】。\n\n`;
 
             if (filteredBugs.length > 0) {
                 report += `## 🔻 漏洞阵列\n\n`;
-                filteredBugs.forEach((b, index) => {
+                filteredBugs.forEach((b) => {
                     let dateStr = new Date(b.timestamp || Date.now()).toISOString().split('T')[0];
-                    let currentTimestamp = b.timestamp || Date.now();
-                    // 逆向还原在云端锁死的文件基础名
-                    let baseName = `${dateStr}-${b.subject}-${b.star}Star-${currentTimestamp}`;
+                    // 兼容旧数据与新数据：如果记录里没有 cloudFolder，就用默认的错题库平层
+                    let folder = b.cloudFolder || '错题库';
+                    let fName = b.baseName || `${dateStr}-${b.subject}-${b.star}Star-${b.timestamp || Date.now()}`;
+                    let ext = b.imageExt || '';
                     
                     report += `=== [BUG_INDEX: ${dateStr} | 科目: ${b.subject} | 星级: ${b.star}星] ===\n`;
                     report += `- **本站病理分析**：${b.content}\n`;
                     
-                    // 【核心漏洞打补丁：暴力注入 GitHub 远程文件的 Raw 访问链路，绝不丢弃物资】
-                    let githubRawBase = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/master/错题库/`;
-                    report += `- **GitHub 远程 Markdown 档案**：[点击提取云端防线](${githubRawBase}${encodeURIComponent(baseName + '.md')})\n`;
-                    report += `- **GitHub 远程原始现场快照/文件**：由于无法预测文件后缀，请通过上方的 Markdown 档案或者在 GitHub 仓库中直接调取名为 [ ${baseName} ] 的图片或文件资产。\n\n`;
+                    // 动态切割并安全编码文件夹路径，防止斜杠被编码导致路径断裂
+                    let encodedFolder = folder.split('/').map(encodeURIComponent).join('/');
+                    let githubRawBase = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/master/${encodedFolder}/`;
+                    
+                    report += `- **GitHub 远程 Markdown 档案**：[点击提取云端防线](${githubRawBase}${encodeURIComponent(fName + '.md')})\n`;
+                    if(ext) {
+                        report += `- **GitHub 远程原始现场快照/文件**：[点击查看原图/文件](${githubRawBase}${encodeURIComponent(fName + ext)})\n\n`;
+                    } else {
+                        report += `- **GitHub 远程原始现场快照/文件**：未上传附属文件。\n\n`;
+                    }
                 });
             }
 
             if (filteredDocs.length > 0) {
                 report += `## 🔹 资料阵列\n\n`;
-                filteredDocs.forEach((d, index) => {
+                filteredDocs.forEach((d) => {
                     report += `=== [DOC_INDEX: 科目: ${d.subject}] ===\n### 资料代号：${d.name}\n`;
-                    report += `- **核心提要**：${d.summary || '未提供提要'}\n\n`;
+                    report += `- **核心提要**：${d.summary || '未提供提要'}\n`;
+                    
+                    let folder = d.cloudFolder || '资料库';
+                    let fName = d.baseName || `(未知档案)`;
+                    let ext = d.fileExt || '';
+                    
+                    if (fName !== `(未知档案)`) {
+                         let encodedFolder = folder.split('/').map(encodeURIComponent).join('/');
+                         let githubRawBase = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/master/${encodedFolder}/`;
+                         report += `- **GitHub 远程原始物资提取**：[点击下载文件](${githubRawBase}${encodeURIComponent(fName + ext)})\n\n`;
+                    } else {
+                         report += `\n`;
+                    }
                 });
             }
 
