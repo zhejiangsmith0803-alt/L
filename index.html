@@ -587,7 +587,7 @@
             selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none'; document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 战术改装 3：分科全量卷轴提取 (废弃日结打包) ==========
+        // ========== 战术改装 3：分科全量卷轴提取 (本地文字 + GitHub 远程文件高维索引缝合版) ==========
         document.getElementById('stitchSubjectBtn').addEventListener('click', function() {
             const selectedSubject = document.getElementById('exportSubjectFilter').value;
             let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
@@ -602,13 +602,23 @@
             }
 
             let report = `# 朔夜全量卷轴 - [${selectedSubject}战区] \n# 提取时间：${new Date().toLocaleString()}\n\n`;
-            report += `> 指挥官，此文件已打入元数据标签，请直接喂给 NotebookLM 的【${selectedSubject}笔记本】。\n\n`;
+            report += `> 指挥官，此文件已打入元数据标签，并成功绑定 GitHub 远程防御链路，请直接喂给 NotebookLM 的【${selectedSubject}笔记本】。\n\n`;
 
             if (filteredBugs.length > 0) {
                 report += `## 🔻 漏洞阵列\n\n`;
                 filteredBugs.forEach((b, index) => {
-                    report += `=== [BUG_INDEX: ${new Date(b.timestamp || Date.now()).toISOString().split('T')[0]} | 科目: ${b.subject} | 星级: ${b.star}星] ===\n`;
-                    report += `- **病理分析**：${b.content}\n\n`;
+                    let dateStr = new Date(b.timestamp || Date.now()).toISOString().split('T')[0];
+                    let currentTimestamp = b.timestamp || Date.now();
+                    // 逆向还原在云端锁死的文件基础名
+                    let baseName = `${dateStr}-${b.subject}-${b.star}Star-${currentTimestamp}`;
+                    
+                    report += `=== [BUG_INDEX: ${dateStr} | 科目: ${b.subject} | 星级: ${b.star}星] ===\n`;
+                    report += `- **本站病理分析**：${b.content}\n`;
+                    
+                    // 【核心漏洞打补丁：暴力注入 GitHub 远程文件的 Raw 访问链路，绝不丢弃物资】
+                    let githubRawBase = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/master/错题库/`;
+                    report += `- **GitHub 远程 Markdown 档案**：[点击提取云端防线](${githubRawBase}${encodeURIComponent(baseName + '.md')})\n`;
+                    report += `- **GitHub 远程原始现场快照/文件**：由于无法预测文件后缀，请通过上方的 Markdown 档案或者在 GitHub 仓库中直接调取名为 [ ${baseName} ] 的图片或文件资产。\n\n`;
                 });
             }
 
@@ -628,7 +638,17 @@
             a.click();
             document.body.removeChild(a);
             
-            alert(`✅ 【${selectedSubject}】全量情报包提取成功！请前往 NotebookLM 投喂！`);
+            // 周结本地自动冲洗机制
+            if (confirm(`✅ 【${selectedSubject}】合体情报包下载成功！已在底部无缝绑定 GitHub 云端文件索引！\n\n是否立即【格式化】本地缓存中该科目的旧数据？\n（注：云端 GitHub 档案已锁死，不受影响）`)) {
+                let remainBugs = bugRecords.filter(b => b.subject !== selectedSubject);
+                let remainDocs = docRecords.filter(d => d.subject !== selectedSubject);
+                localStorage.setItem('longTermBugs', JSON.stringify(remainBugs));
+                localStorage.setItem('todayDocs', JSON.stringify(remainDocs));
+                
+                renderBugRecords(); 
+                if(typeof scanEbbinghausThreats === 'function') scanEbbinghausThreats();
+                alert(`🧹 本地【${selectedSubject}】战区已打扫完毕，算力重整！`);
+            }
         });
 
         // 核心直连 GitHub
