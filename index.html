@@ -381,7 +381,7 @@
                 let th = Math.floor(sessionTotalRemaining / 3600); let tm = Math.floor((sessionTotalRemaining % 3600) / 60); let ts = sessionTotalRemaining % 60;
                 document.getElementById('totalVal').innerText = `${String(th).padStart(2,'0')}:${String(tm).padStart(2,'0')}:${String(ts).padStart(2,'0')}`;
                 let task_m = Math.floor(activeTaskRemaining / 60); let task_s = activeTaskRemaining % 60;
-                document.getElementById('taskVal').innerText = `${String(task_m).padStart(2,'0')}:${String(task_m).padStart(2,'0')}`;
+                document.getElementById('taskVal').innerText = `${String(task_m).padStart(2,'0')}:${String(task_s).padStart(2,'0')}`;
 
                 if (activeTaskRemaining === 0 && dualInterval !== null) {
                     clearInterval(dualInterval); dualInterval = null; 
@@ -593,7 +593,7 @@
             selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none'; document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 【十万分精神精细修正版】：分科全量 MD+PDF 双文书深度融合枢纽 ==========
+        // ========== 【跨域安全绕过版】：分科全量 MD+PDF 双文书深度融合枢纽 ==========
         document.getElementById('stitchSubjectBtn').addEventListener('click', async function() {
             const selectedSubject = document.getElementById('exportSubjectFilter').value;
             
@@ -646,11 +646,16 @@
                         report += `【漏洞编号/物资代号】: ${baseName}\n`;
                         report += `==================================================\n\n`;
 
-                        let mdContentRes = await fetch(mdFile.download_url, {
-                            headers: { 'Authorization': `token ${CONFIG.token}` }
+                        // 【核心安全修复：绕过苹果 WebKit 跨域拦截】
+                        // 放弃使用 download_url 强加 Authorization 头部引起的 CORS 报错，
+                        // 改为直接通过 GitHub 官方 API 并要求返回 raw 格式。由于 API 本身支持跨域，100% 不会弹 Load failed！
+                        let mdContentRes = await fetch(mdFile.url, {
+                            headers: { 
+                                'Authorization': `token ${CONFIG.token}`,
+                                'Accept': 'application/vnd.github.v3.raw'
+                            }
                         });
                         
-                        // 【核心拼写修复处】：将原本打错的幽灵变量彻底修正为正确的 mdTextContent
                         let mdTextContent = mdContentRes.ok ? await mdContentRes.text() : "【核心文字情报拉取发生网络阻塞】";
                         
                         report += `## 💡 我的核心解析与盲区补丁：\n`;
