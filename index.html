@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>朔夜战术终端 5.0 [全域统御版]</title>
+    <title>朔夜战术终端 5.1 [全域统御与全天候续航版]</title>
     <style>
         :root { color-scheme: dark; }
         html, body {
@@ -76,7 +76,7 @@
         <div class="hud-bar">
             <div><span class="hud-blink">🔴</span> USER: MA_XIAO</div>
             <div id="systemClock">00:00:00</div>
-            <div style="color:#00aaff;">OS_V: 5.0 [FULL_DOMAIN]</div>
+            <div style="color:#00aaff;">OS_V: 5.1 [FULL_DOMAIN]</div>
         </div>
 
         <div class="backup-bar">
@@ -299,6 +299,46 @@
         let sessionEndTime = 0; 
         let taskEndTime = 0; 
 
+        // 存储当前正在计时的状态，防止在 iPad 浏览器切后台导致变量丢失
+        function saveTimerState() {
+            if (activeTaskIndex !== -1) {
+                localStorage.setItem('activeTimer', JSON.stringify({
+                    activeTaskIndex, sessionEndTime, taskEndTime, isGlobalTimeSet, sessionTotalRemaining, penaltyCount
+                }));
+            } else {
+                localStorage.removeItem('activeTimer');
+            }
+        }
+
+        // 页面加载时恢复倒计时状态
+        function restoreTimerState() {
+            let saved = localStorage.getItem('activeTimer');
+            if (saved) {
+                try {
+                    let s = JSON.parse(saved);
+                    let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]');
+                    if (s.activeTaskIndex !== -1 && tasks[s.activeTaskIndex]) {
+                        activeTaskIndex = s.activeTaskIndex;
+                        sessionEndTime = s.sessionEndTime;
+                        taskEndTime = s.taskEndTime;
+                        isGlobalTimeSet = s.isGlobalTimeSet;
+                        sessionTotalRemaining = s.sessionTotalRemaining;
+                        penaltyCount = s.penaltyCount || 0;
+                        
+                        let t = tasks[activeTaskIndex];
+                        if (isGlobalTimeSet) document.getElementById('totalMinutes').disabled = true;
+                        document.getElementById('activeTaskName').innerText = `[${t.type}] ${t.name}`;
+                        document.getElementById('runnerContainer').classList.remove('hidden'); 
+                        document.getElementById('queueContainer').classList.add('hidden');
+                        
+                        startTick();
+                    } else {
+                        localStorage.removeItem('activeTimer');
+                    }
+                } catch(e) {}
+            }
+        }
+
         function renderTasks() {
             let tasks = JSON.parse(localStorage.getItem('tonightTasks') || '[]');
             let list = document.getElementById('taskList'); list.innerHTML = '';
@@ -358,6 +398,7 @@
                 console.log("暗号注入失败，请检查浏览器权限。");
             });
 
+            saveTimerState();
             startTick();
         };
 
@@ -403,6 +444,7 @@
                             taskEndTime = newNow + (activeTaskRemaining * 1000);
                             sessionEndTime = newNow + (sessionTotalRemaining * 1000);
                             
+                            saveTimerState();
                             startTick(); 
                         } 
                     }, 100);
@@ -430,6 +472,8 @@
             
             navigator.clipboard.writeText("自由身");
 
+            activeTaskIndex = -1;
+            saveTimerState(); // 任务结束，清除缓存中的倒计时状态
             renderTasks(); scanEbbinghausThreats();
         }
 
@@ -452,6 +496,18 @@
 
                 if (triggerRevive) {
                     threatsFound++;
+                    
+                    // 生成通往云端的原题查看链接
+                    let linkHtml = "";
+                    if (b.cloudFolder && b.baseName) {
+                        let folderEncoded = b.cloudFolder.split('/').map(encodeURIComponent).join('/');
+                        let baseEncoded = encodeURIComponent(b.baseName);
+                        let ext = b.imageExt ? b.imageExt : "";
+                        let targetFile = ext ? `${baseEncoded}${ext}` : `${baseEncoded}.md`;
+                        let url = `https://github.com/${CONFIG.username}/${CONFIG.repo}/blob/main/${folderEncoded}/${targetFile}`;
+                        linkHtml = `<a href="${url}" target="_blank" style="color:#00aaff; text-decoration:underline; font-size:0.9em; margin-left:10px;">[ 🔗 查看原题 ]</a>`;
+                    }
+
                     let div = document.createElement('div');
                     div.style = "background:#150505; border:1px dashed #ff3333; padding:10px; margin:5px 0; border-radius:4px; display:flex; justify-content:space-between; align-items:center;";
                     let starIcon = b.star == 1 ? "🔴" : (b.star == 2 ? "🟡" : "🔵");
@@ -459,6 +515,7 @@
                         <div>
                             <span style="color:#ff3333; font-weight:bold;">[${starIcon} ${b.subject}]</span> 
                             <span style="color:#aaa; font-size:0.9em;">潜伏 ${Math.floor(ageInHours)}h:</span>
+                            ${linkHtml}
                             <div style="color:#fff; font-size:0.9em; margin-top:3px; max-width:550px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.content}</div>
                         </div>
                         <button style="width:auto; padding:5px 10px; font-size:12px; background:#ff3333; color:#fff; margin-bottom:0;" onclick="window.reviveToTaskQueue(${index})">[ ⚔️ 征调进入当晚猎杀 ]</button>
@@ -593,141 +650,63 @@
             selectedDocFile = null; document.getElementById('docName').value = ''; document.getElementById('docSummary').value = ''; document.getElementById('docFileInput').value = ''; document.getElementById('docFileInfo').style.display = 'none'; document.getElementById('uploadDocBtn').disabled = false;
         });
 
-        // ========== 【跨域安全绕过版】：分科全量 MD+PDF 双文书深度融合枢纽 ==========
-        document.getElementById('stitchSubjectBtn').addEventListener('click', async function() {
+        // ========== 【最终实战版】：本地离线编译枢纽 ==========
+        // 核心逻辑：不联网，不触发跨域检查，直接生成 NotebookLM 可完美检索的指令文本
+        document.getElementById('stitchSubjectBtn').addEventListener('click', function() {
             const selectedSubject = document.getElementById('exportSubjectFilter').value;
             
-            document.getElementById('stitchSubjectBtn').disabled = true;
-            document.getElementById('stitchSubjectBtn').innerText = `[ 🔄 正在深度融合全量 MD 与 PDF 核心数据... ]`;
-            
+            let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
+            let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
+            let filteredBugs = bugRecords.filter(b => b.subject === selectedSubject);
+            let filteredDocs = docRecords.filter(d => d.subject === selectedSubject);
+
+            if (filteredBugs.length === 0 && filteredDocs.length === 0) { 
+                return alert(`⚠️ 本地缓存中暂无【${selectedSubject}】的情报可提取！`); 
+            }
+
             let report = `==================================================\n`;
-            report += `  朔夜全量统御卷轴 - [${selectedSubject}战区·双文书深度融合版]\n`;
-            report += `  提取时间：${new Date().toLocaleString()}\n`;
-            report += `  安全指引：本包已无损集成核心手写档案与 PDF 直连数据流，请直接投喂 NotebookLM\n`;
+            report += `  朔夜全量统御卷轴 - [${selectedSubject}战区·NotebookLM 指引版]\n`;
+            report += `  提取时间：${new Date().toLocaleString()}\n\n`;
+            report += `  --- [给 NotebookLM 的系统级检索指令] ---\n`;
+            report += `  1. 本文件为【错题解析与指引包】。\n`;
+            report += `  2. 你在分析题目时，请根据下文中的【物资代号】，在 Source 列表中自动关联对应的 .pdf 或 .png 文件。\n`;
+            report += `  3. 请优先读取关联的 PDF/图片中的原始数据，结合本包中的【病理分析】进行交叉诊断。\n`;
             report += `==================================================\n\n`;
 
-            try {
-                const dateObj = new Date();
-                const yearMonth = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
-                
-                let bugRecords = JSON.parse(localStorage.getItem('longTermBugs') || '[]');
-                let docRecords = JSON.parse(localStorage.getItem('todayDocs') || '[]');
-                let filteredBugs = bugRecords.filter(b => b.subject === selectedSubject);
-                let filteredDocs = docRecords.filter(d => d.subject === selectedSubject);
-
-                if (filteredBugs.length === 0 && filteredDocs.length === 0) { 
-                    throw new Error(`本地缓存中暂无【${selectedSubject}】的情报可供联合编译打包！`); 
-                }
-
-                const cloudPath = `错题库/${selectedSubject}/${yearMonth}`;
-                const urlPath = cloudPath.split('/').map(encodeURIComponent).join('/');
-                
-                let res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${urlPath}`, {
-                    headers: { 'Authorization': `token ${CONFIG.token}` }
+            if (filteredBugs.length > 0) {
+                report += `## 🔻 漏洞阵列\n\n`;
+                filteredBugs.forEach((b) => {
+                    let fName = b.baseName; // 这是你上传时的文件名锚点
+                    report += `==================================================\n`;
+                    report += `【物资代号】：${fName}\n`;
+                    report += `==================================================\n`;
+                    report += `## 💡 我的核心解析与盲区补丁：\n`;
+                    report += `${b.content}\n\n`;
+                    report += `> 检索提示：请在源列表中查找包含“${fName}”前缀的 PDF 或图片文件，进行图像与逻辑关联分析。\n\n`;
                 });
-                
-                if (!res.ok) {
-                    throw new Error(`云端对应战术目录 [${yearMonth}] 尚未建档或拉取失败。`);
-                }
-                let filesArray = await res.json();
-                
-                let mdFiles = filesArray.filter(f => f.name.endsWith('.md'));
+            }
 
-                if (filteredBugs.length > 0 && mdFiles.length === 0) {
-                    throw new Error(`云端对应目录下未检测到任何可缝合的 .md 文本战备实体。`);
-                }
+            if (filteredDocs.length > 0) {
+                report += `## 🔹 资料阵列\n\n`;
+                filteredDocs.forEach((d) => {
+                    report += `【物资代号】：${d.name}\n`;
+                    report += `- **核心提要**: ${d.summary || '无摘要'}\n`;
+                    report += `> 检索提示：请在源列表中查找同名文件进行联合解析。\n\n`;
+                });
+            }
 
-                if (mdFiles.length > 0) {
-                    report += `## 🔻 漏洞阵列 (全量手写文本与 PDF 数据流双闭环)\n\n`;
-                    for (let mdFile of mdFiles) {
-                        let baseName = mdFile.name.replace('.md', '');
-                        
-                        report += `==================================================\n`;
-                        report += `【漏洞编号/物资代号】: ${baseName}\n`;
-                        report += `==================================================\n\n`;
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `朔夜统御卷轴_${selectedSubject}_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
 
-                        // 【核心安全修复：绕过苹果 WebKit 跨域拦截】
-                        // 放弃使用 download_url 强加 Authorization 头部引起的 CORS 报错，
-                        // 改为直接通过 GitHub 官方 API 并要求返回 raw 格式。由于 API 本身支持跨域，100% 不会弹 Load failed！
-                        let mdContentRes = await fetch(mdFile.url, {
-                            headers: { 
-                                'Authorization': `token ${CONFIG.token}`,
-                                'Accept': 'application/vnd.github.v3.raw'
-                            }
-                        });
-                        
-                        let mdTextContent = mdContentRes.ok ? await mdContentRes.text() : "【核心文字情报拉取发生网络阻塞】";
-                        
-                        report += `## 💡 我的核心解析与盲区补丁：\n`;
-                        report += `${mdTextContent}\n\n`;
-
-                        let matchingFiles = filesArray.filter(f => f.name.startsWith(baseName) && !f.name.endsWith('.md'));
-                        
-                        if (matchingFiles.length > 0) {
-                            report += `## 📝 关联物理现场快照/文书：\n`;
-                            matchingFiles.forEach(file => {
-                                let ext = file.name.split('.').pop().toLowerCase();
-                                let rawDirectUrl = file.html_url
-                                    .replace("github.com", "raw.githubusercontent.com")
-                                    .replace("/blob/", "/");
-                                
-                                if (ext === 'pdf') {
-                                    report += `- **关联 OCR_PDF 高清原始数据流 (供 NotebookLM 穿透读取)**: ${rawDirectUrl}\n`;
-                                } else if (['png', 'jpg', 'jpeg', 'gif'].includes(ext)) {
-                                    report += `- **关联现场快照原始数据物证 (供 AI 视觉神经直接扫描)**: ${rawDirectUrl}\n`;
-                                }
-                            });
-                        } else {
-                            report += `## 📝 关联物理现场快照/文书：\n> 未检测到同名附加物理现场资料。\n`;
-                        }
-                        report += `\n--------------------------------------------------\n\n`;
-                    }
-                }
-
-                if (filteredDocs.length > 0) {
-                    report += `## 🔹 资料阵列 (云端高分重装弹药储备库)\n\n`;
-                    filteredDocs.forEach((d) => {
-                        report += `【物资代号】: ${d.name}\n`;
-                        report += `- **核心情报提要 (检索词)**: ${d.summary || '未提供提要'}\n`;
-                        
-                        let folder = d.cloudFolder || '资料库';
-                        let fName = d.baseName || `(未知物资档案)`;
-                        let ext = d.fileExt || '';
-                        
-                        if (fName !== `(未知物资档案)`) {
-                             let encodedFolder = folder.split('/').map(encodeURIComponent).join('/');
-                             let githubRawBase = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${encodedFolder}/`;
-                             report += `- **GitHub 远程原始物资 Raw 直读数据流**: ${githubRawBase}${encodeURIComponent(fName + ext)}\n\n`;
-                        } else {
-                             report += `\n`;
-                        }
-                    });
-                }
-
-                const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `朔夜全量卷轴_${selectedSubject}_${new Date().toISOString().split('T')[0]}.txt`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                if (confirm(`✅ 【${selectedSubject}】合体情报包下载成功！已在底部无缝绑定 GitHub 云端文件索引！\n\n是否立即【格式化】本地缓存中该科目的旧数据？\n（注：云端 GitHub 档案已锁死，不受影响）`)) {
-                    let remainBugs = bugRecords.filter(b => b.subject !== selectedSubject);
-                    let remainDocs = docRecords.filter(d => d.subject !== selectedSubject);
-                    localStorage.setItem('longTermBugs', JSON.stringify(remainBugs));
-                    localStorage.setItem('todayDocs', JSON.stringify(remainDocs));
-                    
-                    renderBugRecords(); 
-                    if(typeof scanEbbinghausThreats === 'function') scanEbbinghausThreats();
-                    alert(`🧹 本地【${selectedSubject}】战区已打扫完毕，算力重整！`);
-                }
-
-            } catch (error) {
-                alert(`❌ 朔夜终端联合编译卡壳: ${error.message}`);
-            } finally {
-                document.getElementById('stitchSubjectBtn').disabled = false;
-                document.getElementById('stitchSubjectBtn').innerText = `[ 📦 缝合该科全量情报包 (TXT) ]`;
+            if (confirm(`✅ 【${selectedSubject}】情报包编译成功！\n\n下一步：请将此 TXT 连同该科目的 PDF 文件一起拖进 NotebookLM。\n\n是否清空本地该战区的缓存？`)) {
+                let remainBugs = bugRecords.filter(b => b.subject !== selectedSubject);
+                let remainDocs = docRecords.filter(d => d.subject !== selectedSubject);
+                localStorage.setItem('longTermBugs', JSON.stringify(remainBugs));
+                localStorage.setItem('todayDocs', JSON.stringify(remainDocs));
+                location.reload();
             }
         });
 
@@ -752,7 +731,7 @@
             });
         }
 
-        window.addEventListener('load', () => { renderTasks(); renderBugRecords(); scanEbbinghausThreats(); });
+        window.addEventListener('load', () => { restoreTimerState(); renderTasks(); renderBugRecords(); scanEbbinghausThreats(); });
     </script>
 </body>
 </html>
