@@ -13,24 +13,24 @@
 
         body {
             font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #333;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
 
         #game-container {
+            width: 100%;
+            max-width: 1400px;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 1200px;
-            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             overflow: hidden;
         }
 
-        /* 菜单界面 */
+        /* ===== 菜单界面 ===== */
         .menu-screen {
             padding: 60px 40px;
             text-align: center;
@@ -38,7 +38,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .menu-screen.hidden {
@@ -51,14 +51,14 @@
 
         .menu-title h1 {
             font-size: 60px;
-            color: #667eea;
+            color: #fff;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
         }
 
         .subtitle {
             font-size: 20px;
-            color: #666;
+            color: #ddd;
         }
 
         .menu-buttons {
@@ -75,22 +75,27 @@
             font-size: 18px;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #667eea;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
         }
 
         .menu-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
-        /* 游戏主界面 */
+        .menu-footer {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        /* ===== 游戏主界面 ===== */
         #game-screen {
             display: grid;
-            grid-template-columns: 1fr 250px;
+            grid-template-columns: 1fr 280px;
             height: 700px;
             background: #f0f0f0;
             gap: 10px;
@@ -108,15 +113,25 @@
             overflow: hidden;
             border: 3px solid #667eea;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
         }
 
         #game-canvas {
-            width: 100%;
-            height: 100%;
+            flex: 1;
             display: block;
-            cursor: crosshair;
+            cursor: pointer;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+        }
+
+        .game-info-bar {
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #667eea;
         }
 
         .game-sidebar {
@@ -127,32 +142,40 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .char-affection {
+        .char-card {
             background: #f9f9f9;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             border-left: 4px solid #667eea;
             margin-bottom: 5px;
         }
 
+        .char-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
         .char-name {
             font-weight: bold;
             color: #333;
-            display: block;
-            margin-bottom: 5px;
             font-size: 13px;
+        }
+
+        .char-emoji {
+            font-size: 18px;
         }
 
         .affection-bar {
             width: 100%;
-            height: 15px;
+            height: 16px;
             background: #e0e0e0;
             border-radius: 8px;
             overflow: hidden;
-            margin: 5px 0;
         }
 
         .affection-fill {
@@ -162,42 +185,44 @@
             transition: width 0.3s ease;
         }
 
-        .affection-level {
+        .affection-info {
             font-size: 11px;
             color: #666;
-            display: block;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .dialogue-box {
             background: white;
             border: 2px solid #667eea;
-            border-radius: 10px;
-            padding: 15px;
-            min-height: 100px;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 90px;
+            max-height: 150px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            overflow-y: auto;
         }
 
         .dialogue-speaker {
             font-weight: bold;
             color: #667eea;
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin-bottom: 6px;
+            font-size: 12px;
         }
 
         .dialogue-text {
             color: #333;
-            line-height: 1.5;
-            min-height: 40px;
+            line-height: 1.4;
             font-size: 12px;
+            margin-bottom: 8px;
         }
 
         .dialogue-continue {
             color: #999;
             font-size: 10px;
             text-align: right;
-            margin-top: 8px;
             animation: blink 1s infinite;
         }
 
@@ -206,26 +231,28 @@
             51%, 100% { opacity: 0.3; }
         }
 
-        .choice-box {
-            background: white;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            padding: 10px;
-            margin-top: 5px;
+        .choices-box {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+            max-height: 100px;
+            overflow-y: auto;
         }
 
         .choice-btn {
             display: block;
             width: 100%;
             padding: 6px;
-            margin-bottom: 5px;
-            background: #f0f0f0;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            margin-bottom: 4px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-size: 11px;
             text-align: left;
+            color: #333;
         }
 
         .choice-btn:hover {
@@ -235,15 +262,12 @@
         }
 
         .game-controls {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
+            display: flex;
+            gap: 8px;
         }
 
         .control-btn {
-            width: 100%;
+            flex: 1;
             padding: 8px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -252,28 +276,85 @@
             cursor: pointer;
             font-size: 11px;
             font-weight: bold;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .control-btn:hover {
             transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .control-btn:last-child {
-            margin-bottom: 0;
+        /* ===== 操作提示 ===== */
+        .instruction-box {
+            background: #fff9e6;
+            border: 2px solid #ffd700;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 11px;
+            color: #333;
+            line-height: 1.4;
         }
 
+        /* ===== 小游戏界面 ===== */
+        .minigame-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .minigame-overlay.hidden {
+            display: none;
+        }
+
+        .minigame-container {
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .minigame-title {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .minigame-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 8px;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .minigame-btn:hover {
+            background: #5a6fd6;
+            transform: scale(1.05);
+        }
+
+        /* ===== 设置和关于 ===== */
         .settings-panel {
             background: white;
             border-radius: 10px;
             padding: 30px;
-            margin: 30px 0;
-            text-align: left;
             max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
         }
 
         .setting-item {
@@ -286,74 +367,47 @@
         .setting-item label {
             font-weight: bold;
             color: #333;
-            flex: 1;
+        }
+
+        .setting-item input {
+            width: 150px;
         }
 
         .about-content {
             background: white;
             border-radius: 10px;
             padding: 30px;
-            text-align: left;
             max-width: 600px;
-            margin: 30px auto;
+            margin: 0 auto;
+            text-align: left;
         }
 
-        .minigame-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .minigame-screen.hidden {
-            display: none;
-        }
-
-        .minigame-container {
-            background: white;
-            color: #333;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .minigame-title {
-            font-size: 24px;
+        .about-content h3 {
             color: #667eea;
-            margin-bottom: 20px;
-            font-weight: bold;
+            margin-bottom: 15px;
         }
 
-        .minigame-btn {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 5px;
-            transition: all 0.3s ease;
+        .about-content p {
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.6;
         }
 
-        .minigame-btn:hover {
-            background: #5a6fd6;
-            transform: scale(1.05);
+        .char-intro {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #667eea;
+            border-radius: 3px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             #game-screen {
                 grid-template-columns: 1fr;
+                height: auto;
             }
             .game-sidebar {
-                height: 150px;
+                height: 200px;
             }
         }
     </style>
@@ -367,21 +421,21 @@
                 <p class="subtitle">校园友情物语</p>
             </div>
             <div class="menu-buttons">
-                <button class="menu-btn" onclick="gameManager.startNewGame()">开始游戏</button>
-                <button class="menu-btn" onclick="gameManager.showSettings()">游戏设置</button>
-                <button class="menu-btn" onclick="gameManager.showAbout()">关于游戏</button>
+                <button class="menu-btn" onclick="gameManager.startNewGame()">▶️ 开始游戏</button>
+                <button class="menu-btn" onclick="gameManager.showSettings()">⚙️ 游戏设置</button>
+                <button class="menu-btn" onclick="gameManager.showAbout()">ℹ️ 关于游戏</button>
             </div>
-            <div class="menu-footer" style="color: #999; font-size: 14px;">
+            <div class="menu-footer">
                 <p>轻松沙雕 · 青春少年友情 · 无虐心悲剧</p>
             </div>
         </div>
 
         <!-- 设置界面 -->
         <div id="settings-screen" class="menu-screen hidden">
-            <h2 style="color: #667eea; margin-bottom: 30px;">游戏设置</h2>
+            <h2 style="color: white; margin-bottom: 30px;">⚙️ 游戏设置</h2>
             <div class="settings-panel">
                 <div class="setting-item">
-                    <label>文字速度</label>
+                    <label>文字显示速度</label>
                     <input type="range" id="text-speed" min="1" max="10" value="5">
                 </div>
                 <div class="setting-item">
@@ -393,50 +447,78 @@
                     <input type="range" id="sfx-volume" min="0" max="100" value="70">
                 </div>
             </div>
-            <button class="menu-btn" onclick="gameManager.showMenu()">返回</button>
+            <br>
+            <button class="menu-btn" onclick="gameManager.showMenu()">◀️ 返回菜单</button>
         </div>
 
         <!-- 关于界面 -->
         <div id="about-screen" class="menu-screen hidden">
-            <h2 style="color: #667eea; margin-bottom: 30px;">关于游戏</h2>
+            <h2 style="color: white; margin-bottom: 30px;">ℹ️ 关于游戏</h2>
             <div class="about-content">
-                <h3 style="color: #667eea; margin-bottom: 15px;">少年同盟 - 校园友情物语</h3>
-                <p style="color: #666; margin-bottom: 15px;">一款轻松沙雕的青春校园友情向游戏</p>
-                <p style="color: #666; margin-bottom: 15px;">与三位性格各异的少年建立深厚的友情羁绊。</p>
-                <p style="color: #666; margin-bottom: 15px;">通过对话和小游戏提升好感度，解锁丰富的剧情。</p>
-                <br>
-                <h4 style="color: #764ba2; margin-bottom: 10px;">游戏特色：</h4>
-                <p style="color: #666; margin-bottom: 8px;">✨ TIAM - 清冷天才少年</p>
-                <p style="color: #666; margin-bottom: 8px;">✨ 紫啧 - 痞帅运动少年</p>
-                <p style="color: #666; margin-bottom: 8px;">✨ 硫代硫酸钠 - 温柔化学少年</p>
-                <p style="color: #666; margin-bottom: 8px;">🎮 多种互动小游戏</p>
-                <p style="color: #666;">💝 实时好感度系统</p>
+                <h3>少年同盟 - 校园友情物语</h3>
+                <p>一款轻松有趣的青春校园友情向游戏。在校园里与三位性格各异的少年建立深厚的友情羁绊。</p>
+                
+                <h3>游戏特色</h3>
+                <div class="char-intro">
+                    <strong>📚 TIAM - 清冷天才少年</strong><br>
+                    冷酷聪慧，喜欢钻研数学难题。内心温暖，是个好朋友。
+                </div>
+                <div class="char-intro">
+                    <strong>⚽ 紫啧 - 痞帅运动少年</strong><br>
+                    活力四射，篮球好手。看似不正经，其实很在意朋友。
+                </div>
+                <div class="char-intro">
+                    <strong>🧪 硫代硫酸钠 - 温柔化学少年</strong><br>
+                    温和细心，化学实验能手。善于倾听，是个贴心的朋友。
+                </div>
+
+                <h3>游戏玩法</h3>
+                <p>✨ 在校园的各个场景活动，点击接近NPC</p>
+                <p>✨ 通过对话增进了解</p>
+                <p>✨ 参加小游戏提升好感度</p>
+                <p>✨ 好感度越高，解锁更多剧情和特殊互动</p>
             </div>
-            <button class="menu-btn" onclick="gameManager.showMenu()">返回</button>
+            <br>
+            <button class="menu-btn" onclick="gameManager.showMenu()">◀️ 返回菜单</button>
         </div>
 
         <!-- 游戏主画面 -->
         <div id="game-screen" class="hidden">
             <div class="game-canvas-area">
-                <canvas id="game-canvas" width="800" height="600"></canvas>
+                <canvas id="game-canvas" width="1024" height="600"></canvas>
+                <div class="game-info-bar">
+                    <span id="location-info">📍 校园广场</span>
+                    <span id="time-info">⏰ 早上 08:00</span>
+                </div>
             </div>
 
             <div class="game-sidebar">
+                <div class="instruction-box">
+                    <strong>操作指南：</strong><br>
+                    🖱️ 点击移动<br>
+                    ↗️ 靠近NPC自动对话<br>
+                    📝 选择对话选项<br>
+                    🎮 完成小游戏加好感
+                </div>
+
                 <div id="chars-affection"></div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-speaker" id="dialogue-speaker">游戏</div>
+                    <div class="dialogue-text" id="dialogue-text">👋 欢迎来到校园！点击屏幕开始冒险...</div>
+                    <div id="dialogue-choices" class="choices-box" style="display: none;"></div>
+                    <div class="dialogue-continue" id="dialogue-continue">▼ 点击继续</div>
+                </div>
+
                 <div class="game-controls">
                     <button class="control-btn" onclick="gameManager.saveGame()">💾 保存</button>
                     <button class="control-btn" onclick="gameManager.showMenu()">🏠 菜单</button>
-                </div>
-                <div class="dialogue-box">
-                    <div class="dialogue-speaker" id="dialogue-speaker">游戏</div>
-                    <div class="dialogue-text" id="dialogue-text">点击开始冒险...</div>
-                    <div class="dialogue-continue">▼ 点击继续</div>
                 </div>
             </div>
         </div>
 
         <!-- 小游戏界面 -->
-        <div id="minigame-screen" class="minigame-screen hidden">
+        <div id="minigame-overlay" class="minigame-overlay hidden">
             <div class="minigame-container" id="minigame-container"></div>
         </div>
     </div>
@@ -445,135 +527,207 @@
         // ==================== 游戏配置 ====================
         const CONFIG = {
             CHARACTERS: [
-                { id: 'tiam', name: 'TIAM', color: '#3498db', emoji: '📚' },
-                { id: 'zize', name: '紫啧', color: '#e74c3c', emoji: '⚽' },
-                { id: 'liudai', name: '硫代硫酸钠', color: '#2ecc71', emoji: '🧪' }
-            ]
+                { id: 'tiam', name: 'TIAM', emoji: '📚', color: '#3498db', initialLocation: 'library', personality: '清冷天才' },
+                { id: 'zize', name: '紫啧', emoji: '⚽', color: '#e74c3c', initialLocation: 'gym', personality: '痞帅运动' },
+                { id: 'liudai', name: '硫代硫酸钠', emoji: '🧪', color: '#2ecc71', initialLocation: 'lab', personality: '温柔化学' }
+            ],
+            LOCATIONS: {
+                plaza: { name: '校园广场', x: 400, y: 400 },
+                library: { name: '图书馆', x: 800, y: 300 },
+                gym: { name: '体育馆', x: 200, y: 100 },
+                lab: { name: '化学实验室', x: 800, y: 150 },
+                cafeteria: { name: '食堂', x: 200, y: 300 }
+            }
         };
 
         // ==================== 游戏数据 ====================
         const gameData = {
-            affections: { tiam: 0, zize: 0, liudai: 0 }
+            affections: { tiam: 0, zize: 0, liudai: 0 },
+            currentDay: 1,
+            currentTime: '08:00',
+            playerX: 400,
+            playerY: 400,
+            currentLocation: 'plaza',
+            dialogueHistory: {}
         };
 
-        // ==================== 对话库 ====================
+        // ==================== 丰富的对话库 ====================
         const dialogues = {
-            tiam: [
-                { text: '哦，是你。我刚做完一套数学题。' },
-                { text: '有点累了...要去小卖部吗？' }
-            ],
-            zize: [
-                { text: '哟！兄弟！要来单挑一局篮球吗？' },
-                { text: '我来教你，保证你学会！' }
-            ],
-            liudai: [
-                { text: '你好呀。我在准备一个化学实验。' },
-                { text: '要一起试试吗？很有趣的！' }
-            ]
+            initial: {
+                tiam: [
+                    "嗯？是你？我在做今天的数学题。",
+                    "你好像有什么事？来坐会儿吧。"
+                ],
+                zize: [
+                    "哟！兄弟！你来得正好！",
+                    "要不要来和我较量一下篮球？"
+                ],
+                liudai: [
+                    "你好呀～我在准备一个有趣的化学实验。",
+                    "要一起参��吗？保证很好玩！"
+                ]
+            },
+            repeat: {
+                tiam: [
+                    "又是你啊...最近在忙什么？",
+                    "嗯，一起讨论一下功课吧。"
+                ],
+                zize: [
+                    "嘿！又见面了！感觉我们越来越熟了呢！",
+                    "走，再来一局！"
+                ],
+                liudai: [
+                    "呀，是你！真开心能再见到你。",
+                    "一起来做个小实验吧～"
+                ]
+            },
+            intimate: {
+                tiam: [
+                    "...你总是这么主动来找我。",
+                    "我发现...我很享受和你在一起。"
+                ],
+                zize: [
+                    "老兄！咱们这友谊真是没话说！",
+                    "从现在开始，咱们就是最好的兄弟！"
+                ],
+                liudai: [
+                    "你知道吗？见到你我就特别开心。",
+                    "你已经成为我最重要的人了。"
+                ]
+            }
         };
 
-        // ==================== 小游戏 ====================
+        // ==================== 小游戏系统 ====================
         const miniGames = {
             rps: {
-                play: function(npcId) {
-                    let container = document.getElementById('minigame-container');
-                    container.innerHTML = `
+                play(npcId) {
+                    const npc = CONFIG.CHARACTERS.find(c => c.id === npcId);
+                    document.getElementById('minigame-container').innerHTML = `
                         <div class="minigame-title">🎮 猜拳游戏</div>
-                        <div style="font-size: 18px; margin: 30px 0;">选择你的出招！</div>
+                        <div style="font-size: 16px; margin: 30px 0; color: #666;">
+                            和${npc.name}来一局猜拳！选择你的出招：
+                        </div>
                         <button class="minigame-btn" onclick="miniGames.rps.choose(0, '${npcId}')">✊ 石头</button>
                         <button class="minigame-btn" onclick="miniGames.rps.choose(1, '${npcId}')">✌️ 剪刀</button>
                         <button class="minigame-btn" onclick="miniGames.rps.choose(2, '${npcId}')">✋ 布</button>
                     `;
                 },
-                choose: function(idx, npcId) {
+                choose(playerChoice, npcId) {
                     const choices = ['✊ 石头', '✌️ 剪刀', '✋ 布'];
-                    const computer = Math.floor(Math.random() * 3);
+                    const npcChoice = Math.floor(Math.random() * 3);
                     let result = '';
                     let bonus = 0;
                     
-                    if (idx === computer) {
+                    if (playerChoice === npcChoice) {
                         result = '平手！';
                         bonus = 3;
-                    } else if ((idx === 0 && computer === 1) || (idx === 1 && computer === 2) || (idx === 2 && computer === 0)) {
-                        result = '你赢了！';
-                        bonus = 12;
+                    } else if (
+                        (playerChoice === 0 && npcChoice === 1) ||
+                        (playerChoice === 1 && npcChoice === 2) ||
+                        (playerChoice === 2 && npcChoice === 0)
+                    ) {
+                        result = '🎉 你赢了！';
+                        bonus = 15;
                     } else {
-                        result = '你输了...';
-                        bonus = 4;
+                        result = '😅 输了呢...';
+                        bonus = 5;
                     }
                     
                     gameData.affections[npcId] += bonus;
-                    let container = document.getElementById('minigame-container');
-                    container.innerHTML = `
+                    document.getElementById('minigame-container').innerHTML = `
                         <div class="minigame-title">${result}</div>
-                        <div style="font-size: 18px; margin: 30px 0;">你: ${choices[idx]} vs 对手: ${choices[computer]}</div>
-                        <div style="color: #667eea; font-size: 14px; margin-bottom: 20px;">+${bonus} 好感度</div>
-                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续</button>
+                        <div style="margin: 30px 0; font-size: 16px; color: #666;">
+                            你：${choices[playerChoice]}<br><br>
+                            对手：${choices[npcChoice]}
+                        </div>
+                        <div style="color: #667eea; font-size: 16px; margin-bottom: 20px; font-weight: bold;">
+                            +${bonus} 好感度
+                        </div>
+                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续冒险</button>
                     `;
                 }
             },
             basketball: {
-                play: function(npcId) {
-                    let power = 50;
-                    let direction = 1;
-                    let container = document.getElementById('minigame-container');
-                    
-                    container.innerHTML = `
-                        <div class="minigame-title">🏀 篮球单挑</div>
-                        <div style="margin: 30px 0;">
-                            <div style="font-size: 48px; margin-bottom: 20px;">🏀</div>
-                            <div style="font-size: 16px; margin-bottom: 15px;">力量：<span id="power-val">50</span>%</div>
-                            <div style="width: 200px; height: 25px; background: #ddd; border-radius: 12px; overflow: hidden; margin: 0 auto 20px;">
-                                <div id="power-bar" style="width: 50%; height: 100%; background: #667eea;"></div>
-                            </div>
-                            <button class="minigame-btn" onclick="miniGames.basketball.shoot('${npcId}')">投篮！</button>
+                play(npcId) {
+                    document.getElementById('minigame-container').innerHTML = `
+                        <div class="minigame-title">🏀 篮球投篮</div>
+                        <div style="font-size: 16px; margin: 20px 0 30px; color: #666;">
+                            抓住力度条，在30-70%之间投篮！
                         </div>
+                        <div style="font-size: 48px; margin-bottom: 20px;">🏀</div>
+                        <div style="font-size: 14px; margin-bottom: 10px;">力度：<span id="power-val">50</span>%</div>
+                        <div style="width: 200px; height: 25px; background: #ddd; border-radius: 12px; overflow: hidden; margin: 0 auto 20px; border: 2px solid #667eea;">
+                            <div id="power-bar" style="width: 50%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2);"></div>
+                        </div>
+                        <button class="minigame-btn" onclick="miniGames.basketball.shoot('${npcId}')">投篮！🎯</button>
                     `;
                     
-                    this.interval = setInterval(() => {
+                    let power = 50, direction = 1;
+                    miniGames.basketball.interval = setInterval(() => {
                         power += direction * 2;
                         if (power >= 100 || power <= 0) direction *= -1;
-                        document.getElementById('power-val').textContent = power;
-                        document.getElementById('power-bar').style.width = power + '%';
+                        const el = document.getElementById('power-val');
+                        if (el) el.textContent = power;
+                        const bar = document.getElementById('power-bar');
+                        if (bar) bar.style.width = power + '%';
                     }, 50);
                 },
-                shoot: function(npcId) {
+                shoot(npcId) {
                     clearInterval(this.interval);
                     const power = parseInt(document.getElementById('power-val').textContent);
-                    const success = power >= 40 && power <= 70;
-                    const bonus = success ? 15 : 5;
+                    const success = power >= 30 && power <= 70;
+                    const bonus = success ? 18 : 6;
                     gameData.affections[npcId] += bonus;
                     
-                    let container = document.getElementById('minigame-container');
-                    container.innerHTML = `
+                    document.getElementById('minigame-container').innerHTML = `
                         <div class="minigame-title">${success ? '进球了！🎯' : '没进...'}</div>
-                        <div style="font-size: 48px; margin: 30px 0;">${success ? '🎉' : '😅'}</div>
-                        <div style="color: #667eea; font-size: 14px; margin-bottom: 20px;">+${bonus} 好感度</div>
-                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续</button>
+                        <div style="font-size: 60px; margin: 30px 0;">${success ? '🎉' : '😅'}</div>
+                        <div style="font-size: 16px; margin: 20px 0 20px; color: #666;">
+                            力度：${power}%
+                        </div>
+                        <div style="color: #667eea; font-size: 16px; margin-bottom: 20px; font-weight: bold;">
+                            +${bonus} 好感度
+                        </div>
+                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续冒险</button>
                     `;
                 }
             },
             chemistry: {
-                play: function(npcId) {
-                    const q = { text: 'H₂O是什么？', ans: '水', opt: ['水', '氧气', '氢气'].sort(() => Math.random() - 0.5) };
-                    let container = document.getElementById('minigame-container');
-                    container.innerHTML = `
-                        <div class="minigame-title">🧪 化学实验</div>
-                        <div style="font-size: 16px; margin: 30px 0 20px;">${q.text}</div>
-                        ${q.opt.map(o => `<button class="minigame-btn" onclick="miniGames.chemistry.answer('${o}', '${q.ans}', '${npcId}')">${o}</button>`).join('')}
+                play(npcId) {
+                    const questions = [
+                        { text: 'H₂O是什么？', correct: '水', options: ['水', '氧气', '氢气'] },
+                        { text: '常见的酸性物质是？', correct: '醋', options: ['醋', '肥皂', '牛奶'] },
+                        { text: '燃烧需要三要素是什么？', correct: '可燃物、氧气、高温', options: ['可燃物、氧气、高温', '只需要高温', '只需要氧气'] }
+                    ];
+                    const q = questions[Math.floor(Math.random() * questions.length)];
+                    const options = q.options.sort(() => Math.random() - 0.5);
+                    
+                    document.getElementById('minigame-container').innerHTML = `
+                        <div class="minigame-title">🧪 化学小测试</div>
+                        <div style="font-size: 16px; margin: 30px 0 20px; color: #333;">
+                            ${q.text}
+                        </div>
+                        ${options.map(o => `
+                            <button class="minigame-btn" onclick="miniGames.chemistry.answer('${o}', '${q.correct}', '${npcId}')">
+                                ${o}
+                            </button>
+                        `).join('')}
                     `;
                 },
-                answer: function(ans, correct, npcId) {
+                answer(ans, correct, npcId) {
                     const ok = ans === correct;
-                    const bonus = ok ? 12 : 4;
+                    const bonus = ok ? 16 : 5;
                     gameData.affections[npcId] += bonus;
                     
-                    let container = document.getElementById('minigame-container');
-                    container.innerHTML = `
-                        <div class="minigame-title">${ok ? '答对了！✨' : '答错了...'}</div>
-                        <div style="font-size: 16px; margin: 20px 0;">正确答案：${correct}</div>
-                        <div style="color: #667eea; font-size: 14px; margin-bottom: 20px;">+${bonus} 好感度</div>
-                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续</button>
+                    document.getElementById('minigame-container').innerHTML = `
+                        <div class="minigame-title">${ok ? '✨ 答对了！' : '❌ 答错了...'}</div>
+                        <div style="font-size: 16px; margin: 20px 0; color: #666;">
+                            正确答案：<strong>${correct}</strong>
+                        </div>
+                        <div style="color: #667eea; font-size: 16px; margin-bottom: 20px; font-weight: bold;">
+                            +${bonus} 好感度
+                        </div>
+                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续冒险</button>
                     `;
                 }
             }
@@ -584,168 +738,235 @@
             canvas: null,
             ctx: null,
             npcs: [],
-            playerX: 400,
-            playerY: 300,
-            targetX: 400,
-            targetY: 300,
-            dialoguing: false,
-            inGame: false,
+            isDialoguing: false,
+            currentNPC: null,
+            dialogueIndex: 0,
+            dialogueChoices: [],
+            selectedDialogueOption: null,
 
             startNewGame() {
                 gameData.affections = { tiam: 0, zize: 0, liudai: 0 };
-                this.inGame = true;
+                gameData.currentDay = 1;
+                gameData.playerX = 400;
+                gameData.playerY = 400;
+                gameData.currentLocation = 'plaza';
+
                 document.getElementById('start-menu').classList.add('hidden');
                 document.getElementById('game-screen').classList.remove('hidden');
-                
+
                 this.canvas = document.getElementById('game-canvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.npcs = CONFIG.CHARACTERS.map(c => ({
-                    id: c.id,
-                    name: c.name,
-                    x: 150 + Math.random() * 500,
-                    y: 150 + Math.random() * 300,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5,
-                    color: c.color,
-                    emoji: c.emoji
-                }));
-                
+
+                // 初始化NPC
+                this.npcs = CONFIG.CHARACTERS.map(char => {
+                    const loc = CONFIG.LOCATIONS[char.initialLocation];
+                    return {
+                        id: char.id,
+                        name: char.name,
+                        emoji: char.emoji,
+                        color: char.color,
+                        x: loc.x,
+                        y: loc.y,
+                        targetX: loc.x,
+                        targetY: loc.y,
+                        location: char.initialLocation,
+                        talked: false,
+                        vx: (Math.random() - 0.5) * 1,
+                        vy: (Math.random() - 0.5) * 1
+                    };
+                });
+
                 this.updateUI();
                 this.setupCanvas();
-                this.loop();
+                this.gameLoop();
             },
 
             setupCanvas() {
                 this.canvas.addEventListener('click', (e) => {
-                    if (this.dialoguing) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    if (this.isDialoguing) {
                         this.nextDialogue();
                     } else {
-                        const rect = this.canvas.getBoundingClientRect();
-                        this.targetX = e.clientX - rect.left;
-                        this.targetY = e.clientY - rect.top;
-                        this.checkCollision();
+                        gameData.playerX = x;
+                        gameData.playerY = y;
                     }
                 });
             },
 
-            checkCollision() {
-                for (let npc of this.npcs) {
-                    const dx = npc.x - this.playerX;
-                    const dy = npc.y - this.playerY;
-                    if (Math.hypot(dx, dy) < 120) {
-                        this.startDialogue(npc);
-                        return;
+            update() {
+                // NPC移动
+                this.npcs.forEach(npc => {
+                    const dx = npc.targetX - npc.x;
+                    const dy = npc.targetY - npc.y;
+                    const dist = Math.hypot(dx, dy);
+
+                    if (dist > 50) {
+                        npc.x += (dx / dist) * 0.8;
+                        npc.y += (dy / dist) * 0.8;
+                    } else if (Math.random() < 0.02) {
+                        const locations = Object.values(CONFIG.LOCATIONS);
+                        const newLoc = locations[Math.floor(Math.random() * locations.length)];
+                        npc.targetX = newLoc.x;
+                        npc.targetY = newLoc.y;
                     }
-                }
+
+                    // 碰撞检测
+                    const dx2 = npc.x - gameData.playerX;
+                    const dy2 = npc.y - gameData.playerY;
+                    if (Math.hypot(dx2, dy2) < 80 && !this.isDialoguing) {
+                        this.startDialogue(npc);
+                    }
+                });
+            },
+
+            draw() {
+                const ctx = this.ctx;
+                ctx.fillStyle = '#87CEEB';
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // 绘制地点区域
+                ctx.fillStyle = 'rgba(200, 200, 255, 0.3)';
+                ctx.fillRect(350, 350, 100, 100);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('📍 广场', 400, 460);
+
+                ctx.fillStyle = 'rgba(255, 200, 200, 0.3)';
+                ctx.fillRect(150, 50, 100, 100);
+                ctx.fillText('🏀 体育馆', 200, 160);
+
+                ctx.fillStyle = 'rgba(200, 255, 200, 0.3)';
+                ctx.fillRect(750, 100, 100, 100);
+                ctx.fillText('🧪 实验室', 800, 210);
+
+                ctx.fillStyle = 'rgba(255, 255, 200, 0.3)';
+                ctx.fillRect(750, 250, 100, 100);
+                ctx.fillText('📚 图书馆', 800, 360);
+
+                // 绘制NPC
+                this.npcs.forEach(npc => {
+                    ctx.fillStyle = npc.color;
+                    ctx.beginPath();
+                    ctx.arc(npc.x, npc.y, 22, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '18px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(npc.emoji, npc.x, npc.y);
+
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 11px Arial';
+                    ctx.fillText(npc.name, npc.x, npc.y + 35);
+                });
+
+                // 绘制玩家
+                ctx.fillStyle = '#667eea';
+                ctx.beginPath();
+                ctx.arc(gameData.playerX, gameData.playerY, 18, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('👤', gameData.playerX, gameData.playerY);
             },
 
             startDialogue(npc) {
-                this.dialoguing = true;
+                this.isDialoguing = true;
                 this.currentNPC = npc;
-                this.dialogueIdx = 0;
+                this.dialogueIndex = 0;
+
+                let dialogueSet = dialogues.initial;
+                if (gameData.affections[npc.id] >= 50) {
+                    dialogueSet = dialogues.intimate;
+                } else if (npc.talked) {
+                    dialogueSet = dialogues.repeat;
+                }
+
+                this.currentDialogues = dialogueSet[npc.id];
                 this.showDialogue();
+                npc.talked = true;
             },
 
             showDialogue() {
-                const d = dialogues[this.currentNPC.id][this.dialogueIdx];
-                document.getElementById('dialogue-speaker').textContent = this.currentNPC.name;
-                document.getElementById('dialogue-text').textContent = d.text;
+                const d = this.currentDialogues[this.dialogueIndex];
+                document.getElementById('dialogue-speaker').textContent = this.currentNPC.name + ' ' + this.currentNPC.emoji;
+                document.getElementById('dialogue-text').textContent = d;
+                document.getElementById('dialogue-choices').style.display = 'none';
+                document.getElementById('dialogue-continue').style.display = 'block';
             },
 
             nextDialogue() {
-                this.dialogueIdx++;
-                if (this.dialogueIdx < dialogues[this.currentNPC.id].length) {
+                if (this.dialogueIndex < this.currentDialogues.length - 1) {
+                    this.dialogueIndex++;
                     this.showDialogue();
                 } else {
+                    this.isDialoguing = false;
                     this.startMinigame();
                 }
             },
 
             startMinigame() {
-                this.dialoguing = false;
+                if (!this.currentNPC) return;
                 const games = ['rps', 'basketball', 'chemistry'];
-                const game = games[Math.floor(Math.random() * 3)];
-                document.getElementById('minigame-screen').classList.remove('hidden');
+                const game = games[Math.floor(Math.random() * games.length)];
+                document.getElementById('minigame-overlay').classList.remove('hidden');
                 miniGames[game].play(this.currentNPC.id);
             },
 
             endMinigame() {
-                document.getElementById('minigame-screen').classList.add('hidden');
+                document.getElementById('minigame-overlay').classList.add('hidden');
+                this.currentNPC = null;
                 this.updateUI();
             },
 
-            update() {
-                const dx = this.targetX - this.playerX;
-                const dy = this.targetY - this.playerY;
-                const dist = Math.hypot(dx, dy);
-                
-                if (dist > 5) {
-                    this.playerX += (dx / dist) * 4;
-                    this.playerY += (dy / dist) * 4;
-                }
-                
-                this.npcs.forEach(npc => {
-                    npc.x += npc.vx;
-                    npc.y += npc.vy;
-                    if (npc.x < 50 || npc.x > 750) npc.vx *= -1;
-                    if (npc.y < 50 || npc.y > 550) npc.vy *= -1;
-                });
-            },
-
-            draw() {
-                this.ctx.fillStyle = '#E8F4F8';
-                this.ctx.fillRect(0, 0, 800, 600);
-                
-                this.npcs.forEach(npc => {
-                    this.ctx.fillStyle = npc.color;
-                    this.ctx.beginPath();
-                    this.ctx.arc(npc.x, npc.y, 20, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.fillStyle = '#fff';
-                    this.ctx.font = '16px Arial';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillText(npc.emoji, npc.x, npc.y + 2);
-                    this.ctx.fillStyle = '#333';
-                    this.ctx.font = 'bold 12px Arial';
-                    this.ctx.fillText(npc.name, npc.x, npc.y + 35);
-                });
-                
-                this.ctx.fillStyle = '#667eea';
-                this.ctx.beginPath();
-                this.ctx.arc(this.playerX, this.playerY, 15, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.fillStyle = '#fff';
-                this.ctx.font = '16px Arial';
-                this.ctx.textAlign = 'center';
-                this.ctx.fillText('👤', this.playerX, this.playerY + 2);
-            },
-
-            loop() {
+            gameLoop() {
                 this.update();
                 this.draw();
-                requestAnimationFrame(() => this.loop());
+                requestAnimationFrame(() => this.gameLoop());
             },
 
             updateUI() {
                 const html = CONFIG.CHARACTERS.map(c => {
                     const aff = gameData.affections[c.id];
-                    let level = '陌生 😐';
-                    if (aff >= 40) level = '友好 😊';
-                    if (aff >= 70) level = '亲密 😄';
+                    let level = '😐 陌生';
+                    let levelClass = 'unfamiliar';
+
+                    if (aff >= 15) level = '😊 熟悉';
+                    if (aff >= 35) level = '😄 友好';
+                    if (aff >= 60) level = '💕 亲密';
+                    if (aff >= 90) level = '⭐ 深交';
+
                     return `
-                        <div class="char-affection">
-                            <div class="char-name">${c.emoji} ${c.name}</div>
-                            <div class="affection-bar"><div class="affection-fill" style="width: ${Math.min(aff, 100)}%; background: ${c.color};"></div></div>
-                            <div class="affection-level">${level}</div>
+                        <div class="char-card">
+                            <div class="char-header">
+                                <span class="char-name">${c.emoji} ${c.name}</span>
+                            </div>
+                            <div class="affection-bar">
+                                <div class="affection-fill" style="width: ${Math.min(aff / 100 * 100, 100)}%;"></div>
+                            </div>
+                            <div class="affection-info">
+                                <span>${aff}/100</span>
+                                <span>${level}</span>
+                            </div>
                         </div>
                     `;
                 }).join('');
+
                 document.getElementById('chars-affection').innerHTML = html;
+                document.getElementById('location-info').textContent = '📍 ' + CONFIG.LOCATIONS[gameData.currentLocation].name;
             },
 
             saveGame() {
                 localStorage.setItem('gameData', JSON.stringify(gameData));
-                alert('游戏已保存！');
+                alert('✅ 游戏已保存！');
             },
 
             showSettings() {
@@ -765,6 +986,15 @@
                 document.getElementById('start-menu').classList.remove('hidden');
             }
         };
+
+        // 页面加载完成时的初始化
+        window.addEventListener('load', () => {
+            // 检查存档
+            const saved = localStorage.getItem('gameData');
+            if (saved) {
+                Object.assign(gameData, JSON.parse(saved));
+            }
+        });
     </script>
 </body>
 </html>
