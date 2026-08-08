@@ -25,12 +25,12 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 1000px;
+            max-width: 1200px;
             width: 100%;
             overflow: hidden;
         }
 
-        /* 通用样式 */
+        /* 菜单界面 */
         .menu-screen {
             padding: 60px 40px;
             text-align: center;
@@ -66,9 +66,11 @@
             flex-direction: column;
             gap: 15px;
             margin-bottom: 40px;
+            align-items: center;
         }
 
         .menu-btn {
+            width: 300px;
             padding: 15px 40px;
             font-size: 18px;
             border: none;
@@ -85,84 +87,55 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .menu-btn:active {
-            transform: translateY(0);
-        }
-
-        .menu-footer {
-            color: #999;
-            font-size: 14px;
-            margin-top: 30px;
-        }
-
         /* 游戏主界面 */
         #game-screen {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 250px;
             height: 700px;
             background: #f0f0f0;
+            gap: 10px;
+            padding: 10px;
         }
 
         #game-screen.hidden {
             display: none;
         }
 
-        .game-top-bar {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 16px;
-        }
-
-        .game-info {
-            display: flex;
-            gap: 30px;
-        }
-
-        .game-main {
-            flex: 1;
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            overflow: hidden;
-        }
-
         .game-canvas-area {
-            flex: 1;
             background: white;
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow: hidden;
             border: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #game-canvas {
             width: 100%;
             height: 100%;
             display: block;
+            cursor: crosshair;
         }
 
         .game-sidebar {
-            width: 200px;
             background: white;
             border-radius: 10px;
             padding: 15px;
             border: 2px solid #e0e0e0;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .char-affection {
-            margin-bottom: 20px;
-            padding: 10px;
             background: #f9f9f9;
+            padding: 10px;
             border-radius: 8px;
             border-left: 4px solid #667eea;
+            margin-bottom: 5px;
         }
 
         .char-name {
@@ -170,14 +143,14 @@
             color: #333;
             display: block;
             margin-bottom: 5px;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .affection-bar {
             width: 100%;
-            height: 20px;
+            height: 15px;
             background: #e0e0e0;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             margin: 5px 0;
         }
@@ -190,7 +163,7 @@
         }
 
         .affection-level {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
             display: block;
         }
@@ -199,8 +172,7 @@
             background: white;
             border: 2px solid #667eea;
             border-radius: 10px;
-            padding: 20px;
-            margin-top: 10px;
+            padding: 15px;
             min-height: 100px;
             display: flex;
             flex-direction: column;
@@ -210,22 +182,22 @@
         .dialogue-speaker {
             font-weight: bold;
             color: #667eea;
-            margin-bottom: 10px;
-            font-size: 16px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
 
         .dialogue-text {
             color: #333;
-            line-height: 1.6;
-            min-height: 50px;
-            font-size: 15px;
+            line-height: 1.5;
+            min-height: 40px;
+            font-size: 12px;
         }
 
         .dialogue-continue {
             color: #999;
-            font-size: 12px;
+            font-size: 10px;
             text-align: right;
-            margin-top: 10px;
+            margin-top: 8px;
             animation: blink 1s infinite;
         }
 
@@ -238,21 +210,21 @@
             background: white;
             border: 2px solid #667eea;
             border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
+            padding: 10px;
+            margin-top: 5px;
         }
 
         .choice-btn {
             display: block;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 6px;
+            margin-bottom: 5px;
             background: #f0f0f0;
             border: 2px solid #ddd;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 14px;
+            font-size: 11px;
             text-align: left;
         }
 
@@ -262,11 +234,37 @@
             border-color: #667eea;
         }
 
-        .choice-btn:last-child {
+        .game-controls {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .control-btn:last-child {
             margin-bottom: 0;
         }
 
-        /* 设置面板 */
         .settings-panel {
             background: white;
             border-radius: 10px;
@@ -279,7 +277,7 @@
         }
 
         .setting-item {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -291,18 +289,6 @@
             flex: 1;
         }
 
-        .setting-item input[type="range"] {
-            flex: 1;
-            margin-left: 20px;
-        }
-
-        .setting-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            margin-left: 20px;
-        }
-
         .about-content {
             background: white;
             border-radius: 10px;
@@ -312,58 +298,63 @@
             margin: 30px auto;
         }
 
-        .about-content h3 {
-            color: #667eea;
-            margin-top: 0;
-            margin-bottom: 15px;
+        .minigame-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .minigame-screen.hidden {
+            display: none;
+        }
+
+        .minigame-container {
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .minigame-title {
             font-size: 24px;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
 
-        .about-content h4 {
-            color: #764ba2;
-            margin-top: 20px;
-            margin-bottom: 10px;
+        .minigame-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
         }
 
-        .about-content p {
-            color: #666;
-            line-height: 1.8;
-            margin-bottom: 10px;
+        .minigame-btn:hover {
+            background: #5a6fd6;
+            transform: scale(1.05);
         }
 
-        /* 响应式 */
         @media (max-width: 768px) {
-            .game-main {
-                flex-direction: column;
+            #game-screen {
+                grid-template-columns: 1fr;
             }
-
             .game-sidebar {
-                width: 100%;
                 height: 150px;
             }
-
-            .menu-title h1 {
-                font-size: 40px;
-            }
-
-            .menu-screen {
-                padding: 30px 20px;
-            }
-        }
-
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -380,30 +371,26 @@
                 <button class="menu-btn" onclick="gameManager.showSettings()">游戏设置</button>
                 <button class="menu-btn" onclick="gameManager.showAbout()">关于游戏</button>
             </div>
-            <div class="menu-footer">
+            <div class="menu-footer" style="color: #999; font-size: 14px;">
                 <p>轻松沙雕 · 青春少年友情 · 无虐心悲剧</p>
             </div>
         </div>
 
         <!-- 设置界面 -->
         <div id="settings-screen" class="menu-screen hidden">
-            <h2>游戏设置</h2>
+            <h2 style="color: #667eea; margin-bottom: 30px;">游戏设置</h2>
             <div class="settings-panel">
                 <div class="setting-item">
                     <label>文字速度</label>
-                    <input type="range" id="text-speed" min="1" max="10" value="5" onchange="gameManager.saveSettings()">
+                    <input type="range" id="text-speed" min="1" max="10" value="5">
                 </div>
                 <div class="setting-item">
                     <label>背景音乐音量</label>
-                    <input type="range" id="bgm-volume" min="0" max="100" value="50" onchange="gameManager.saveSettings()">
+                    <input type="range" id="bgm-volume" min="0" max="100" value="50">
                 </div>
                 <div class="setting-item">
                     <label>音效音量</label>
-                    <input type="range" id="sfx-volume" min="0" max="100" value="70" onchange="gameManager.saveSettings()">
-                </div>
-                <div class="setting-item">
-                    <label>自动保存</label>
-                    <input type="checkbox" id="auto-save" checked onchange="gameManager.saveSettings()">
+                    <input type="range" id="sfx-volume" min="0" max="100" value="70">
                 </div>
             </div>
             <button class="menu-btn" onclick="gameManager.showMenu()">返回</button>
@@ -411,405 +398,373 @@
 
         <!-- 关于界面 -->
         <div id="about-screen" class="menu-screen hidden">
-            <h2>关于游戏</h2>
+            <h2 style="color: #667eea; margin-bottom: 30px;">关于游戏</h2>
             <div class="about-content">
-                <h3>少年同盟 - 校园友情物语</h3>
-                <p>一款轻松沙雕的青春校园友情向游戏</p>
-                <p>在校园中自由探索，与三位性格各异的少年建立深厚的友情羁绊。</p>
-                <p>通过对话、送礼、小游戏提升好感度，解锁丰富的剧情和结局。</p>
+                <h3 style="color: #667eea; margin-bottom: 15px;">少年同盟 - 校园友情物语</h3>
+                <p style="color: #666; margin-bottom: 15px;">一款轻松沙雕的青春校园友情向游戏</p>
+                <p style="color: #666; margin-bottom: 15px;">与三位性格各异的少年建立深厚的友情羁绊。</p>
+                <p style="color: #666; margin-bottom: 15px;">通过对话和小游戏提升好感度，解锁丰富的剧情。</p>
                 <br>
-                <h4>操作说明：</h4>
-                <p>🖱️ 鼠标点击 - 移动到目标位置</p>
-                <p>🔤 点击屏幕 - 推进对话</p>
-                <p>📦 右侧栏 - 查看角色好感度</p>
-                <p>⚙️ 设置 - 调整游戏参数</p>
+                <h4 style="color: #764ba2; margin-bottom: 10px;">游戏特色：</h4>
+                <p style="color: #666; margin-bottom: 8px;">✨ TIAM - 清冷天才少年</p>
+                <p style="color: #666; margin-bottom: 8px;">✨ 紫啧 - 痞帅运动少年</p>
+                <p style="color: #666; margin-bottom: 8px;">✨ 硫代硫酸钠 - 温柔化学少年</p>
+                <p style="color: #666; margin-bottom: 8px;">🎮 多种互动小游戏</p>
+                <p style="color: #666;">💝 实时好感度系统</p>
             </div>
             <button class="menu-btn" onclick="gameManager.showMenu()">返回</button>
         </div>
 
         <!-- 游戏主画面 -->
         <div id="game-screen" class="hidden">
-            <div class="game-top-bar">
-                <div class="game-info">
-                    <span>📅 第 <span id="day-display">1</span> 天</span>
-                    <span>🕐 <span id="time-display">清晨</span></span>
-                    <span>📍 <span id="location-display">教室</span></span>
-                </div>
-                <button class="menu-btn" style="padding: 8px 20px; font-size: 14px;" onclick="gameManager.showGameMenu()">菜单</button>
+            <div class="game-canvas-area">
+                <canvas id="game-canvas" width="800" height="600"></canvas>
             </div>
 
-            <div class="game-main">
-                <div class="game-canvas-area">
-                    <canvas id="game-canvas" width="600" height="500"></canvas>
+            <div class="game-sidebar">
+                <div id="chars-affection"></div>
+                <div class="game-controls">
+                    <button class="control-btn" onclick="gameManager.saveGame()">💾 保存</button>
+                    <button class="control-btn" onclick="gameManager.showMenu()">🏠 菜单</button>
                 </div>
-
-                <div class="game-sidebar">
-                    <div id="chars-affection"></div>
+                <div class="dialogue-box">
+                    <div class="dialogue-speaker" id="dialogue-speaker">游戏</div>
+                    <div class="dialogue-text" id="dialogue-text">点击开始冒险...</div>
+                    <div class="dialogue-continue">▼ 点击继续</div>
                 </div>
-            </div>
-
-            <div class="dialogue-box" id="dialogue-section">
-                <div class="dialogue-speaker" id="dialogue-speaker">游戏</div>
-                <div class="dialogue-text" id="dialogue-text">点击开始冒险...</div>
-                <div class="dialogue-continue">▼ 点击继续</div>
-            </div>
-
-            <div class="choice-box hidden" id="choice-section">
-                <div id="choice-list"></div>
             </div>
         </div>
 
-        <!-- 游戏内菜单 -->
-        <div id="game-menu" class="menu-screen hidden">
-            <h2>游戏菜单</h2>
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="gameManager.resumeGame()">继续游戏</button>
-                <button class="menu-btn" onclick="gameManager.saveGame()">保存游戏</button>
-                <button class="menu-btn" onclick="gameManager.showSettings()">设置</button>
-                <button class="menu-btn" onclick="gameManager.backToTitle()">返回标题</button>
-            </div>
+        <!-- 小游戏界面 -->
+        <div id="minigame-screen" class="minigame-screen hidden">
+            <div class="minigame-container" id="minigame-container"></div>
         </div>
     </div>
 
     <script>
-        // 游戏配置
+        // ==================== 游戏配置 ====================
         const CONFIG = {
-            CANVAS_WIDTH: 600,
-            CANVAS_HEIGHT: 500,
             CHARACTERS: [
-                { id: 'tiam', name: 'TIAM', color: '#FF6B9D', personality: '调皮捣蛋' },
-                { id: 'zize', name: '紫啧', color: '#4ECDC4', personality: '温柔体贴' },
-                { id: 'liudai', name: '硫酸钠', color: '#FFE66D', personality: '聪慧冷静' }
-            ],
-            LOCATIONS: [
-                { id: 'classroom', name: '教室', x: 150, y: 150, color: '#8B7355' },
-                { id: 'playground', name: '操场', x: 450, y: 150, color: '#90EE90' },
-                { id: 'library', name: '图书馆', x: 150, y: 350, color: '#4169E1' },
-                { id: 'cafe', name: '食堂', x: 450, y: 350, color: '#FFB6C1' }
+                { id: 'tiam', name: 'TIAM', color: '#3498db', emoji: '📚' },
+                { id: 'zize', name: '紫啧', color: '#e74c3c', emoji: '⚽' },
+                { id: 'liudai', name: '硫代硫酸钠', color: '#2ecc71', emoji: '🧪' }
             ]
         };
 
-        // 游戏数据
-        class GameData {
-            constructor() {
-                this.day = 1;
-                this.time = 'morning'; // morning, noon, evening
-                this.location = 'classroom';
-                this.affections = {
-                    tiam: 0,
-                    zize: 0,
-                    liudai: 0
-                };
-                this.inventory = [];
-                this.events = [];
-            }
+        // ==================== 游戏数据 ====================
+        const gameData = {
+            affections: { tiam: 0, zize: 0, liudai: 0 }
+        };
 
-            toJSON() {
-                return JSON.stringify(this);
-            }
+        // ==================== 对话库 ====================
+        const dialogues = {
+            tiam: [
+                { text: '哦，是你。我刚做完一套数学题。' },
+                { text: '有点累了...要去小卖部吗？' }
+            ],
+            zize: [
+                { text: '哟！兄弟！要来单挑一局篮球吗？' },
+                { text: '我来教你，保证你学会！' }
+            ],
+            liudai: [
+                { text: '你好呀。我在准备一个化学实验。' },
+                { text: '要一起试试吗？很有趣的！' }
+            ]
+        };
 
-            fromJSON(json) {
-                const data = JSON.parse(json);
-                Object.assign(this, data);
+        // ==================== 小游戏 ====================
+        const miniGames = {
+            rps: {
+                play: function(npcId) {
+                    let container = document.getElementById('minigame-container');
+                    container.innerHTML = `
+                        <div class="minigame-title">🎮 猜拳游戏</div>
+                        <div style="font-size: 18px; margin: 30px 0;">选择你的出招！</div>
+                        <button class="minigame-btn" onclick="miniGames.rps.choose(0, '${npcId}')">✊ 石头</button>
+                        <button class="minigame-btn" onclick="miniGames.rps.choose(1, '${npcId}')">✌️ 剪刀</button>
+                        <button class="minigame-btn" onclick="miniGames.rps.choose(2, '${npcId}')">✋ 布</button>
+                    `;
+                },
+                choose: function(idx, npcId) {
+                    const choices = ['✊ 石头', '✌️ 剪刀', '✋ 布'];
+                    const computer = Math.floor(Math.random() * 3);
+                    let result = '';
+                    let bonus = 0;
+                    
+                    if (idx === computer) {
+                        result = '平手！';
+                        bonus = 3;
+                    } else if ((idx === 0 && computer === 1) || (idx === 1 && computer === 2) || (idx === 2 && computer === 0)) {
+                        result = '你赢了！';
+                        bonus = 12;
+                    } else {
+                        result = '你输了...';
+                        bonus = 4;
+                    }
+                    
+                    gameData.affections[npcId] += bonus;
+                    let container = document.getElementById('minigame-container');
+                    container.innerHTML = `
+                        <div class="minigame-title">${result}</div>
+                        <div style="font-size: 18px; margin: 30px 0;">你: ${choices[idx]} vs 对手: ${choices[computer]}</div>
+                        <div style="color: #667eea; font-size: 14px; margin-bottom: 20px;">+${bonus} 好感度</div>
+                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续</button>
+                    `;
+                }
+            },
+            basketball: {
+                play: function(npcId) {
+                    let power = 50;
+                    let direction = 1;
+                    let container = document.getElementById('minigame-container');
+                    
+                    container.innerHTML = `
+                        <div class="minigame-title">🏀 篮球单挑</div>
+                        <div style="margin: 30px 0;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">🏀</div>
+                            <div style="font-size: 16px; margin-bottom: 15px;">力量：<span id="power-val">50</span>%</div>
+                            <div style="width: 200px; height: 25px; background: #ddd; border-radius: 12px; overflow: hidden; margin: 0 auto 20px;">
+                                <div id="power-bar" style="width: 50%; height: 100%; background: #667eea;"></div>
+                            </div>
+                            <button class="minigame-btn" onclick="miniGames.basketball.shoot('${npcId}')">投篮！</button>
+                        </div>
+                    `;
+                    
+                    this.interval = setInterval(() => {
+                        power += direction * 2;
+                        if (power >= 100 || power <= 0) direction *= -1;
+                        document.getElementById('power-val').textContent = power;
+                        document.getElementById('power-bar').style.width = power + '%';
+                    }, 50);
+                },
+                shoot: function(npcId) {
+                    clearInterval(this.interval);
+                    const power = parseInt(document.getElementById('power-val').textContent);
+                    const success = power >= 40 && power <= 70;
+                    const bonus = success ? 15 : 5;
+                    gameData.affections[npcId] += bonus;
+                    
+                    let container = document.getElementById('minigame-container');
+                    container.innerHTML = `
+                        <div class="minigame-title">${success ? '进球了！🎯' : '没进...'}</div>
+                        <div style="font-size: 48px; margin: 30px 0;">${success ? '🎉' : '😅'}</div>
+                        <div style="color: #667eea; font-size: 14px; margin-bottom: 20px;">+${bonus} 好感度</div>
+                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续</button>
+                    `;
+                }
+            },
+            chemistry: {
+                play: function(npcId) {
+                    const q = { text: 'H₂O是什么？', ans: '水', opt: ['水', '氧气', '氢气'].sort(() => Math.random() - 0.5) };
+                    let container = document.getElementById('minigame-container');
+                    container.innerHTML = `
+                        <div class="minigame-title">🧪 化学实验</div>
+                        <div style="font-size: 16px; margin: 30px 0 20px;">${q.text}</div>
+                        ${q.opt.map(o => `<button class="minigame-btn" onclick="miniGames.chemistry.answer('${o}', '${q.ans}', '${npcId}')">${o}</button>`).join('')}
+                    `;
+                },
+                answer: function(ans, correct, npcId) {
+                    const ok = ans === correct;
+                    const bonus = ok ? 12 : 4;
+                    gameData.affections[npcId] += bonus;
+                    
+                    let container = document.getElementById('minigame-container');
+                    container.innerHTML = `
+                        <div class="minigame-title">${ok ? '答对了！✨' : '答错了...'}</div>
+                        <div style="font-size: 16px; margin: 20px 0;">正确答案：${correct}</div>
+                        <div style="color: #667eea; font-size: 14px; margin-bottom: 20px;">+${bonus} 好感度</div>
+                        <button class="minigame-btn" onclick="gameManager.endMinigame()">继续</button>
+                    `;
+                }
             }
-        }
+        };
 
-        // 游戏管理器
-        class GameManager {
-            constructor() {
-                this.data = new GameData();
-                this.currentDialogue = 0;
-                this.dialogueIndex = 0;
-                this.canvas = null;
-                this.ctx = null;
-                this.playerX = 300;
-                this.playerY = 250;
-                this.targetX = 300;
-                this.targetY = 250;
-                this.gameState = 'menu'; // menu, playing, dialogue
-                this.npcs = this.generateNPCs();
-            }
-
-            generateNPCs() {
-                return CONFIG.CHARACTERS.map(char => ({
-                    ...char,
-                    x: Math.random() * 500 + 50,
-                    y: Math.random() * 350 + 100,
-                    dialogue: this.getCharacterDialogue(char.id)
-                }));
-            }
-
-            getCharacterDialogue(charId) {
-                const dialogues = {
-                    tiam: [
-                        '哈哈！你来了！我刚才做了个超搞笑的事情！',
-                        '你想听听吗？昨天我在教室里...',
-                        '算了，太复杂了。你跟我去玩小游戏吧！'
-                    ],
-                    zize: [
-                        '你好呀。我在看最近的新书。',
-                        '这本书很有趣，要不要一起看？',
-                        '我们可以坐在图书馆的角落里，很安静很舒服。'
-                    ],
-                    liudai: [
-                        '嗯，你来了。',
-                        '我正在思考一个有趣的问题。',
-                        '你想一起探讨吗？'
-                    ]
-                };
-                return dialogues[charId] || [];
-            }
+        // ==================== 游戏管理器 ====================
+        const gameManager = {
+            canvas: null,
+            ctx: null,
+            npcs: [],
+            playerX: 400,
+            playerY: 300,
+            targetX: 400,
+            targetY: 300,
+            dialoguing: false,
+            inGame: false,
 
             startNewGame() {
-                this.data = new GameData();
-                this.gameState = 'playing';
-                this.npcs = this.generateNPCs();
-                this.showGameScreen();
-                this.startGameLoop();
-            }
-
-            showGameScreen() {
-                this.hideAllScreens();
+                gameData.affections = { tiam: 0, zize: 0, liudai: 0 };
+                this.inGame = true;
+                document.getElementById('start-menu').classList.add('hidden');
                 document.getElementById('game-screen').classList.remove('hidden');
+                
                 this.canvas = document.getElementById('game-canvas');
                 this.ctx = this.canvas.getContext('2d');
+                this.npcs = CONFIG.CHARACTERS.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    x: 150 + Math.random() * 500,
+                    y: 150 + Math.random() * 300,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    color: c.color,
+                    emoji: c.emoji
+                }));
+                
                 this.updateUI();
-                this.setupCanvasListener();
-            }
+                this.setupCanvas();
+                this.loop();
+            },
 
-            setupCanvasListener() {
+            setupCanvas() {
                 this.canvas.addEventListener('click', (e) => {
-                    if (this.gameState === 'dialogue') {
+                    if (this.dialoguing) {
                         this.nextDialogue();
                     } else {
                         const rect = this.canvas.getBoundingClientRect();
                         this.targetX = e.clientX - rect.left;
                         this.targetY = e.clientY - rect.top;
-                        this.checkNPCInteraction();
+                        this.checkCollision();
                     }
                 });
-            }
+            },
 
-            checkNPCInteraction() {
+            checkCollision() {
                 for (let npc of this.npcs) {
                     const dx = npc.x - this.playerX;
                     const dy = npc.y - this.playerY;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 80) {
+                    if (Math.hypot(dx, dy) < 120) {
                         this.startDialogue(npc);
                         return;
                     }
                 }
-            }
+            },
 
             startDialogue(npc) {
-                this.gameState = 'dialogue';
+                this.dialoguing = true;
                 this.currentNPC = npc;
-                this.dialogueIndex = 0;
-                this.showDialogue(npc.dialogue[0], npc.name);
-            }
+                this.dialogueIdx = 0;
+                this.showDialogue();
+            },
 
-            showDialogue(text, speaker) {
-                document.getElementById('dialogue-speaker').textContent = speaker;
-                document.getElementById('dialogue-text').textContent = text;
-                document.getElementById('choice-section').classList.add('hidden');
-            }
+            showDialogue() {
+                const d = dialogues[this.currentNPC.id][this.dialogueIdx];
+                document.getElementById('dialogue-speaker').textContent = this.currentNPC.name;
+                document.getElementById('dialogue-text').textContent = d.text;
+            },
 
             nextDialogue() {
-                this.dialogueIndex++;
-                if (this.dialogueIndex < this.currentNPC.dialogue.length) {
-                    this.showDialogue(
-                        this.currentNPC.dialogue[this.dialogueIndex],
-                        this.currentNPC.name
-                    );
+                this.dialogueIdx++;
+                if (this.dialogueIdx < dialogues[this.currentNPC.id].length) {
+                    this.showDialogue();
                 } else {
-                    this.endDialogue();
+                    this.startMinigame();
                 }
-            }
+            },
 
-            endDialogue() {
-                this.gameState = 'playing';
-                this.affectionIncrease(this.currentNPC.id, 10);
+            startMinigame() {
+                this.dialoguing = false;
+                const games = ['rps', 'basketball', 'chemistry'];
+                const game = games[Math.floor(Math.random() * 3)];
+                document.getElementById('minigame-screen').classList.remove('hidden');
+                miniGames[game].play(this.currentNPC.id);
+            },
+
+            endMinigame() {
+                document.getElementById('minigame-screen').classList.add('hidden');
                 this.updateUI();
-            }
+            },
 
-            affectionIncrease(charId, amount) {
-                if (this.data.affections[charId] !== undefined) {
-                    this.data.affections[charId] += amount;
-                    if (this.data.affections[charId] > 100) {
-                        this.data.affections[charId] = 100;
-                    }
+            update() {
+                const dx = this.targetX - this.playerX;
+                const dy = this.targetY - this.playerY;
+                const dist = Math.hypot(dx, dy);
+                
+                if (dist > 5) {
+                    this.playerX += (dx / dist) * 4;
+                    this.playerY += (dy / dist) * 4;
                 }
-            }
+                
+                this.npcs.forEach(npc => {
+                    npc.x += npc.vx;
+                    npc.y += npc.vy;
+                    if (npc.x < 50 || npc.x > 750) npc.vx *= -1;
+                    if (npc.y < 50 || npc.y > 550) npc.vy *= -1;
+                });
+            },
+
+            draw() {
+                this.ctx.fillStyle = '#E8F4F8';
+                this.ctx.fillRect(0, 0, 800, 600);
+                
+                this.npcs.forEach(npc => {
+                    this.ctx.fillStyle = npc.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(npc.x, npc.y, 20, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.fillStyle = '#fff';
+                    this.ctx.font = '16px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(npc.emoji, npc.x, npc.y + 2);
+                    this.ctx.fillStyle = '#333';
+                    this.ctx.font = 'bold 12px Arial';
+                    this.ctx.fillText(npc.name, npc.x, npc.y + 35);
+                });
+                
+                this.ctx.fillStyle = '#667eea';
+                this.ctx.beginPath();
+                this.ctx.arc(this.playerX, this.playerY, 15, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('👤', this.playerX, this.playerY + 2);
+            },
+
+            loop() {
+                this.update();
+                this.draw();
+                requestAnimationFrame(() => this.loop());
+            },
 
             updateUI() {
-                const timeLabels = { morning: '清晨', noon: '中午', evening: '傍晚' };
-                document.getElementById('day-display').textContent = this.data.day;
-                document.getElementById('time-display').textContent = timeLabels[this.data.time] || '清晨';
-                document.getElementById('location-display').textContent = this.getCurrentLocationName();
-
-                const affectionHtml = CONFIG.CHARACTERS.map(char => {
-                    const aff = this.data.affections[char.id];
-                    const level = this.getAffectionLevel(aff);
+                const html = CONFIG.CHARACTERS.map(c => {
+                    const aff = gameData.affections[c.id];
+                    let level = '陌生 😐';
+                    if (aff >= 40) level = '友好 😊';
+                    if (aff >= 70) level = '亲密 😄';
                     return `
                         <div class="char-affection">
-                            <div class="char-name">${char.name}</div>
-                            <div class="affection-bar">
-                                <div class="affection-fill" style="width: ${aff}%; background: ${char.color};"></div>
-                            </div>
+                            <div class="char-name">${c.emoji} ${c.name}</div>
+                            <div class="affection-bar"><div class="affection-fill" style="width: ${Math.min(aff, 100)}%; background: ${c.color};"></div></div>
                             <div class="affection-level">${level}</div>
                         </div>
                     `;
                 }).join('');
-                document.getElementById('chars-affection').innerHTML = affectionHtml;
-            }
-
-            getAffectionLevel(value) {
-                if (value < 10) return '陌生';
-                if (value < 30) return '熟识';
-                if (value < 60) return '友好';
-                if (value < 80) return '亲密';
-                return '深厚';
-            }
-
-            getCurrentLocationName() {
-                const loc = CONFIG.LOCATIONS.find(l => l.id === this.data.location);
-                return loc ? loc.name : '教室';
-            }
-
-            startGameLoop() {
-                const gameLoop = () => {
-                    this.update();
-                    this.draw();
-                    requestAnimationFrame(gameLoop);
-                };
-                gameLoop();
-            }
-
-            update() {
-                // 玩家移动
-                const dx = this.targetX - this.playerX;
-                const dy = this.targetY - this.playerY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance > 5) {
-                    this.playerX += (dx / distance) * 3;
-                    this.playerY += (dy / distance) * 3;
-                }
-
-                // NPC移动
-                this.npcs.forEach(npc => {
-                    if (Math.random() < 0.02) {
-                        npc.targetX = Math.random() * 500 + 50;
-                        npc.targetY = Math.random() * 350 + 100;
-                    }
-                    const dx = (npc.targetX || npc.x) - npc.x;
-                    const dy = (npc.targetY || npc.y) - npc.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist > 2) {
-                        npc.x += (dx / dist) * 1.5;
-                        npc.y += (dy / dist) * 1.5;
-                    }
-                });
-            }
-
-            draw() {
-                // 清空画布
-                this.ctx.fillStyle = '#E8F4F8';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                // 绘制背景
-                this.ctx.fillStyle = '#f0f0f0';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                // 绘制地点标记
-                CONFIG.LOCATIONS.forEach(loc => {
-                    this.ctx.fillStyle = loc.color + '30';
-                    this.ctx.fillRect(loc.x - 30, loc.y - 30, 60, 60);
-                    this.ctx.strokeStyle = loc.color;
-                    this.ctx.lineWidth = 2;
-                    this.ctx.strokeRect(loc.x - 30, loc.y - 30, 60, 60);
-                });
-
-                // 绘制NPC
-                this.npcs.forEach(npc => {
-                    this.ctx.fillStyle = npc.color;
-                    this.ctx.beginPath();
-                    this.ctx.arc(npc.x, npc.y, 15, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.fillStyle = '#333';
-                    this.ctx.font = 'bold 12px Arial';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillText(npc.name, npc.x, npc.y + 25);
-                });
-
-                // 绘制玩家
-                this.ctx.fillStyle = '#667eea';
-                this.ctx.beginPath();
-                this.ctx.arc(this.playerX, this.playerY, 12, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.fillStyle = '#333';
-                this.ctx.font = 'bold 12px Arial';
-                this.ctx.textAlign = 'center';
-                this.ctx.fillText('你', this.playerX, this.playerY + 22);
-            }
-
-            showMenu() {
-                this.hideAllScreens();
-                document.getElementById('start-menu').classList.remove('hidden');
-                this.gameState = 'menu';
-            }
-
-            showGameMenu() {
-                this.hideAllScreens();
-                document.getElementById('game-menu').classList.remove('hidden');
-            }
-
-            showSettings() {
-                this.hideAllScreens();
-                document.getElementById('settings-screen').classList.remove('hidden');
-            }
-
-            showAbout() {
-                this.hideAllScreens();
-                document.getElementById('about-screen').classList.remove('hidden');
-            }
-
-            resumeGame() {
-                this.showGameScreen();
-            }
+                document.getElementById('chars-affection').innerHTML = html;
+            },
 
             saveGame() {
-                localStorage.setItem('gameData', this.data.toJSON());
+                localStorage.setItem('gameData', JSON.stringify(gameData));
                 alert('游戏已保存！');
-            }
+            },
 
-            saveSettings() {
-                const settings = {
-                    textSpeed: document.getElementById('text-speed').value,
-                    bgmVolume: document.getElementById('bgm-volume').value,
-                    sfxVolume: document.getElementById('sfx-volume').value,
-                    autoSave: document.getElementById('auto-save').checked
-                };
-                localStorage.setItem('gameSettings', JSON.stringify(settings));
-            }
-
-            backToTitle() {
-                this.showMenu();
-            }
-
-            hideAllScreens() {
+            showSettings() {
                 document.getElementById('start-menu').classList.add('hidden');
-                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('settings-screen').classList.remove('hidden');
+            },
+
+            showAbout() {
+                document.getElementById('start-menu').classList.add('hidden');
+                document.getElementById('about-screen').classList.remove('hidden');
+            },
+
+            showMenu() {
                 document.getElementById('settings-screen').classList.add('hidden');
                 document.getElementById('about-screen').classList.add('hidden');
-                document.getElementById('game-menu').classList.add('hidden');
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('start-menu').classList.remove('hidden');
             }
-        }
-
-        // 初始化游戏
-        const gameManager = new GameManager();
+        };
     </script>
 </body>
 </html>
